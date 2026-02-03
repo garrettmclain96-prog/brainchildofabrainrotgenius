@@ -28,11 +28,26 @@ const Index = () => {
   const [showIntro, setShowIntro] = useState(false);
 
   useEffect(() => {
+    // Check for reset parameter or if intro hasn't been seen
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('reset') === 'intro') {
+      localStorage.removeItem(INTRO_SEEN_KEY);
+      window.history.replaceState({}, '', '/');
+      setShowIntro(true);
+      return;
+    }
+    
     const hasSeenIntro = localStorage.getItem(INTRO_SEEN_KEY);
     if (!hasSeenIntro) {
       setShowIntro(true);
     }
   }, []);
+
+  const handleReplayIntro = () => {
+    localStorage.removeItem(INTRO_SEEN_KEY);
+    setShowIntro(true);
+    setShowSettings(false);
+  };
 
   const handleIntroComplete = () => {
     localStorage.setItem(INTRO_SEEN_KEY, 'true');
@@ -156,6 +171,14 @@ const Index = () => {
                 social layer permanently disabled
               </p>
             )}
+            
+            {/* Replay intro button */}
+            <button
+              onClick={handleReplayIntro}
+              className="w-full px-3 py-2 rounded text-xs text-muted-foreground hover:text-foreground bg-secondary/30 hover:bg-secondary/50 transition-colors text-left"
+            >
+              replay intro
+            </button>
           </div>
           
           {/* Close button */}
