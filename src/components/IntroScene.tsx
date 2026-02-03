@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
+import { useIntroSounds } from '@/hooks/useIntroSounds';
 
 interface IntroSceneProps {
   onComplete: () => void;
@@ -47,6 +48,41 @@ export const IntroScene = ({ onComplete }: IntroSceneProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const [showSkip, setShowSkip] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const hasInteractedRef = useRef(false);
+  
+  const { startAmbient, stopAmbient, playTyping, playWhoosh } = useIntroSounds();
+
+  // Start ambient sound on first user interaction
+  const handleFirstInteraction = () => {
+    if (!hasInteractedRef.current) {
+      hasInteractedRef.current = true;
+      setSoundEnabled(true);
+      startAmbient();
+    }
+  };
+
+  // Play typing sounds when text appears
+  useEffect(() => {
+    if (!soundEnabled) return;
+    
+    // Play whoosh on step change
+    playWhoosh();
+    
+    // Simulate typing sounds for text content
+    const step = INTRO_STEPS[currentStep];
+    const textLength = (step.title?.length || 0) + (step.body?.length || 0) + (step.subtitle?.length || 0);
+    const typingSounds: NodeJS.Timeout[] = [];
+    
+    // Create random typing sounds spread over the text appearance
+    for (let i = 0; i < Math.min(textLength / 5, 15); i++) {
+      typingSounds.push(
+        setTimeout(() => playTyping(), 50 + Math.random() * 300)
+      );
+    }
+    
+    return () => typingSounds.forEach(t => clearTimeout(t));
+  }, [currentStep, soundEnabled, playTyping, playWhoosh]);
 
   useEffect(() => {
     // Show skip button after first step
@@ -71,8 +107,25 @@ export const IntroScene = ({ onComplete }: IntroSceneProps) => {
   }, []);
 
   const handleComplete = () => {
+    stopAmbient();
     setIsVisible(false);
     setTimeout(onComplete, 600);
+  };
+
+  const handleContinue = () => {
+    handleFirstInteraction();
+    setCurrentStep(prev => Math.min(prev + 1, INTRO_STEPS.length - 1));
+  };
+
+  const handleEnterFog = () => {
+    handleFirstInteraction();
+    playWhoosh();
+    setTimeout(handleComplete, 200);
+  };
+
+  const handleSkip = () => {
+    handleFirstInteraction();
+    handleComplete();
   };
 
   const step = INTRO_STEPS[currentStep];
@@ -156,7 +209,7 @@ export const IntroScene = ({ onComplete }: IntroSceneProps) => {
         <div className="mt-12 flex flex-col items-center gap-4">
           {currentStep === INTRO_STEPS.length - 1 ? (
             <button
-              onClick={handleComplete}
+              onClick={handleEnterFog}
               className={cn(
                 "px-8 py-3 rounded-full font-thought text-sm",
                 "bg-primary/10 text-primary border border-primary/20",
@@ -168,7 +221,7 @@ export const IntroScene = ({ onComplete }: IntroSceneProps) => {
             </button>
           ) : (
             <button
-              onClick={() => setCurrentStep(prev => Math.min(prev + 1, INTRO_STEPS.length - 1))}
+              onClick={handleContinue}
               className="text-muted-foreground/60 hover:text-muted-foreground text-sm transition-colors"
             >
               continue →
@@ -177,7 +230,7 @@ export const IntroScene = ({ onComplete }: IntroSceneProps) => {
           
           {showSkip && currentStep < INTRO_STEPS.length - 1 && (
             <button
-              onClick={handleComplete}
+              onClick={handleSkip}
               className="text-muted-foreground/40 hover:text-muted-foreground/60 text-xs transition-colors"
             >
               skip intro
