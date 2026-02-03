@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useThoughtStore } from '@/stores/thoughtStore';
 import { FogBackground } from '@/components/FogBackground';
 import { PublicFogView } from '@/components/PublicFogView';
 import { PrivateThoughtsView } from '@/components/PrivateThoughtsView';
+import { IntroScene } from '@/components/IntroScene';
 import { cn } from '@/lib/utils';
 import {
   AlertDialog,
@@ -18,13 +19,29 @@ import {
 
 type View = 'private' | 'fog';
 
+const INTRO_SEEN_KEY = 'brainchild-intro-seen';
+
 const Index = () => {
   const [view, setView] = useState<View>('private');
   const { socialEnabled, socialPermanentlyDisabled, toggleSocial, nuclearDisableSocial } = useThoughtStore();
   const [showSettings, setShowSettings] = useState(false);
+  const [showIntro, setShowIntro] = useState(false);
+
+  useEffect(() => {
+    const hasSeenIntro = localStorage.getItem(INTRO_SEEN_KEY);
+    if (!hasSeenIntro) {
+      setShowIntro(true);
+    }
+  }, []);
+
+  const handleIntroComplete = () => {
+    localStorage.setItem(INTRO_SEEN_KEY, 'true');
+    setShowIntro(false);
+  };
 
   return (
     <div className="min-h-screen bg-background relative">
+      {showIntro && <IntroScene onComplete={handleIntroComplete} />}
       <FogBackground />
       
       {/* Navigation */}
