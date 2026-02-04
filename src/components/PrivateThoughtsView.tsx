@@ -3,6 +3,9 @@ import { useThoughtStore } from '@/stores/thoughtStore';
 import { usePublicFog } from '@/hooks/usePublicFog';
 import { ThoughtCard } from '@/components/ThoughtCard';
 import { ThoughtComposer } from '@/components/ThoughtComposer';
+import { AnimatedEmptyState } from '@/components/AnimatedEmptyState';
+import { FloatingParticles } from '@/components/FloatingParticles';
+import { GlowingOrb } from '@/components/GlowingOrb';
 import { DecaySpeed } from '@/types/thought';
 import { cn } from '@/lib/utils';
 import {
@@ -37,35 +40,45 @@ export function PrivateThoughtsView() {
 
   return (
     <div className="min-h-screen relative">
-      {/* Header */}
-      <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b border-border/30 px-6 py-4">
+      {/* Ambient visual elements */}
+      <FloatingParticles />
+      <GlowingOrb className="top-20 left-10" color="primary" size="lg" intensity="low" />
+      <GlowingOrb className="bottom-40 right-10" color="accent" size="md" intensity="low" />
+
+      {/* Header with gradient border */}
+      <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b border-border/30 px-6 py-4 relative overflow-hidden">
+        {/* Animated gradient line */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+        
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-lg font-thought text-foreground/90">private thoughts</h1>
-          <p className="text-xs text-muted-foreground mt-1">
+          <h1 className="text-lg font-thought text-foreground/90 text-gradient">private thoughts</h1>
+          <p className="text-xs text-muted-foreground mt-1 flex items-center gap-2">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary/50 animate-pulse" />
             these never leave unless you release them
           </p>
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-6 py-8">
-        {/* Composer */}
-        <div className="mb-8 p-5 bg-card/40 rounded-lg border border-border/30">
-          <ThoughtComposer
-            onSubmit={(content, mode) => {
-              addPrivateThought(content, mode);
-            }}
-          />
+      <main className="max-w-2xl mx-auto px-6 py-8 relative">
+        {/* Composer with glow effect */}
+        <div className="mb-8 p-5 glass rounded-lg relative group hover-glow transition-all duration-500">
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 rounded-lg blur opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="relative">
+            <ThoughtComposer
+              onSubmit={(content, mode) => {
+                addPrivateThought(content, mode);
+              }}
+            />
+          </div>
         </div>
 
         {/* Empty state */}
         {privateThoughts.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-muted-foreground/50 text-sm font-thought">
-              no thoughts captured yet.
-              <br />
-              <span className="text-muted-foreground/30">write something above.</span>
-            </p>
-          </div>
+          <AnimatedEmptyState
+            title="no thoughts captured yet."
+            subtitle="write something above."
+            icon="thought"
+          />
         )}
 
         {/* Thoughts list */}

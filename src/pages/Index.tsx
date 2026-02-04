@@ -55,22 +55,28 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen bg-background relative overflow-hidden">
       {showIntro && <IntroScene onComplete={handleIntroComplete} />}
       <FogBackground />
       
-      {/* Navigation */}
-      <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1 p-1 rounded-full bg-secondary/30 backdrop-blur-md border border-border/30">
+      {/* Navigation with enhanced styling */}
+      <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1 p-1 rounded-full glass-strong relative overflow-hidden group">
+        {/* Animated border glow */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+        
         <button
           onClick={() => setView('private')}
           className={cn(
-            'px-4 py-2 rounded-full text-sm font-thought transition-all duration-300',
+            'px-4 py-2 rounded-full text-sm font-thought transition-all duration-300 relative overflow-hidden',
             view === 'private'
               ? 'bg-card text-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
           )}
         >
-          private
+          <span className="relative z-10">private</span>
+          {view === 'private' && (
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+          )}
         </button>
         
         {!socialPermanentlyDisabled && (
@@ -82,24 +88,27 @@ const Index = () => {
               setView('fog');
             }}
             className={cn(
-              'px-4 py-2 rounded-full text-sm font-thought transition-all duration-300',
+              'px-4 py-2 rounded-full text-sm font-thought transition-all duration-300 relative overflow-hidden',
               view === 'fog' && socialEnabled
                 ? 'bg-card text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
             )}
           >
-            public fog
+            <span className="relative z-10">public fog</span>
+            {view === 'fog' && socialEnabled && (
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-echo/10 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+            )}
           </button>
         )}
         
-        {/* Settings toggle */}
+        {/* Settings toggle with rotation animation */}
         <button
           onClick={() => setShowSettings(!showSettings)}
           className={cn(
             'w-8 h-8 rounded-full flex items-center justify-center',
             'text-muted-foreground hover:text-foreground',
-            'transition-all duration-200',
-            showSettings && 'bg-secondary/50'
+            'transition-all duration-300',
+            showSettings && 'bg-secondary/50 rotate-90'
           )}
           aria-label="Settings"
         >
@@ -107,10 +116,17 @@ const Index = () => {
         </button>
       </nav>
 
-      {/* Settings panel */}
+      {/* Settings panel with enhanced styling */}
       {showSettings && (
-        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-30 w-72 p-4 rounded-lg bg-card/90 backdrop-blur-md border border-border/50 fog-appear">
-          <h3 className="text-sm font-thought text-foreground mb-4">controls</h3>
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-30 w-72 p-4 rounded-lg glass-strong fog-appear relative overflow-hidden">
+          {/* Animated border */}
+          <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+          
+          <div className="relative">
+            <h3 className="text-sm font-thought text-foreground mb-4 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary/50 animate-pulse" />
+              controls
+            </h3>
           
           <div className="space-y-4">
             {/* Social toggle */}
@@ -175,16 +191,18 @@ const Index = () => {
             {/* Replay intro button */}
             <button
               onClick={handleReplayIntro}
-              className="w-full px-3 py-2 rounded text-xs text-muted-foreground hover:text-foreground bg-secondary/30 hover:bg-secondary/50 transition-colors text-left"
+              className="w-full px-3 py-2 rounded text-xs text-muted-foreground hover:text-foreground bg-secondary/30 hover:bg-secondary/50 transition-colors text-left group relative overflow-hidden"
             >
-              replay intro
+              <span className="relative z-10">replay intro</span>
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </button>
+          </div>
           </div>
           
           {/* Close button */}
           <button
             onClick={() => setShowSettings(false)}
-            className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+            className="absolute top-2 right-2 text-muted-foreground hover:text-foreground transition-transform hover:rotate-90 duration-300"
           >
             ×
           </button>
