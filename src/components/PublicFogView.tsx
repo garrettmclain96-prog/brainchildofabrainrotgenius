@@ -4,6 +4,9 @@ import { ThoughtCard } from '@/components/ThoughtCard';
 import { EchoCard } from '@/components/EchoCard';
 import { EchoComposer } from '@/components/EchoComposer';
 import { ThoughtComposer } from '@/components/ThoughtComposer';
+import { AnimatedEmptyState } from '@/components/AnimatedEmptyState';
+import { FloatingParticles } from '@/components/FloatingParticles';
+import { GlowingOrb } from '@/components/GlowingOrb';
 import { cn } from '@/lib/utils';
 
 type FogFilter = 'all' | 'fading' | 'near-extinction' | 'recently-disturbed';
@@ -44,12 +47,22 @@ export function PublicFogView() {
 
   return (
     <div className="min-h-screen relative">
+      {/* Ambient visual elements */}
+      <FloatingParticles />
+      <GlowingOrb className="top-40 right-20" color="echo" size="lg" intensity="medium" />
+      <GlowingOrb className="bottom-20 left-20" color="primary" size="md" intensity="low" />
+      <GlowingOrb className="top-1/2 left-1/3" color="accent" size="sm" intensity="low" />
+
       {/* Header */}
-      <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b border-border/30 px-6 py-4">
+      <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b border-border/30 px-6 py-4 relative overflow-hidden">
+        {/* Animated gradient line */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-echo/50 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+        
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-thought text-foreground/90">public fog</h1>
-            <p className="text-xs text-muted-foreground mt-1">
+            <h1 className="text-lg font-thought text-foreground/90 text-gradient">public fog</h1>
+            <p className="text-xs text-muted-foreground mt-1 flex items-center gap-2">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-echo/50 animate-pulse" />
               {totalCount} thoughts drifting • all will fade
             </p>
           </div>
@@ -57,47 +70,54 @@ export function PublicFogView() {
           <button
             onClick={() => setShowComposer(!showComposer)}
             className={cn(
-              'px-4 py-2 rounded text-sm',
+              'px-4 py-2 rounded text-sm relative overflow-hidden group',
               'bg-primary/10 text-primary',
               'hover:bg-primary/20',
               'transition-all duration-300',
-              showComposer && 'bg-primary/20'
+              showComposer && 'bg-primary/20 animate-glow-pulse'
             )}
           >
-            {showComposer ? 'close' : 'release thought'}
+            <span className="relative z-10">{showComposer ? 'close' : 'release thought'}</span>
+            <span className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
           </button>
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-6 py-8">
+      <main className="max-w-2xl mx-auto px-6 py-8 relative">
         {/* Composer */}
         {showComposer && (
-          <div className="mb-8 p-5 bg-card/40 rounded-lg border border-border/30 fog-appear">
-            <ThoughtComposer
-              isPublic
-              onSubmit={(content, mode, speed) => {
-                createPublicThought(content, mode, speed);
-                setShowComposer(false);
-              }}
-            />
+          <div className="mb-8 p-5 glass rounded-lg fog-appear relative group hover-glow">
+            <div className="absolute -inset-1 bg-gradient-to-r from-echo/5 via-primary/5 to-echo/5 rounded-lg blur opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative">
+              <ThoughtComposer
+                isPublic
+                onSubmit={(content, mode, speed) => {
+                  createPublicThought(content, mode, speed);
+                  setShowComposer(false);
+                }}
+              />
+            </div>
           </div>
         )}
 
-        {/* Filters */}
+        {/* Filters with animated selection */}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           {filters.map((f) => (
             <button
               key={f.value}
               onClick={() => setFilter(f.value)}
               className={cn(
-                'px-3 py-1.5 rounded-full text-xs whitespace-nowrap',
+                'px-3 py-1.5 rounded-full text-xs whitespace-nowrap relative overflow-hidden',
                 'transition-all duration-300',
                 filter === f.value
                   ? 'bg-secondary text-secondary-foreground'
                   : 'bg-transparent text-muted-foreground hover:text-foreground hover:bg-secondary/30'
               )}
             >
-              {f.label}
+              <span className="relative z-10">{f.label}</span>
+              {filter === f.value && (
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+              )}
             </button>
           ))}
         </div>
@@ -105,21 +125,26 @@ export function PublicFogView() {
         {/* Loading state */}
         {isLoading && (
           <div className="text-center py-20">
-            <p className="text-muted-foreground/50 text-sm font-thought animate-pulse">
-              gathering fog...
-            </p>
+            <div className="relative inline-block">
+              <span className="text-muted-foreground/50 text-sm font-thought">
+                gathering fog
+              </span>
+              <span className="inline-flex ml-1">
+                <span className="animate-wave" style={{ animationDelay: '0s' }}>.</span>
+                <span className="animate-wave" style={{ animationDelay: '0.2s' }}>.</span>
+                <span className="animate-wave" style={{ animationDelay: '0.4s' }}>.</span>
+              </span>
+            </div>
           </div>
         )}
 
         {/* Empty state */}
         {!isLoading && visibleThoughts.length === 0 && (
-          <div className="text-center py-20">
-            <p className="text-muted-foreground/50 text-sm font-thought">
-              {filter === 'all' 
-                ? 'the fog is empty. release a thought.' 
-                : 'no thoughts match this filter.'}
-            </p>
-          </div>
+          <AnimatedEmptyState
+            title={filter === 'all' ? 'the fog is empty.' : 'no thoughts match this filter.'}
+            subtitle={filter === 'all' ? 'release a thought.' : undefined}
+            icon="fog"
+          />
         )}
 
         {/* Thoughts grid - sparse, random placement */}
