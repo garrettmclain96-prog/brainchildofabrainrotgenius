@@ -98,7 +98,11 @@ const Index = () => {
        ))}
        
       <FogBackground />
-      
+       
+       {/* Cinematic overlays */}
+       <div className="noise-overlay" />
+       <div className="vignette" />
+ 
       {/* Navigation with enhanced styling */}
       <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1 p-1 rounded-full glass-strong relative overflow-hidden group">
         {/* Animated border glow */}
