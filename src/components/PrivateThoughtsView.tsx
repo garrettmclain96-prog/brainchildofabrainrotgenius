@@ -1,4 +1,4 @@
-import { useState } from 'react';
+ import { useState, useCallback } from 'react';
 import { useThoughtStore } from '@/stores/thoughtStore';
 import { usePublicFog } from '@/hooks/usePublicFog';
 import { ThoughtCard } from '@/components/ThoughtCard';
@@ -8,6 +8,7 @@ import { FloatingParticles } from '@/components/FloatingParticles';
 import { GlowingOrb } from '@/components/GlowingOrb';
 import { DecaySpeed } from '@/types/thought';
 import { cn } from '@/lib/utils';
+ import { SubmitBurst } from '@/components/SubmitBurst';
 import {
   Dialog,
   DialogContent,
@@ -27,6 +28,16 @@ export function PrivateThoughtsView() {
     thoughtId: null,
   });
   const [selectedSpeed, setSelectedSpeed] = useState<DecaySpeed>('normal');
+   const [bursts, setBursts] = useState<Array<{ id: number; x: number; y: number }>>([]);
+ 
+   const handleBurst = useCallback((x: number, y: number) => {
+     const id = Date.now();
+     setBursts(prev => [...prev, { id, x, y }]);
+   }, []);
+ 
+   const removeBurst = useCallback((id: number) => {
+     setBursts(prev => prev.filter(b => b.id !== id));
+   }, []);
 
   const handleRelease = () => {
     if (releaseDialog.thoughtId) {
@@ -40,6 +51,16 @@ export function PrivateThoughtsView() {
 
   return (
     <div className="min-h-screen relative">
+       {/* Submit burst effects */}
+       {bursts.map(burst => (
+         <SubmitBurst 
+           key={burst.id} 
+           x={burst.x} 
+           y={burst.y} 
+           onComplete={() => removeBurst(burst.id)} 
+         />
+       ))}
+       
       {/* Ambient visual elements */}
       <FloatingParticles />
       <GlowingOrb className="top-20 left-10" color="primary" size="lg" intensity="low" />
@@ -68,6 +89,7 @@ export function PrivateThoughtsView() {
               onSubmit={(content, mode) => {
                 addPrivateThought(content, mode);
               }}
+               onBurst={handleBurst}
             />
           </div>
         </div>

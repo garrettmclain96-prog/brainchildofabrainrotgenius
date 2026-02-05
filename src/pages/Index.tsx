@@ -1,10 +1,13 @@
-import { useState, useEffect } from 'react';
+ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useThoughtStore } from '@/stores/thoughtStore';
 import { FogBackground } from '@/components/FogBackground';
 import { PublicFogView } from '@/components/PublicFogView';
 import { PrivateThoughtsView } from '@/components/PrivateThoughtsView';
 import { IntroScene } from '@/components/IntroScene';
-import { cn } from '@/lib/utils';
+ import { LoadingScreen } from '@/components/LoadingScreen';
+ import { CursorGlow } from '@/components/CursorGlow';
+ import { SubmitBurst } from '@/components/SubmitBurst';
+ import { cn } from '@/lib/utils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,12 +23,16 @@ import {
 type View = 'private' | 'fog';
 
 const INTRO_SEEN_KEY = 'brainchild-intro-seen';
+ const LOADING_SEEN_KEY = 'brainchild-loading-seen';
 
 const Index = () => {
   const [view, setView] = useState<View>('private');
   const { socialEnabled, socialPermanentlyDisabled, toggleSocial, nuclearDisableSocial } = useThoughtStore();
   const [showSettings, setShowSettings] = useState(false);
   const [showIntro, setShowIntro] = useState(false);
+   const [showLoading, setShowLoading] = useState(false);
+   const [bursts, setBursts] = useState<Array<{ id: number; x: number; y: number }>>([]);
+   const burstIdRef = useRef(0);
 
   useEffect(() => {
     // Check for reset parameter or if intro hasn't been seen
@@ -37,12 +44,32 @@ const Index = () => {
       return;
     }
     
-    const hasSeenIntro = localStorage.getItem(INTRO_SEEN_KEY);
-    if (!hasSeenIntro) {
+     const hasSeenLoading = sessionStorage.getItem(LOADING_SEEN_KEY);
+     
+     if (!hasSeenLoading) {
+       setShowLoading(true);
+     } else if (!localStorage.getItem(INTRO_SEEN_KEY)) {
       setShowIntro(true);
     }
   }, []);
 
+   const handleLoadingComplete = () => {
+     sessionStorage.setItem(LOADING_SEEN_KEY, 'true');
+     setShowLoading(false);
+     if (!localStorage.getItem(INTRO_SEEN_KEY)) {
+       setShowIntro(true);
+     }
+   };
+ 
+   const triggerBurst = useCallback((x: number, y: number) => {
+     const id = burstIdRef.current++;
+     setBursts(prev => [...prev, { id, x, y }]);
+   }, []);
+ 
+   const removeBurst = useCallback((id: number) => {
+     setBursts(prev => prev.filter(b => b.id !== id));
+   }, []);
+ 
   const handleReplayIntro = () => {
     localStorage.removeItem(INTRO_SEEN_KEY);
     setShowIntro(true);
@@ -56,9 +83,26 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
+       {showLoading && <LoadingScreen onComplete={handleLoadingComplete} />}
       {showIntro && <IntroScene onComplete={handleIntroComplete} />}
+       <CursorGlow />
+       
+       {/* Submit burst effects */}
+       {bursts.map(burst => (
+         <SubmitBurst 
+           key={burst.id} 
+           x={burst.x} 
+           y={burst.y} 
+           onComplete={() => removeBurst(burst.id)} 
+         />
+       ))}
+       
       <FogBackground />
-      
+       
+       {/* Cinematic overlays */}
+       <div className="noise-overlay" />
+       <div className="vignette" />
+ 
       {/* Navigation with enhanced styling */}
       <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1 p-1 rounded-full glass-strong relative overflow-hidden group">
         {/* Animated border glow */}

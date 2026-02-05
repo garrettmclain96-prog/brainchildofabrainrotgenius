@@ -1,4 +1,4 @@
-import { useState } from 'react';
+ import { useState, useCallback } from 'react';
 import { usePublicFog } from '@/hooks/usePublicFog';
 import { ThoughtCard } from '@/components/ThoughtCard';
 import { EchoCard } from '@/components/EchoCard';
@@ -8,6 +8,7 @@ import { AnimatedEmptyState } from '@/components/AnimatedEmptyState';
 import { FloatingParticles } from '@/components/FloatingParticles';
 import { GlowingOrb } from '@/components/GlowingOrb';
 import { cn } from '@/lib/utils';
+ import { SubmitBurst } from '@/components/SubmitBurst';
 
 type FogFilter = 'all' | 'fading' | 'near-extinction' | 'recently-disturbed';
 
@@ -32,7 +33,17 @@ export function PublicFogView() {
   
   const [echoingThoughtId, setEchoingThoughtId] = useState<string | null>(null);
   const [showComposer, setShowComposer] = useState(false);
+   const [bursts, setBursts] = useState<Array<{ id: number; x: number; y: number }>>([]);
 
+   const handleBurst = useCallback((x: number, y: number) => {
+     const id = Date.now();
+     setBursts(prev => [...prev, { id, x, y }]);
+   }, []);
+ 
+   const removeBurst = useCallback((id: number) => {
+     setBursts(prev => prev.filter(b => b.id !== id));
+   }, []);
+ 
   // Limit visible thoughts for anti-feed (max 6)
   const visibleThoughts = thoughts.slice(0, 6);
 
@@ -47,6 +58,16 @@ export function PublicFogView() {
 
   return (
     <div className="min-h-screen relative">
+       {/* Submit burst effects */}
+       {bursts.map(burst => (
+         <SubmitBurst 
+           key={burst.id} 
+           x={burst.x} 
+           y={burst.y} 
+           onComplete={() => removeBurst(burst.id)} 
+         />
+       ))}
+       
       {/* Ambient visual elements */}
       <FloatingParticles />
       <GlowingOrb className="top-40 right-20" color="echo" size="lg" intensity="medium" />
@@ -95,6 +116,7 @@ export function PublicFogView() {
                   createPublicThought(content, mode, speed);
                   setShowComposer(false);
                 }}
+               onBurst={handleBurst}
               />
             </div>
           </div>
