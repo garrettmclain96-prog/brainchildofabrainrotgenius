@@ -97,7 +97,6 @@ export type Database = {
           expires_at: string | null
           fragment_text: string | null
           id: string | null
-          session_id: string | null
           thought_id: string | null
         }
         Insert: {
@@ -105,7 +104,6 @@ export type Database = {
           expires_at?: string | null
           fragment_text?: string | null
           id?: string | null
-          session_id?: string | null
           thought_id?: string | null
         }
         Update: {
@@ -113,7 +111,6 @@ export type Database = {
           expires_at?: string | null
           fragment_text?: string | null
           id?: string | null
-          session_id?: string | null
           thought_id?: string | null
         }
         Relationships: [
@@ -142,7 +139,6 @@ export type Database = {
           expires_at: string | null
           id: string | null
           mode: Database["public"]["Enums"]["decay_mode"] | null
-          session_id: string | null
         }
         Insert: {
           content?: string | null
@@ -152,7 +148,6 @@ export type Database = {
           expires_at?: string | null
           id?: string | null
           mode?: Database["public"]["Enums"]["decay_mode"] | null
-          session_id?: string | null
         }
         Update: {
           content?: string | null
@@ -162,7 +157,6 @@ export type Database = {
           expires_at?: string | null
           id?: string | null
           mode?: Database["public"]["Enums"]["decay_mode"] | null
-          session_id?: string | null
         }
         Relationships: []
       }
@@ -171,6 +165,10 @@ export type Database = {
       calculate_decay_level: {
         Args: { created_at: string; expires_at: string }
         Returns: number
+      }
+      is_own_session: {
+        Args: { current_session_id: string; thought_session_id: string }
+        Returns: boolean
       }
     }
     Enums: {
