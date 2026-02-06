@@ -2,6 +2,9 @@ import { Suspense, lazy, useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThoughtStore } from '@/stores/thoughtStore';
 import { useAppMode } from '@/hooks/useAppMode';
+import { useEasterEggs } from '@/hooks/useEasterEggs';
+import { useOverloadSensor } from '@/hooks/useOverloadSensor';
+import { useOvernightSynthesis } from '@/hooks/useOvernightSynthesis';
 import { FogBackground } from '@/components/FogBackground';
 import { PublicFogView } from '@/components/PublicFogView';
 import { PrivateThoughtsView } from '@/components/PrivateThoughtsView';
@@ -10,6 +13,9 @@ import { IntroScene } from '@/components/IntroScene';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { BottomNav } from '@/components/BottomNav';
 import { ModeToggle } from '@/components/ModeToggle';
+import { SystemKoan } from '@/components/SystemKoan';
+import { OverloadOverlay } from '@/components/OverloadOverlay';
+import { OvernightSynthesisOverlay } from '@/components/OvernightSynthesis';
 
 // Lazy load heavy 3D scene
 const FogScene = lazy(() => import('@/components/three/FogScene').then((m) => ({ default: m.FogScene })));
@@ -39,11 +45,16 @@ const pageVariants = {
 
 const Index = () => {
   const [view, setView] = useState<View>('private');
-  const { socialEnabled, socialPermanentlyDisabled, toggleSocial } = useThoughtStore();
+  const { socialEnabled, socialPermanentlyDisabled, toggleSocial, privateThoughts } = useThoughtStore();
   const { mode } = useAppMode();
   const [showIntro, setShowIntro] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
   const [is3DReady, setIs3DReady] = useState(false);
+
+  // Phase 2: Cognitive systems
+  const { activeEgg, dismissEgg } = useEasterEggs(privateThoughts);
+  const overload = useOverloadSensor();
+  const synthesis = useOvernightSynthesis(privateThoughts);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -87,12 +98,13 @@ const Index = () => {
 
   const handleViewChange = useCallback(
     (newView: View) => {
+      overload.recordAction();
       if (newView === 'fog' && !socialEnabled && !socialPermanentlyDisabled) {
         toggleSocial();
       }
       setView(newView);
     },
-    [socialEnabled, socialPermanentlyDisabled, toggleSocial]
+    [socialEnabled, socialPermanentlyDisabled, toggleSocial, overload]
   );
 
   return (
@@ -115,6 +127,25 @@ const Index = () => {
       <div className="noise-overlay" />
       <div className="vignette" />
 
+      {/* Phase 2: Easter eggs */}
+      <SystemKoan egg={activeEgg} onDismiss={dismissEgg} />
+
+      {/* Phase 2: Overload sensor */}
+      <OverloadOverlay
+        isOverloaded={overload.isOverloaded}
+        intensity={overload.intensity}
+        onChoose={overload.choosePath}
+        onDismiss={overload.dismiss}
+      />
+
+      {/* Phase 2: Overnight synthesis */}
+      <OvernightSynthesisOverlay
+        hasSynthesis={synthesis.hasSynthesis}
+        synthesis={synthesis.synthesis}
+        decayedCount={synthesis.decayedCount}
+        onDismiss={synthesis.dismissSynthesis}
+      />
+
       {/* Top bar - minimal, mobile-friendly */}
       <header className="fixed top-0 left-0 right-0 z-30 safe-area-top">
         <div className="flex items-center justify-between px-4 py-2">
@@ -135,13 +166,13 @@ const Index = () => {
         <AnimatePresence mode="wait">
           {view === 'private' && (
             <motion.div key="private" variants={pageVariants} initial="initial" animate="enter" exit="exit">
-              <PrivateThoughtsView />
+              <PrivateThoughtsView onAction={overload.recordAction} />
             </motion.div>
           )}
 
           {view === 'fog' && socialEnabled && !socialPermanentlyDisabled && (
             <motion.div key="fog" variants={pageVariants} initial="initial" animate="enter" exit="exit">
-              <PublicFogView />
+              <PublicFogView onAction={overload.recordAction} />
             </motion.div>
           )}
 
