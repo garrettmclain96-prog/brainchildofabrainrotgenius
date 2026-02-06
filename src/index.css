@@ -2,12 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Brainchild — Public Fog Design System
-   A decaying social network aesthetic: dark, foggy, impermanent
+/* Brainchild — BrainRot Edition Design System
+   A decaying cognitive environment: dark, foggy, impermanent
    All colors in HSL for theming consistency
+   Fonts loaded via index.html <link> to avoid @import order issues
 */
-
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap');
 
 @layer base {
   :root {
@@ -73,6 +72,34 @@
     --sidebar-accent-foreground: 210 15% 70%;
     --sidebar-border: 220 10% 15%;
     --sidebar-ring: 185 35% 45%;
+    
+    /* Mode-specific tokens */
+    --rot-glitch: 280 60% 50%;
+    --rot-accent: 320 40% 40%;
+    --prune-calm: 200 20% 60%;
+    --prune-accent: 180 30% 50%;
+  }
+  
+  /* Embrace the Rot mode overrides */
+  .mode-rot {
+    --primary: 280 40% 45%;
+    --accent: 320 35% 35%;
+    --decay-fresh: 280 30% 65%;
+    --decay-fading: 300 20% 50%;
+    --decay-rotting: 320 15% 35%;
+    --decay-extinct: 340 10% 20%;
+    --echo: 280 25% 55%;
+  }
+  
+  /* Prune the Decay mode overrides */
+  .mode-prune {
+    --primary: 200 35% 50%;
+    --accent: 180 25% 35%;
+    --decay-fresh: 200 30% 65%;
+    --decay-fading: 200 20% 50%;
+    --decay-rotting: 200 15% 35%;
+    --decay-extinct: 200 10% 20%;
+    --echo: 200 25% 55%;
   }
 }
 
@@ -837,6 +864,24 @@
 /* Hide default cursor */
 .cursor-none * {
   cursor: none !important;
+}
+
+/* Safe area padding for mobile PWA */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
 /* Premium card hover */

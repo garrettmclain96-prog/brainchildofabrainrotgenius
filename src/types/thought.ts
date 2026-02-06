@@ -1,8 +1,10 @@
-// Core data models for Brainchild — Public Fog
+// Core data models for Brainchild — BrainRot Edition
 
 export type DecayMode = 'clean' | 'rot';
+export type AppMode = 'prune' | 'rot';
 export type Visibility = 'private' | 'public';
 export type DecaySpeed = 'normal' | 'fast' | 'sink';
+export type FragmentCategory = 'ideas' | 'tasks' | 'journal' | 'projects' | 'uncategorized';
 
 export interface Thought {
   id: string;
@@ -13,6 +15,9 @@ export interface Thought {
   visibility: Visibility;
   expiresAt: Date;
   decaySpeed: DecaySpeed;
+  category: FragmentCategory;
+  lastWateredAt?: Date; // "Watering" resets decay timer
+  waterCount: number; // How many times this thought has been revisited
 }
 
 export interface Echo {
@@ -30,8 +35,23 @@ export const DECAY_DURATIONS: Record<DecaySpeed, number> = {
   sink: 5,       // 5 minutes - for things you want gone quickly
 };
 
+// Private thought decay (24h default, extended by watering)
+export const PRIVATE_DECAY_DURATION = 24 * 60; // 24 hours in minutes
+
 // Echo decay is always faster than thoughts
 export const ECHO_DECAY_DURATION = 10; // 10 minutes
+
+// Watering extends life by this multiplier
+export const WATER_EXTENSION_MINUTES = 60; // Each watering adds 1 hour
+
+// Category metadata
+export const CATEGORY_META: Record<FragmentCategory, { label: string; icon: string; color: string }> = {
+  ideas: { label: 'ideas', icon: '💡', color: 'primary' },
+  tasks: { label: 'tasks', icon: '◯', color: 'accent' },
+  journal: { label: 'journal', icon: '📖', color: 'echo' },
+  projects: { label: 'projects', icon: '🧩', color: 'decay-fresh' },
+  uncategorized: { label: 'all', icon: '·', color: 'muted-foreground' },
+};
 
 // Helper to calculate decay level based on time
 export function calculateDecayLevel(createdAt: Date, expiresAt: Date): number {
@@ -63,13 +83,40 @@ export function applyRotEffect(text: string, decayLevel: number): string {
   const chars = text.split('');
   const decayFactor = (decayLevel - 25) / 75; // 0-1 scale after 25%
   
-  return chars.map((char, index) => {
-    // More characters get affected as decay increases
+  return chars.map((char) => {
     if (Math.random() < decayFactor * 0.3) {
-      // Replace with decay characters
       const decayChars = ['░', '▒', '▓', '·', '∙', ' ', '_', '.'];
       return decayChars[Math.floor(Math.random() * decayChars.length)];
     }
     return char;
   }).join('');
 }
+
+// Apply word rearrangement for advanced decay
+export function applyWordDecay(text: string, decayLevel: number): string {
+  if (decayLevel < 40) return text;
+  
+  const words = text.split(' ');
+  const shuffleFactor = (decayLevel - 40) / 60;
+  
+  return words.map((word, i) => {
+    if (Math.random() < shuffleFactor * 0.2 && i < words.length - 1) {
+      // Swap with next word
+      const temp = words[i + 1];
+      words[i + 1] = word;
+      return temp;
+    }
+    return word;
+  }).join(' ');
+}
+
+// Farewell messages for dissolve
+export const FAREWELL_MESSAGES = [
+  "rot to root. decay to dream.",
+  "the compost of genius returns to earth.",
+  "every thought was a seed. some were meant to dissolve.",
+  "brainrot is not failure. it is the garden composting.",
+  "you are lighter now.",
+  "the fog clears. the mind breathes.",
+  "nothing was lost. everything became something else.",
+];

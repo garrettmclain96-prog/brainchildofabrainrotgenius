@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Thought, DecayMode, DecaySpeed, DECAY_DURATIONS, calculateDecayLevel } from '@/types/thought';
+import { Thought, DecayMode, DecaySpeed, FragmentCategory, PRIVATE_DECAY_DURATION, WATER_EXTENSION_MINUTES, DECAY_DURATIONS, calculateDecayLevel } from '@/types/thought';
 
 interface ThoughtStore {
   // Private thoughts (stored locally)
@@ -11,11 +11,13 @@ interface ThoughtStore {
   socialPermanentlyDisabled: boolean;
   
   // Actions
-  addPrivateThought: (content: string, mode: DecayMode) => void;
+  addPrivateThought: (content: string, mode: DecayMode, category?: FragmentCategory) => void;
   deletePrivateThought: (id: string) => void;
+  waterThought: (id: string) => void;
   releaseToFog: (id: string, decaySpeed: DecaySpeed) => Thought | null;
   toggleSocial: () => void;
   nuclearDisableSocial: () => void;
+  dissolveEverything: () => void;
   
   // Decay management
   updateDecayLevels: () => void;
@@ -31,7 +33,7 @@ export const useThoughtStore = create<ThoughtStore>()(
       socialEnabled: false,
       socialPermanentlyDisabled: false,
 
-      addPrivateThought: (content, mode) => {
+      addPrivateThought: (content, mode, category = 'uncategorized') => {
         const now = new Date();
         const thought: Thought = {
           id: generateId(),
@@ -40,8 +42,10 @@ export const useThoughtStore = create<ThoughtStore>()(
           decayLevel: 0,
           mode,
           visibility: 'private',
-          expiresAt: new Date(now.getTime() + 24 * 60 * 60 * 1000), // 24h for private
+          expiresAt: new Date(now.getTime() + PRIVATE_DECAY_DURATION * 60 * 1000),
           decaySpeed: 'normal',
+          category,
+          waterCount: 0,
         };
         
         set((state) => ({
@@ -55,6 +59,24 @@ export const useThoughtStore = create<ThoughtStore>()(
         }));
       },
 
+      waterThought: (id) => {
+        set((state) => ({
+          privateThoughts: state.privateThoughts.map((t) => {
+            if (t.id !== id) return t;
+            const now = new Date();
+            return {
+              ...t,
+              lastWateredAt: now,
+              waterCount: t.waterCount + 1,
+              // Extend expiration by WATER_EXTENSION_MINUTES
+              expiresAt: new Date(t.expiresAt.getTime() + WATER_EXTENSION_MINUTES * 60 * 1000),
+              // Reduce decay level slightly
+              decayLevel: Math.max(0, t.decayLevel - 15),
+            };
+          }),
+        }));
+      },
+
       releaseToFog: (id, decaySpeed) => {
         const thought = get().privateThoughts.find((t) => t.id === id);
         if (!thought) return null;
@@ -62,7 +84,7 @@ export const useThoughtStore = create<ThoughtStore>()(
         const now = new Date();
         const publicThought: Thought = {
           ...thought,
-          id: generateId(), // New ID for public version
+          id: generateId(),
           visibility: 'public',
           decaySpeed,
           createdAt: now,
@@ -86,6 +108,12 @@ export const useThoughtStore = create<ThoughtStore>()(
         set({
           socialEnabled: false,
           socialPermanentlyDisabled: true,
+        });
+      },
+
+      dissolveEverything: () => {
+        set({
+          privateThoughts: [],
         });
       },
 
@@ -114,17 +142,20 @@ export const useThoughtStore = create<ThoughtStore>()(
           ...t,
           createdAt: t.createdAt.toISOString(),
           expiresAt: t.expiresAt.toISOString(),
+          lastWateredAt: t.lastWateredAt?.toISOString(),
         })),
         socialEnabled: state.socialEnabled,
         socialPermanentlyDisabled: state.socialPermanentlyDisabled,
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {
-          // Rehydrate dates
           state.privateThoughts = state.privateThoughts.map((t: any) => ({
             ...t,
             createdAt: new Date(t.createdAt),
             expiresAt: new Date(t.expiresAt),
+            lastWateredAt: t.lastWateredAt ? new Date(t.lastWateredAt) : undefined,
+            category: t.category || 'uncategorized',
+            waterCount: t.waterCount || 0,
           }));
         }
       },
