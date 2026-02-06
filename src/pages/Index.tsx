@@ -17,6 +17,9 @@ import { useTemporalInversions } from '@/hooks/useTemporalInversions';
 import { useIntentionalBoredom } from '@/hooks/useIntentionalBoredom';
 import { useExitInterview } from '@/hooks/useExitInterview';
 import { usePerceptualDrift } from '@/hooks/usePerceptualDrift';
+import { usePermanentConsequences } from '@/hooks/usePermanentConsequences';
+import { useIdentityDrift } from '@/hooks/useIdentityDrift';
+import { useTrueEnding } from '@/hooks/useTrueEnding';
 import { FogBackground } from '@/components/FogBackground';
 import { PublicFogView } from '@/components/PublicFogView';
 import { PrivateThoughtsView } from '@/components/PrivateThoughtsView';
@@ -39,6 +42,8 @@ import { AppMoodIndicator } from '@/components/AppMoodIndicator';
 import { BoredomOverlay } from '@/components/BoredomOverlay';
 import { ExitInterviewOverlay } from '@/components/ExitInterviewOverlay';
 import { DangerWarning, hasDismissedWarning } from '@/components/DangerWarning';
+import { OneTimeWhisper } from '@/components/OneTimeWhisper';
+import { TrueEndingScreen } from '@/components/TrueEndingScreen';
 
 // Lazy load heavy 3D scene
 const FogScene = lazy(() => import('@/components/three/FogScene').then((m) => ({ default: m.FogScene })));
@@ -89,7 +94,7 @@ const Index = () => {
   const quietEnding = useQuietEnding();
   const coThinking = useCoThinking(privateThoughts.length);
 
-  // New sentient systems
+  // Sentient systems
   const appMood = useAppMoods();
   const { haunting, dismissHaunting } = useCognitiveHauntings(privateThoughts);
   const { inversion, dismissInversion } = useTemporalInversions(privateThoughts);
@@ -97,21 +102,26 @@ const Index = () => {
   const exitInterview = useExitInterview();
   const drift = usePerceptualDrift();
 
+  // Irreversibility layer
+  const consequences = usePermanentConsequences(privateThoughts);
+  const identity = useIdentityDrift(privateThoughts);
+  const trueEnding = useTrueEnding(privateThoughts.length);
+
   // Forbidden screen — 5-tap on header
   const [headerTaps, setHeaderTaps] = useState(0);
   useEffect(() => {
     if (headerTaps >= 5) {
       setShowForbidden(true);
       setHeaderTaps(0);
+      consequences.recordMark('hasSeenForbiddenScreen');
     }
     if (headerTaps > 0) {
       const timer = setTimeout(() => setHeaderTaps(0), 2000);
       return () => clearTimeout(timer);
     }
-  }, [headerTaps]);
+  }, [headerTaps, consequences]);
 
   useEffect(() => {
-    // Don't start loading/intro until danger warning is dismissed
     if (showDangerWarning) return;
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -171,6 +181,11 @@ const Index = () => {
     [socialEnabled, socialPermanentlyDisabled, toggleSocial, overload]
   );
 
+  // True Ending — graduation
+  if (trueEnding.phase === 'complete') {
+    return <TrueEndingScreen phase="complete" onBegin={() => {}} onAccept={() => {}} onDecline={() => {}} />;
+  }
+
   // Danger Warning — first gate
   if (showDangerWarning) {
     return <DangerWarning onAccept={handleDangerWarningAccept} />;
@@ -191,6 +206,19 @@ const Index = () => {
         {showIntro && <IntroScene onComplete={handleIntroComplete} />}
       </AnimatePresence>
 
+      {/* True Ending — offering / ceremony */}
+      {(trueEnding.phase === 'offering' || trueEnding.phase === 'ceremony') && (
+        <TrueEndingScreen
+          phase={trueEnding.phase}
+          onBegin={trueEnding.beginCompletion}
+          onAccept={() => {
+            consequences.recordMark('completionAccepted');
+            trueEnding.acceptCompletion();
+          }}
+          onDecline={trueEnding.declineCompletion}
+        />
+      )}
+
       {/* Quiet ending — welcome back */}
       {quietEnding.isActive && !quietEnding.isInert && (
         <QuietEndingScreen state={quietEnding} onDismiss={() => {}} />
@@ -203,6 +231,9 @@ const Index = () => {
       {/* Film grain & vignette */}
       <div className="noise-overlay" />
       <div className="vignette" />
+
+      {/* One-time whispers (permanent consequences) */}
+      <OneTimeWhisper whisper={consequences.oneTimeWhisper} onDismiss={consequences.dismissWhisper} />
 
       {/* Easter eggs */}
       <SystemKoan egg={activeEgg} onDismiss={dismissEgg} />
@@ -225,7 +256,10 @@ const Index = () => {
       {/* Exit interview */}
       <ExitInterviewOverlay
         isOpen={exitInterview.shouldShow}
-        onComplete={exitInterview.completeInterview}
+        onComplete={(answers) => {
+          consequences.recordMark('interviewCompleted');
+          exitInterview.completeInterview(answers);
+        }}
         onDismiss={exitInterview.dismissInterview}
       />
 
@@ -279,7 +313,10 @@ const Index = () => {
                 onAction={overload.recordAction}
                 appMood={appMood}
                 drift={drift}
+                identity={identity}
+                consequences={consequences.consequences}
                 onNearDeletion={exitInterview.recordNearDeletion}
+                onRecordMark={consequences.recordMark}
               />
             </motion.div>
           )}
@@ -312,11 +349,30 @@ const Index = () => {
 
           {view === 'settings' && (
             <motion.div key="settings" variants={pageVariants} initial="initial" animate="enter" exit="exit">
-              <SettingsView onReplayIntro={handleReplayIntro} audio={audio} appMood={appMood} />
+              <SettingsView
+                onReplayIntro={handleReplayIntro}
+                audio={audio}
+                appMood={appMood}
+                identity={identity}
+                consequences={consequences.consequences}
+              />
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      {/* Permanent whisper scar */}
+      {consequences.consequences.scars.permanentWhisper && (
+        <motion.div
+          className="fixed top-14 right-4 z-20"
+          animate={{ opacity: [0, 0.15, 0] }}
+          transition={{ duration: 8, repeat: Infinity, repeatDelay: 30 }}
+        >
+          <span className="text-[8px] text-muted-foreground/10 font-thought italic">
+            {consequences.consequences.scars.permanentWhisper}
+          </span>
+        </motion.div>
+      )}
 
       {/* Bottom navigation */}
       <BottomNav
