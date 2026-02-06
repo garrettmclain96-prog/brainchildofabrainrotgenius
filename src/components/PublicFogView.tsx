@@ -13,6 +13,7 @@ import { AnimatedEmptyState } from '@/components/AnimatedEmptyState';
 import { IdeaDriftNotification } from '@/components/IdeaDriftNotification';
 import { GraveyardView } from '@/components/GraveyardView';
 import { ThoughtWeatherIndicator } from '@/components/ThoughtWeatherIndicator';
+import { AppMoodState } from '@/hooks/useAppMoods';
 import { cn } from '@/lib/utils';
 import { SubmitBurst } from '@/components/SubmitBurst';
 
@@ -28,9 +29,10 @@ const filters: { value: FogFilter; label: string }[] = [
 
 interface PublicFogViewProps {
   onAction?: () => void;
+  appMood?: AppMoodState;
 }
 
-export function PublicFogView({ onAction }: PublicFogViewProps) {
+export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
   const {
     thoughts, echoes, filter, setFilter, addEcho, createPublicThought, totalCount, isLoading,
   } = usePublicFog();
@@ -70,6 +72,10 @@ export function PublicFogView({ onAction }: PublicFogViewProps) {
   const visibleThoughts = thoughts.slice(0, 6);
   const isGraveyard = activeFilter === 'graveyard';
 
+  // App mood affects visual density
+  const thoughtLimit = appMood?.mood === 'silent' ? 3 : appMood?.mood === 'fragmented' ? 8 : 6;
+  const displayThoughts = thoughts.slice(0, thoughtLimit);
+
   return (
     <div className="min-h-screen relative pb-28">
       {/* Submit bursts */}
@@ -98,7 +104,7 @@ export function PublicFogView({ onAction }: PublicFogViewProps) {
               </p>
             </div>
 
-            {!isGraveyard && (
+            {!isGraveyard && appMood?.mood !== 'withholding' && (
               <motion.button
                 onClick={() => setShowComposer(!showComposer)}
                 className={cn(
@@ -178,7 +184,7 @@ export function PublicFogView({ onAction }: PublicFogViewProps) {
             )}
 
             {/* Empty */}
-            {!isLoading && visibleThoughts.length === 0 && (
+            {!isLoading && displayThoughts.length === 0 && (
               <AnimatedEmptyState
                 title={filter === 'all' ? 'the fog is empty.' : 'no thoughts match this filter.'}
                 subtitle={filter === 'all' ? 'release a thought.' : undefined}
@@ -188,7 +194,7 @@ export function PublicFogView({ onAction }: PublicFogViewProps) {
 
             {/* Thoughts */}
             <div className="space-y-4">
-              {visibleThoughts.map((thought, index) => (
+              {displayThoughts.map((thought, index) => (
                 <motion.div
                   key={thought.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -230,9 +236,9 @@ export function PublicFogView({ onAction }: PublicFogViewProps) {
               ))}
             </div>
 
-            {thoughts.length > 6 && (
+            {thoughts.length > thoughtLimit && (
               <div className="text-center mt-8 text-[10px] text-muted-foreground/25 font-thought">
-                {thoughts.length - 6} more thoughts hidden in the fog
+                {thoughts.length - thoughtLimit} more thoughts hidden in the fog
               </div>
             )}
           </>

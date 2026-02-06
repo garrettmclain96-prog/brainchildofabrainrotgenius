@@ -4,6 +4,7 @@ import { useAppMode } from '@/hooks/useAppMode';
 import { ModeToggle } from '@/components/ModeToggle';
 import { DissolveButton } from '@/components/DissolveButton';
 import { FinitudeDial } from '@/components/FinitudeDial';
+import { AppMoodState } from '@/hooks/useAppMoods';
 import { cn } from '@/lib/utils';
 import {
   AlertDialog,
@@ -26,9 +27,10 @@ interface SettingsViewProps {
     stopAmbient: () => void;
     setVolume: (v: number) => void;
   };
+  appMood?: AppMoodState;
 }
 
-export function SettingsView({ onReplayIntro, audio }: SettingsViewProps) {
+export function SettingsView({ onReplayIntro, audio, appMood }: SettingsViewProps) {
   const {
     socialEnabled,
     socialPermanentlyDisabled,
@@ -48,6 +50,34 @@ export function SettingsView({ onReplayIntro, audio }: SettingsViewProps) {
             shape how your mind breathes here
           </p>
         </header>
+
+        {/* App Mood indicator */}
+        {appMood && (
+          <section className="space-y-3">
+            <h2 className="text-sm font-thought text-muted-foreground/60 tracking-wider">app state</h2>
+            <div className="glass-premium rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-sm text-foreground/70">{appMood.mood}</span>
+                  <p className="text-[10px] text-muted-foreground/35 mt-0.5 italic">
+                    {appMood.description}
+                  </p>
+                </div>
+                <motion.div
+                  className="w-3 h-3 rounded-full bg-primary/30"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.3, 0.6, 0.3],
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                />
+              </div>
+              <p className="text-[9px] text-muted-foreground/20 mt-3 tracking-wide">
+                the app's mood shifts on its own. you don't control this.
+              </p>
+            </div>
+          </section>
+        )}
 
         {/* Finitude Dial */}
         <section className="space-y-3">
