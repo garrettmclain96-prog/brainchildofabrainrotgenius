@@ -20,55 +20,55 @@ export function OverloadOverlay({ isOverloaded, intensity, onChoose, onDismiss }
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
         >
-          {/* Backdrop with pulse */}
+          {/* Backdrop — sacred darkening */}
           <motion.div
-            className="absolute inset-0 bg-background/80 backdrop-blur-xl"
-            animate={{
-              backgroundColor: [
-                'hsl(var(--background) / 0.8)',
-                'hsl(var(--background) / 0.9)',
-                'hsl(var(--background) / 0.8)',
-              ],
-            }}
-            transition={{ duration: 3, repeat: Infinity }}
+            className="absolute inset-0 bg-background/85 backdrop-blur-2xl"
             onClick={onDismiss}
           />
 
           {/* Content */}
           <motion.div
-            className="relative z-10 max-w-sm w-full text-center space-y-8"
-            initial={{ scale: 0.9, y: 20 }}
+            className="relative z-10 max-w-sm w-full text-center space-y-10"
+            initial={{ scale: 0.92, y: 30 }}
             animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.95, y: 10 }}
-            transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+            exit={{ scale: 0.95, y: 15 }}
+            transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
           >
-            {/* Breathing orb */}
-            <div className="relative mx-auto w-24 h-24">
+            {/* Sacred breathing guide */}
+            <div className="relative mx-auto w-28 h-28">
+              {/* Outer ring */}
               <motion.div
-                className="absolute inset-0 rounded-full bg-primary/10"
-                animate={{
-                  scale: [1, 1.3, 1],
-                  opacity: [0.3, 0.6, 0.3],
+                className="absolute inset-0 rounded-full sacred-breathe"
+                style={{
+                  border: '1px solid hsl(var(--primary) / 0.15)',
                 }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
+              {/* Middle ring */}
               <motion.div
-                className="absolute inset-3 rounded-full bg-primary/20"
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.4, 0.7, 0.4],
+                className="absolute inset-4 rounded-full sacred-breathe"
+                style={{
+                  border: '1px solid hsl(var(--primary) / 0.1)',
+                  animationDelay: '1s',
                 }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
               />
+              {/* Inner glow */}
+              <motion.div
+                className="absolute inset-8 rounded-full sacred-breathe"
+                style={{
+                  background: 'radial-gradient(circle, hsl(var(--primary) / 0.15) 0%, transparent 70%)',
+                  animationDelay: '2s',
+                }}
+              />
+              {/* Center symbol */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <motion.span
-                  className="text-2xl"
-                  animate={{ rotate: [0, 5, -5, 0] }}
-                  transition={{ duration: 4, repeat: Infinity }}
+                  className="text-xl text-primary/60"
+                  animate={{ rotate: [0, 3, -3, 0] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
                 >
-                  {mode === 'rot' ? '🌀' : '◉'}
+                  {mode === 'rot' ? '◎' : '◉'}
                 </motion.span>
               </div>
             </div>
@@ -77,59 +77,59 @@ export function OverloadOverlay({ isOverloaded, intensity, onChoose, onDismiss }
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.5, duration: 0.8 }}
             >
-              <p className="font-thought text-sm text-foreground/80 mb-2">
+              <p className="font-thought text-sm text-foreground/70 mb-3 tracking-wide">
                 {mode === 'rot'
                   ? 'the rot is accelerating.'
                   : 'your mind is moving fast.'}
               </p>
-              <p className="text-xs text-muted-foreground/60 leading-relaxed">
+              <p className="text-xs text-muted-foreground/50 leading-relaxed max-w-xs mx-auto">
                 {mode === 'rot'
                   ? 'the compost heap is overflowing. what do you want to do with all this?'
                   : 'take a breath. what would serve you right now?'}
               </p>
             </motion.div>
 
-            {/* Choices */}
+            {/* Choices — staggered, organic */}
             <div className="flex flex-col gap-3">
               <motion.button
                 onClick={() => onChoose('amplify')}
                 className={cn(
-                  'w-full px-4 py-3 rounded-xl text-sm font-thought',
-                  'bg-primary/10 text-primary border border-primary/20',
-                  'hover:bg-primary/20 transition-all duration-300'
+                  'w-full px-4 py-3.5 rounded-xl text-sm font-thought tracking-wide',
+                  'bg-primary/8 text-primary border border-primary/15',
+                  'hover:bg-primary/15 transition-all duration-700'
                 )}
-                whileTap={{ scale: 0.98 }}
-                initial={{ opacity: 0, x: -20 }}
+                whileTap={{ scale: 0.97 }}
+                initial={{ opacity: 0, x: -15 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 }}
+                transition={{ delay: 0.7, duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
               >
-                {mode === 'rot' ? 'amplify the rot 🌪️' : 'keep going'}
+                {mode === 'rot' ? 'amplify the rot' : 'keep going'}
               </motion.button>
 
               <motion.button
                 onClick={() => onChoose('prune')}
                 className={cn(
-                  'w-full px-4 py-3 rounded-xl text-sm font-thought',
-                  'bg-secondary/30 text-muted-foreground border border-border/20',
-                  'hover:bg-secondary/50 transition-all duration-300'
+                  'w-full px-4 py-3.5 rounded-xl text-sm font-thought tracking-wide',
+                  'bg-secondary/20 text-muted-foreground border border-border/15',
+                  'hover:bg-secondary/35 transition-all duration-700'
                 )}
-                whileTap={{ scale: 0.98 }}
-                initial={{ opacity: 0, x: 20 }}
+                whileTap={{ scale: 0.97 }}
+                initial={{ opacity: 0, x: 15 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 }}
+                transition={{ delay: 0.85, duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
               >
-                {mode === 'rot' ? 'prune it back 🌿' : 'slow down'}
+                {mode === 'rot' ? 'prune it back' : 'slow down'}
               </motion.button>
 
-              {/* Breathing exercise */}
+              {/* Breathing option */}
               <motion.button
                 onClick={onDismiss}
-                className="text-[10px] text-muted-foreground/30 hover:text-muted-foreground/50 transition-colors py-2"
+                className="text-[10px] text-muted-foreground/25 hover:text-muted-foreground/40 transition-all duration-700 py-3 font-thought tracking-widest uppercase"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
+                transition={{ delay: 1.1, duration: 0.8 }}
               >
                 just breathe
               </motion.button>
