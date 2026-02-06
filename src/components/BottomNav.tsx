@@ -10,23 +10,30 @@ interface BottomNavProps {
   onViewChange: (view: View) => void;
   socialEnabled: boolean;
   socialPermanentlyDisabled: boolean;
+  navOrder?: string[];
 }
 
-const navItems: { id: View; label: string; icon: string; rotIcon: string; requiresSocial?: boolean }[] = [
-  { id: 'private', label: 'fragments', icon: '◉', rotIcon: '◎' },
-  { id: 'fog', label: 'fog', icon: '☁', rotIcon: '🌫', requiresSocial: true },
-  { id: 'settings', label: 'controls', icon: '⚙', rotIcon: '⚙' },
-];
+const navItemData: Record<string, { label: string; icon: string; rotIcon: string; requiresSocial?: boolean }> = {
+  private: { label: 'fragments', icon: '◉', rotIcon: '◎' },
+  fog: { label: 'fog', icon: '☁', rotIcon: '🌫', requiresSocial: true },
+  settings: { label: 'controls', icon: '⚙', rotIcon: '⚙' },
+};
 
-export function BottomNav({ view, onViewChange, socialEnabled, socialPermanentlyDisabled }: BottomNavProps) {
+export function BottomNav({ view, onViewChange, socialEnabled, socialPermanentlyDisabled, navOrder }: BottomNavProps) {
   const { mode } = useAppMode();
   const { tapLight } = useHaptics();
   const isRot = mode === 'rot';
 
-  const visibleItems = navItems.filter((item) => {
-    if (item.requiresSocial && socialPermanentlyDisabled) return false;
-    return true;
-  });
+  // Use perceptual drift nav order, or default
+  const orderedIds = navOrder || ['private', 'fog', 'settings'];
+  
+  const visibleItems = orderedIds
+    .filter(id => navItemData[id])
+    .map(id => ({ id: id as View, ...navItemData[id] }))
+    .filter((item) => {
+      if (item.requiresSocial && socialPermanentlyDisabled) return false;
+      return true;
+    });
 
   const handleNavChange = (newView: View) => {
     tapLight();

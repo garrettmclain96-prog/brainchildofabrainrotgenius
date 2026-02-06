@@ -11,6 +11,12 @@ import { useMemoryDrift } from '@/hooks/useMemoryDrift';
 import { useRareCognitiveEvents } from '@/hooks/useRareCognitiveEvents';
 import { useQuietEnding } from '@/hooks/useQuietEnding';
 import { useCoThinking } from '@/hooks/useCoThinking';
+import { useAppMoods } from '@/hooks/useAppMoods';
+import { useCognitiveHauntings } from '@/hooks/useCognitiveHauntings';
+import { useTemporalInversions } from '@/hooks/useTemporalInversions';
+import { useIntentionalBoredom } from '@/hooks/useIntentionalBoredom';
+import { useExitInterview } from '@/hooks/useExitInterview';
+import { usePerceptualDrift } from '@/hooks/usePerceptualDrift';
 import { FogBackground } from '@/components/FogBackground';
 import { PublicFogView } from '@/components/PublicFogView';
 import { PrivateThoughtsView } from '@/components/PrivateThoughtsView';
@@ -27,6 +33,12 @@ import { QuietEndingScreen } from '@/components/QuietEndingScreen';
 import { CoThinkingIndicator } from '@/components/CoThinkingIndicator';
 import { EndOfDayCompost } from '@/components/EndOfDayCompost';
 import { ForbiddenScreen } from '@/components/ForbiddenScreen';
+import { HauntingOverlay } from '@/components/HauntingOverlay';
+import { TemporalInversionOverlay } from '@/components/TemporalInversionOverlay';
+import { AppMoodIndicator } from '@/components/AppMoodIndicator';
+import { BoredomOverlay } from '@/components/BoredomOverlay';
+import { ExitInterviewOverlay } from '@/components/ExitInterviewOverlay';
+import { DangerWarning, hasDismissedWarning } from '@/components/DangerWarning';
 
 // Lazy load heavy 3D scene
 const FogScene = lazy(() => import('@/components/three/FogScene').then((m) => ({ default: m.FogScene })));
@@ -62,6 +74,7 @@ const Index = () => {
   const [showLoading, setShowLoading] = useState(false);
   const [is3DReady, setIs3DReady] = useState(false);
   const [showForbidden, setShowForbidden] = useState(false);
+  const [showDangerWarning, setShowDangerWarning] = useState(!hasDismissedWarning());
 
   // Sensory systems
   const audio = useAmbientAudio();
@@ -70,13 +83,21 @@ const Index = () => {
   const overload = useOverloadSensor();
   const synthesis = useOvernightSynthesis(privateThoughts);
 
-  // New cognitive systems
+  // Cognitive systems
   useMemoryDrift();
   const { activeEvent, dismissEvent } = useRareCognitiveEvents(privateThoughts);
   const quietEnding = useQuietEnding();
   const coThinking = useCoThinking(privateThoughts.length);
 
-  // Forbidden screen — triple-tap on header
+  // New sentient systems
+  const appMood = useAppMoods();
+  const { haunting, dismissHaunting } = useCognitiveHauntings(privateThoughts);
+  const { inversion, dismissInversion } = useTemporalInversions(privateThoughts);
+  const boredom = useIntentionalBoredom();
+  const exitInterview = useExitInterview();
+  const drift = usePerceptualDrift();
+
+  // Forbidden screen — 5-tap on header
   const [headerTaps, setHeaderTaps] = useState(0);
   useEffect(() => {
     if (headerTaps >= 5) {
@@ -90,6 +111,9 @@ const Index = () => {
   }, [headerTaps]);
 
   useEffect(() => {
+    // Don't start loading/intro until danger warning is dismissed
+    if (showDangerWarning) return;
+
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('reset') === 'intro') {
       localStorage.removeItem(INTRO_SEEN_KEY);
@@ -108,11 +132,15 @@ const Index = () => {
 
     const timer = setTimeout(() => setIs3DReady(true), 2500);
     return () => clearTimeout(timer);
-  }, []);
+  }, [showDangerWarning]);
 
   useEffect(() => {
     if (activeEgg) haptics.discoveryPattern();
   }, [activeEgg, haptics]);
+
+  const handleDangerWarningAccept = useCallback(() => {
+    setShowDangerWarning(false);
+  }, []);
 
   const handleLoadingComplete = useCallback(() => {
     sessionStorage.setItem(LOADING_SEEN_KEY, 'true');
@@ -143,7 +171,12 @@ const Index = () => {
     [socialEnabled, socialPermanentlyDisabled, toggleSocial, overload]
   );
 
-  // If the quiet ending is inert, show that instead
+  // Danger Warning — first gate
+  if (showDangerWarning) {
+    return <DangerWarning onAccept={handleDangerWarningAccept} />;
+  }
+
+  // Quiet ending — inert state
   if (quietEnding.isInert) {
     return <QuietEndingScreen state={quietEnding} onDismiss={() => {}} />;
   }
@@ -180,6 +213,22 @@ const Index = () => {
       {/* Co-thinking presence */}
       <CoThinkingIndicator presence={coThinking} />
 
+      {/* Cognitive hauntings */}
+      <HauntingOverlay haunting={haunting} onDismiss={dismissHaunting} />
+
+      {/* Temporal inversions */}
+      <TemporalInversionOverlay inversion={inversion} onDismiss={dismissInversion} />
+
+      {/* Intentional boredom */}
+      <BoredomOverlay boredom={boredom} />
+
+      {/* Exit interview */}
+      <ExitInterviewOverlay
+        isOpen={exitInterview.shouldShow}
+        onComplete={exitInterview.completeInterview}
+        onDismiss={exitInterview.dismissInterview}
+      />
+
       {/* Overload sensor */}
       <OverloadOverlay
         isOverloaded={overload.isOverloaded}
@@ -205,15 +254,18 @@ const Index = () => {
       {/* Top bar */}
       <header className="fixed top-0 left-0 right-0 z-30 safe-area-top">
         <div className="flex items-center justify-between px-4 py-2.5">
-          <motion.h1
-            className="font-thought text-[10px] text-muted-foreground/30 tracking-[0.25em] uppercase cursor-default select-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 1.2 }}
-            onClick={() => setHeaderTaps((t) => t + 1)}
-          >
-            brainchild
-          </motion.h1>
+          <div className="flex items-center gap-3">
+            <motion.h1
+              className="font-thought text-[10px] text-muted-foreground/30 tracking-[0.25em] uppercase cursor-default select-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8, duration: 1.2 }}
+              onClick={() => setHeaderTaps((t) => t + 1)}
+            >
+              brainchild
+            </motion.h1>
+            <AppMoodIndicator moodState={appMood} />
+          </div>
           <ModeToggle />
         </div>
       </header>
@@ -223,13 +275,18 @@ const Index = () => {
         <AnimatePresence mode="wait">
           {view === 'private' && (
             <motion.div key="private" variants={pageVariants} initial="initial" animate="enter" exit="exit">
-              <PrivateThoughtsView onAction={overload.recordAction} />
+              <PrivateThoughtsView
+                onAction={overload.recordAction}
+                appMood={appMood}
+                drift={drift}
+                onNearDeletion={exitInterview.recordNearDeletion}
+              />
             </motion.div>
           )}
 
           {view === 'fog' && socialEnabled && !socialPermanentlyDisabled && (
             <motion.div key="fog" variants={pageVariants} initial="initial" animate="enter" exit="exit">
-              <PublicFogView onAction={overload.recordAction} />
+              <PublicFogView onAction={overload.recordAction} appMood={appMood} />
             </motion.div>
           )}
 
@@ -255,7 +312,7 @@ const Index = () => {
 
           {view === 'settings' && (
             <motion.div key="settings" variants={pageVariants} initial="initial" animate="enter" exit="exit">
-              <SettingsView onReplayIntro={handleReplayIntro} audio={audio} />
+              <SettingsView onReplayIntro={handleReplayIntro} audio={audio} appMood={appMood} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -267,6 +324,7 @@ const Index = () => {
         onViewChange={handleViewChange}
         socialEnabled={socialEnabled}
         socialPermanentlyDisabled={socialPermanentlyDisabled}
+        navOrder={drift.navOrder}
       />
     </div>
   );
