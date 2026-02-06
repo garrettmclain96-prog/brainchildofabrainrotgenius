@@ -1,4 +1,5 @@
- import { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { usePublicFog } from '@/hooks/usePublicFog';
 import { ThoughtCard } from '@/components/ThoughtCard';
 import { EchoCard } from '@/components/EchoCard';
@@ -8,7 +9,8 @@ import { AnimatedEmptyState } from '@/components/AnimatedEmptyState';
 import { FloatingParticles } from '@/components/FloatingParticles';
 import { GlowingOrb } from '@/components/GlowingOrb';
 import { cn } from '@/lib/utils';
- import { SubmitBurst } from '@/components/SubmitBurst';
+import { SubmitBurst } from '@/components/SubmitBurst';
+import { StaggerChildren, StaggerItem } from '@/components/effects/MotionEffects';
 
 type FogFilter = 'all' | 'fading' | 'near-extinction' | 'recently-disturbed';
 
