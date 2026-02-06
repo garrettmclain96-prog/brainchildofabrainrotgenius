@@ -7,6 +7,10 @@ import { useOverloadSensor } from '@/hooks/useOverloadSensor';
 import { useOvernightSynthesis } from '@/hooks/useOvernightSynthesis';
 import { useAmbientAudio } from '@/hooks/useAmbientAudio';
 import { useHaptics } from '@/hooks/useHaptics';
+import { useMemoryDrift } from '@/hooks/useMemoryDrift';
+import { useRareCognitiveEvents } from '@/hooks/useRareCognitiveEvents';
+import { useQuietEnding } from '@/hooks/useQuietEnding';
+import { useCoThinking } from '@/hooks/useCoThinking';
 import { FogBackground } from '@/components/FogBackground';
 import { PublicFogView } from '@/components/PublicFogView';
 import { PrivateThoughtsView } from '@/components/PrivateThoughtsView';
@@ -18,6 +22,11 @@ import { ModeToggle } from '@/components/ModeToggle';
 import { SystemKoan } from '@/components/SystemKoan';
 import { OverloadOverlay } from '@/components/OverloadOverlay';
 import { OvernightSynthesisOverlay } from '@/components/OvernightSynthesis';
+import { RareEventOverlay } from '@/components/RareEventOverlay';
+import { QuietEndingScreen } from '@/components/QuietEndingScreen';
+import { CoThinkingIndicator } from '@/components/CoThinkingIndicator';
+import { EndOfDayCompost } from '@/components/EndOfDayCompost';
+import { ForbiddenScreen } from '@/components/ForbiddenScreen';
 
 // Lazy load heavy 3D scene
 const FogScene = lazy(() => import('@/components/three/FogScene').then((m) => ({ default: m.FogScene })));
@@ -52,6 +61,7 @@ const Index = () => {
   const [showIntro, setShowIntro] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
   const [is3DReady, setIs3DReady] = useState(false);
+  const [showForbidden, setShowForbidden] = useState(false);
 
   // Sensory systems
   const audio = useAmbientAudio();
@@ -59,6 +69,25 @@ const Index = () => {
   const { activeEgg, dismissEgg } = useEasterEggs(privateThoughts);
   const overload = useOverloadSensor();
   const synthesis = useOvernightSynthesis(privateThoughts);
+
+  // New cognitive systems
+  useMemoryDrift();
+  const { activeEvent, dismissEvent } = useRareCognitiveEvents(privateThoughts);
+  const quietEnding = useQuietEnding();
+  const coThinking = useCoThinking(privateThoughts.length);
+
+  // Forbidden screen — triple-tap on header
+  const [headerTaps, setHeaderTaps] = useState(0);
+  useEffect(() => {
+    if (headerTaps >= 5) {
+      setShowForbidden(true);
+      setHeaderTaps(0);
+    }
+    if (headerTaps > 0) {
+      const timer = setTimeout(() => setHeaderTaps(0), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [headerTaps]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -77,16 +106,12 @@ const Index = () => {
       setShowIntro(true);
     }
 
-    // Delay 3D scene for performance
     const timer = setTimeout(() => setIs3DReady(true), 2500);
     return () => clearTimeout(timer);
   }, []);
 
-  // Trigger haptics on easter egg discovery
   useEffect(() => {
-    if (activeEgg) {
-      haptics.discoveryPattern();
-    }
+    if (activeEgg) haptics.discoveryPattern();
   }, [activeEgg, haptics]);
 
   const handleLoadingComplete = useCallback(() => {
@@ -118,6 +143,11 @@ const Index = () => {
     [socialEnabled, socialPermanentlyDisabled, toggleSocial, overload]
   );
 
+  // If the quiet ending is inert, show that instead
+  if (quietEnding.isInert) {
+    return <QuietEndingScreen state={quietEnding} onDismiss={() => {}} />;
+  }
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Loading & Intro */}
@@ -128,10 +158,13 @@ const Index = () => {
         {showIntro && <IntroScene onComplete={handleIntroComplete} />}
       </AnimatePresence>
 
+      {/* Quiet ending — welcome back */}
+      {quietEnding.isActive && !quietEnding.isInert && (
+        <QuietEndingScreen state={quietEnding} onDismiss={() => {}} />
+      )}
+
       {/* Background layers */}
       <FogBackground />
-
-      {/* 3D Scene — lazy loaded, reduced on mobile */}
       <Suspense fallback={null}>{is3DReady && <FogScene />}</Suspense>
 
       {/* Film grain & vignette */}
@@ -140,6 +173,12 @@ const Index = () => {
 
       {/* Easter eggs */}
       <SystemKoan egg={activeEgg} onDismiss={dismissEgg} />
+
+      {/* Rare cognitive events */}
+      <RareEventOverlay event={activeEvent} onDismiss={dismissEvent} />
+
+      {/* Co-thinking presence */}
+      <CoThinkingIndicator presence={coThinking} />
 
       {/* Overload sensor */}
       <OverloadOverlay
@@ -157,14 +196,21 @@ const Index = () => {
         onDismiss={synthesis.dismissSynthesis}
       />
 
-      {/* Top bar — minimal, organic */}
+      {/* End of day compost */}
+      <EndOfDayCompost thoughts={privateThoughts} />
+
+      {/* Forbidden screen */}
+      <ForbiddenScreen isOpen={showForbidden} onClose={() => setShowForbidden(false)} />
+
+      {/* Top bar */}
       <header className="fixed top-0 left-0 right-0 z-30 safe-area-top">
         <div className="flex items-center justify-between px-4 py-2.5">
           <motion.h1
-            className="font-thought text-[10px] text-muted-foreground/30 tracking-[0.25em] uppercase"
+            className="font-thought text-[10px] text-muted-foreground/30 tracking-[0.25em] uppercase cursor-default select-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 1.2 }}
+            onClick={() => setHeaderTaps((t) => t + 1)}
           >
             brainchild
           </motion.h1>
@@ -209,10 +255,7 @@ const Index = () => {
 
           {view === 'settings' && (
             <motion.div key="settings" variants={pageVariants} initial="initial" animate="enter" exit="exit">
-              <SettingsView 
-                onReplayIntro={handleReplayIntro} 
-                audio={audio}
-              />
+              <SettingsView onReplayIntro={handleReplayIntro} audio={audio} />
             </motion.div>
           )}
         </AnimatePresence>

@@ -10,9 +10,10 @@ interface ThoughtComposerProps {
   isPublic?: boolean;
   disabled?: boolean;
   onBurst?: (x: number, y: number) => void;
+  onTextChange?: (text: string) => void;
 }
 
-export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, onBurst }: ThoughtComposerProps) {
+export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, onBurst, onTextChange }: ThoughtComposerProps) {
   const [content, setContent] = useState('');
   const [mode, setMode] = useState<DecayMode>('clean');
   const [decaySpeed, setDecaySpeed] = useState<DecaySpeed>('normal');
@@ -63,7 +64,11 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
 
       <Textarea
         value={content}
-        onChange={(e) => setContent(e.target.value.slice(0, 1000))}
+        onChange={(e) => {
+          const newValue = e.target.value.slice(0, 1000);
+          setContent(newValue);
+          onTextChange?.(newValue);
+        }}
         onKeyDown={handleKeyDown}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}

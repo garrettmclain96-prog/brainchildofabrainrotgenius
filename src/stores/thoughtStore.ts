@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Thought, DecayMode, DecaySpeed, FragmentCategory, PRIVATE_DECAY_DURATION, WATER_EXTENSION_MINUTES, DECAY_DURATIONS, calculateDecayLevel } from '@/types/thought';
+import { incrementStat } from '@/components/ForbiddenScreen';
 
 interface ThoughtStore {
   // Private thoughts (stored locally)
@@ -48,18 +49,22 @@ export const useThoughtStore = create<ThoughtStore>()(
           waterCount: 0,
         };
         
+        incrementStat('totalCreated');
+        
         set((state) => ({
           privateThoughts: [thought, ...state.privateThoughts],
         }));
       },
 
       deletePrivateThought: (id) => {
+        incrementStat('totalDissolved');
         set((state) => ({
           privateThoughts: state.privateThoughts.filter((t) => t.id !== id),
         }));
       },
 
       waterThought: (id) => {
+        incrementStat('totalWatered');
         set((state) => ({
           privateThoughts: state.privateThoughts.map((t) => {
             if (t.id !== id) return t;
@@ -80,6 +85,8 @@ export const useThoughtStore = create<ThoughtStore>()(
       releaseToFog: (id, decaySpeed) => {
         const thought = get().privateThoughts.find((t) => t.id === id);
         if (!thought) return null;
+        
+        incrementStat('totalReleased');
         
         const now = new Date();
         const publicThought: Thought = {
