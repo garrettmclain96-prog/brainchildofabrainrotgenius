@@ -5,6 +5,8 @@ import { ModeToggle } from '@/components/ModeToggle';
 import { DissolveButton } from '@/components/DissolveButton';
 import { FinitudeDial } from '@/components/FinitudeDial';
 import { AppMoodState } from '@/hooks/useAppMoods';
+import { IdentityState } from '@/hooks/useIdentityDrift';
+import { PermanentConsequences } from '@/hooks/usePermanentConsequences';
 import { cn } from '@/lib/utils';
 import {
   AlertDialog,
@@ -28,9 +30,11 @@ interface SettingsViewProps {
     setVolume: (v: number) => void;
   };
   appMood?: AppMoodState;
+  identity?: IdentityState;
+  consequences?: PermanentConsequences;
 }
 
-export function SettingsView({ onReplayIntro, audio, appMood }: SettingsViewProps) {
+export function SettingsView({ onReplayIntro, audio, appMood, identity, consequences }: SettingsViewProps) {
   const {
     socialEnabled,
     socialPermanentlyDisabled,
@@ -47,9 +51,58 @@ export function SettingsView({ onReplayIntro, audio, appMood }: SettingsViewProp
         <header>
           <h1 className="text-xl font-thought text-foreground/80 text-gradient tracking-wider">controls</h1>
           <p className="text-xs text-muted-foreground/40 mt-1.5 tracking-wide">
-            shape how your mind breathes here
+            {identity ? identity.appGreeting : 'shape how your mind breathes here'}
           </p>
         </header>
+
+        {/* Identity Drift — who you're becoming */}
+        {identity && identity.tone !== 'neutral' && (
+          <section className="space-y-3">
+            <h2 className="text-sm font-thought text-muted-foreground/60 tracking-wider">identity</h2>
+            <div className="glass-premium rounded-xl p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-sm text-foreground/70">{identity.profile}</span>
+                  <p className="text-[10px] text-muted-foreground/35 mt-0.5">
+                    writing tone: {identity.tone} · {identity.velocityTrend}
+                  </p>
+                </div>
+              </div>
+              {identity.previousTone && identity.previousTone !== identity.tone && (
+                <p className="text-[9px] text-muted-foreground/20 italic">
+                  you used to write {identity.previousTone}. now it's {identity.tone}. the app notices.
+                </p>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* Permanent Consequences — scars */}
+        {consequences && consequences.marks.totalDissolutions > 0 && (
+          <section className="space-y-3">
+            <h2 className="text-sm font-thought text-muted-foreground/60 tracking-wider">scars</h2>
+            <div className="glass-premium rounded-xl p-4 space-y-2">
+              {consequences.scars.reducedDecayTime && (
+                <p className="text-[10px] text-muted-foreground/30 font-thought">
+                  ◆ decay runs faster now. you've dissolved too many times.
+                </p>
+              )}
+              {consequences.scars.deeperHauntings && (
+                <p className="text-[10px] text-muted-foreground/30 font-thought">
+                  ◆ hauntings reach deeper. you looked behind the curtain.
+                </p>
+              )}
+              {consequences.marks.rotModeAbandoned && (
+                <p className="text-[10px] text-muted-foreground/30 font-thought">
+                  ◆ rot mode is permanently locked. you chose to leave it.
+                </p>
+              )}
+              <p className="text-[8px] text-muted-foreground/10 mt-2 italic">
+                these cannot be undone.
+              </p>
+            </div>
+          </section>
+        )}
 
         {/* App Mood indicator */}
         {appMood && (

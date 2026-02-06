@@ -21,6 +21,8 @@ import { RefusalOverlay } from '@/components/RefusalOverlay';
 import { DecaySpeed, FragmentCategory } from '@/types/thought';
 import { AppMoodState } from '@/hooks/useAppMoods';
 import { DriftState } from '@/hooks/usePerceptualDrift';
+import { IdentityState } from '@/hooks/useIdentityDrift';
+import { PermanentConsequences } from '@/hooks/usePermanentConsequences';
 import { cn } from '@/lib/utils';
 import { SubmitBurst } from '@/components/SubmitBurst';
 import {
@@ -37,10 +39,13 @@ interface PrivateThoughtsViewProps {
   onAction?: () => void;
   appMood?: AppMoodState;
   drift?: DriftState;
+  identity?: IdentityState;
+  consequences?: PermanentConsequences;
   onNearDeletion?: () => void;
+  onRecordMark?: (mark: string, value?: any) => void;
 }
 
-export function PrivateThoughtsView({ onAction, appMood, drift, onNearDeletion }: PrivateThoughtsViewProps) {
+export function PrivateThoughtsView({ onAction, appMood, drift, identity, consequences, onNearDeletion, onRecordMark }: PrivateThoughtsViewProps) {
   const { privateThoughts, addPrivateThought, deletePrivateThought, waterThought, releaseToFog } = useThoughtStore();
   const { addThought: addToPublicFog } = usePublicFog();
   const { mode } = useAppMode();
