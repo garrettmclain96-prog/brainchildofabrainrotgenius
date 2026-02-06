@@ -47,14 +47,7 @@ export function RefusalOverlay({ refusal, onDismiss }: RefusalOverlayProps) {
               transition={{ duration: 2, delay: 1 }}
             />
             
-            <motion.p
-              className="mt-4 text-[10px] text-muted-foreground/20"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 2.5 }}
-            >
-              tap to continue
-            </motion.p>
+            {/* no dismiss hint — tap anywhere works silently */}
           </motion.div>
         </motion.div>
       )}
