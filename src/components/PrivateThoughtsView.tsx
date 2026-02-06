@@ -105,46 +105,61 @@ export function PrivateThoughtsView() {
           />
         )}
 
-        {/* Thoughts list */}
-        <div className="space-y-4">
-          {privateThoughts.map((thought, index) => (
-            <div 
-              key={thought.id} 
-              className="group relative fog-appear"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <ThoughtCard thought={thought} showEchoButton={false} />
-              
-              {/* Actions overlay */}
-              <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <button
-                  onClick={() => setReleaseDialog({ open: true, thoughtId: thought.id })}
-                  className={cn(
-                    'px-2 py-1 rounded text-xs',
-                    'bg-primary/20 text-primary',
-                    'hover:bg-primary/30',
-                    'transition-colors duration-200'
-                  )}
-                  title="Release to public fog"
+        {/* Thoughts list with stagger animation */}
+        <StaggerChildren className="space-y-4" staggerDelay={0.08}>
+          <AnimatePresence mode="popLayout">
+            {privateThoughts.map((thought) => (
+              <StaggerItem key={thought.id}>
+                <motion.div
+                  className="group relative"
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, x: -100, filter: 'blur(10px)' }}
+                  transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                 >
-                  release
-                </button>
-                <button
-                  onClick={() => deletePrivateThought(thought.id)}
-                  className={cn(
-                    'px-2 py-1 rounded text-xs',
-                    'bg-destructive/20 text-destructive-foreground/70',
-                    'hover:bg-destructive/30',
-                    'transition-colors duration-200'
-                  )}
-                  title="Delete permanently"
-                >
-                  delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+                  <ThoughtCard thought={thought} showEchoButton={false} />
+                  
+                  {/* Actions overlay */}
+                  <motion.div 
+                    className="absolute top-2 right-2 flex gap-2"
+                    initial={{ opacity: 0, x: 10 }}
+                    whileHover={{ opacity: 1, x: 0 }}
+                  >
+                    <motion.button
+                      onClick={() => setReleaseDialog({ open: true, thoughtId: thought.id })}
+                      className={cn(
+                        'px-3 py-1.5 rounded-lg text-xs',
+                        'bg-primary/20 text-primary backdrop-blur-sm',
+                        'hover:bg-primary/30 hover:shadow-lg hover:shadow-primary/20',
+                        'transition-all duration-300'
+                      )}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      title="Release to public fog"
+                    >
+                      release
+                    </motion.button>
+                    <motion.button
+                      onClick={() => deletePrivateThought(thought.id)}
+                      className={cn(
+                        'px-3 py-1.5 rounded-lg text-xs',
+                        'bg-destructive/20 text-destructive-foreground/70 backdrop-blur-sm',
+                        'hover:bg-destructive/30',
+                        'transition-all duration-300'
+                      )}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      title="Delete permanently"
+                    >
+                      delete
+                    </motion.button>
+                  </motion.div>
+                </motion.div>
+              </StaggerItem>
+            ))}
+          </AnimatePresence>
+        </StaggerChildren>
       </main>
 
       {/* Release confirmation dialog */}
