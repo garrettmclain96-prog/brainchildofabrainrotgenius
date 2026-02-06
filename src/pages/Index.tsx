@@ -38,10 +38,10 @@ import { EndOfDayCompost } from '@/components/EndOfDayCompost';
 import { ForbiddenScreen } from '@/components/ForbiddenScreen';
 import { HauntingOverlay } from '@/components/HauntingOverlay';
 import { TemporalInversionOverlay } from '@/components/TemporalInversionOverlay';
-import { AppMoodIndicator } from '@/components/AppMoodIndicator';
+
 import { BoredomOverlay } from '@/components/BoredomOverlay';
 import { ExitInterviewOverlay } from '@/components/ExitInterviewOverlay';
-import { DangerWarning, hasDismissedWarning } from '@/components/DangerWarning';
+
 import { OneTimeWhisper } from '@/components/OneTimeWhisper';
 import { TrueEndingScreen } from '@/components/TrueEndingScreen';
 
@@ -77,7 +77,7 @@ const Index = () => {
   const [showIntro, setShowIntro] = useState(false);
   const [is3DReady, setIs3DReady] = useState(false);
   const [showForbidden, setShowForbidden] = useState(false);
-  const [showDangerWarning, setShowDangerWarning] = useState(!hasDismissedWarning());
+  
 
   // Sensory systems
   const audio = useAmbientAudio();
@@ -120,8 +120,6 @@ const Index = () => {
   }, [headerTaps, consequences]);
 
   useEffect(() => {
-    if (showDangerWarning) return;
-
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('reset') === 'intro') {
       localStorage.removeItem(INTRO_SEEN_KEY);
@@ -130,23 +128,18 @@ const Index = () => {
       return;
     }
 
-    // No loading screen — straight to intro or app (< 3s first launch)
     if (!localStorage.getItem(INTRO_SEEN_KEY)) {
       setShowIntro(true);
     }
 
-    // Defer 3D scene to keep first paint instant
     const timer = setTimeout(() => setIs3DReady(true), 2000);
     return () => clearTimeout(timer);
-  }, [showDangerWarning]);
+  }, []);
 
   useEffect(() => {
     if (activeEgg) haptics.discoveryPattern();
   }, [activeEgg, haptics]);
 
-  const handleDangerWarningAccept = useCallback(() => {
-    setShowDangerWarning(false);
-  }, []);
 
   const handleIntroComplete = useCallback(() => {
     localStorage.setItem(INTRO_SEEN_KEY, 'true');
@@ -172,11 +165,6 @@ const Index = () => {
   // True Ending — graduation
   if (trueEnding.phase === 'complete') {
     return <TrueEndingScreen phase="complete" onBegin={() => {}} onAccept={() => {}} onDecline={() => {}} />;
-  }
-
-  // Danger Warning — first gate (buttons appear quickly)
-  if (showDangerWarning) {
-    return <DangerWarning onAccept={handleDangerWarningAccept} />;
   }
 
   // Quiet ending — inert state
@@ -280,18 +268,15 @@ const Index = () => {
         {/* Top bar */}
         <header className="fixed top-0 left-0 right-0 z-30 safe-area-top">
           <div className="flex items-center justify-between px-4 py-2.5">
-            <div className="flex items-center gap-3">
-              <motion.h1
-                className="font-thought text-[10px] text-muted-foreground/30 tracking-[0.25em] uppercase cursor-default select-none"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8, duration: 1.2 }}
-                onClick={() => setHeaderTaps((t) => t + 1)}
-              >
-                brainchild
-              </motion.h1>
-              <AppMoodIndicator moodState={appMood} />
-            </div>
+            <motion.h1
+              className="font-thought text-[10px] text-muted-foreground/30 tracking-[0.25em] uppercase cursor-default select-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8, duration: 1.2 }}
+              onClick={() => setHeaderTaps((t) => t + 1)}
+            >
+              brainchild
+            </motion.h1>
             <ModeToggle />
           </div>
         </header>
@@ -330,15 +315,14 @@ const Index = () => {
                 initial="initial"
                 animate="enter"
                 exit="exit"
-                className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6"
+                className="flex items-center justify-center min-h-[60vh]"
               >
-                <p className="text-muted-foreground/40 font-thought text-sm mb-4 tracking-wide">the social layer is dormant</p>
                 <motion.button
                   onClick={toggleSocial}
-                  className="px-5 py-2.5 rounded-xl bg-primary/8 text-primary/70 hover:bg-primary/15 transition-all duration-700 text-sm font-thought tracking-wider"
+                  className="text-muted-foreground/30 font-thought text-sm tracking-wider hover:text-muted-foreground/50 transition-all duration-700"
                   whileTap={{ scale: 0.95 }}
                 >
-                  awaken the fog
+                  ☁
                 </motion.button>
               </motion.div>
             )}
