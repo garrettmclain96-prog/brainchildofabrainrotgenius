@@ -58,9 +58,10 @@ interface ThoughtComposerProps {
        
       <Textarea
         value={content}
-        onChange={(e) => setContent(e.target.value)}
+        onChange={(e) => setContent(e.target.value.slice(0, 1000))}
         onKeyDown={handleKeyDown}
         placeholder={isPublic ? "Release a thought into the fog..." : "Capture a thought..."}
+        maxLength={1000}
         className={cn(
            'min-h-[120px] font-thought text-sm resize-none relative z-10',
           'bg-secondary/30 border-border/50',
