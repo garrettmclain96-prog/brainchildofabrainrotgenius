@@ -98,7 +98,7 @@ export function DangerWarning({ onAccept }: DangerWarningProps) {
           className="mt-14 space-y-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 5, duration: 1.5 }}
+          transition={{ delay: 1.5, duration: 1 }}
         >
           <motion.button
             onClick={handleAccept}
