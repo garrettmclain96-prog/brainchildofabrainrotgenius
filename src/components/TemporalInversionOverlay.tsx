@@ -38,7 +38,7 @@ export function TemporalInversionOverlay({ inversion, onDismiss }: TemporalInver
 
               <div className="relative">
                 <span className="text-[9px] text-accent/30 tracking-[0.3em] uppercase font-thought block mb-2">
-                  temporal {inversion.type === 'prediction' ? 'prediction' : 'echo'}
+                  {inversion.type === 'prediction' ? 'ahead' : 'behind'}
                 </span>
                 
                 <p className="text-xs text-foreground/50 font-thought italic leading-relaxed">

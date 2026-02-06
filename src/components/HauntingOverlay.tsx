@@ -45,16 +45,6 @@ export function HauntingOverlay({ haunting, onDismiss }: HauntingOverlayProps) {
               {haunting.text}
             </p>
 
-            {haunting.type === 'prophecy' && (
-              <motion.span
-                className="block mt-2 text-[9px] text-accent/20 tracking-[0.3em] uppercase"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 3 }}
-              >
-                temporal echo
-              </motion.span>
-            )}
           </motion.div>
         </motion.div>
       )}

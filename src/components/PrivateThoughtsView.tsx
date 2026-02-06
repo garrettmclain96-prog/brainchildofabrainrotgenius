@@ -189,7 +189,7 @@ export function PrivateThoughtsView({ onAction, appMood, drift, identity, conseq
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-3">
             <h1 className={cn('text-lg font-thought text-foreground/90', mode === 'rot' && 'animate-glitch-subtle')}>
-              {mode === 'rot' ? 'brain dump' : 'fragments'}
+              {mode === 'rot' ? 'dump' : 'local'}
             </h1>
 
             {privateThoughts.length > 0 && (

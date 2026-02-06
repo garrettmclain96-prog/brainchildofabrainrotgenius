@@ -14,9 +14,9 @@ interface BottomNavProps {
 }
 
 const navItemData: Record<string, { label: string; icon: string; rotIcon: string; requiresSocial?: boolean }> = {
-  private: { label: 'fragments', icon: '◉', rotIcon: '◎' },
-  fog: { label: 'fog', icon: '☁', rotIcon: '🌫', requiresSocial: true },
-  settings: { label: 'controls', icon: '⚙', rotIcon: '⚙' },
+  private: { label: 'local', icon: '◉', rotIcon: '◎' },
+  fog: { label: 'fog', icon: '◌', rotIcon: '◌', requiresSocial: true },
+  settings: { label: 'controls', icon: '·', rotIcon: '·' },
 };
 
 export function BottomNav({ view, onViewChange, socialEnabled, socialPermanentlyDisabled, navOrder }: BottomNavProps) {

@@ -46,10 +46,10 @@ export const WATER_EXTENSION_MINUTES = 60; // Each watering adds 1 hour
 
 // Category metadata
 export const CATEGORY_META: Record<FragmentCategory, { label: string; icon: string; color: string }> = {
-  ideas: { label: 'ideas', icon: '💡', color: 'primary' },
-  tasks: { label: 'tasks', icon: '◯', color: 'accent' },
-  journal: { label: 'journal', icon: '📖', color: 'echo' },
-  projects: { label: 'projects', icon: '🧩', color: 'decay-fresh' },
+  ideas: { label: 'ideas', icon: '~', color: 'primary' },
+  tasks: { label: 'tasks', icon: ':', color: 'accent' },
+  journal: { label: 'journal', icon: '—', color: 'echo' },
+  projects: { label: 'projects', icon: '+', color: 'decay-fresh' },
   uncategorized: { label: 'all', icon: '·', color: 'muted-foreground' },
 };
 
@@ -112,11 +112,9 @@ export function applyWordDecay(text: string, decayLevel: number): string {
 
 // Farewell messages for dissolve
 export const FAREWELL_MESSAGES = [
-  "rot to root. decay to dream.",
-  "the compost of genius returns to earth.",
-  "every thought was a seed. some were meant to dissolve.",
-  "brainrot is not failure. it is the garden composting.",
-  "you are lighter now.",
-  "the fog clears. the mind breathes.",
-  "nothing was lost. everything became something else.",
+  "the space is clear now.",
+  "what was here has returned to where it came from.",
+  "nothing was lost. it simply ceased to be held.",
+  "the container is empty. that is not the same as nothing.",
+  "done.",
 ];

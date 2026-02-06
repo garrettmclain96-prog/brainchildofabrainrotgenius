@@ -51,7 +51,6 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
 
   return (
     <div className="space-y-3 relative">
-      {/* Ambient glow when typing */}
       {content.length > 0 && (
         <div
           className="absolute -inset-4 rounded-2xl pointer-events-none transition-opacity duration-500"
@@ -72,13 +71,7 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
         onKeyDown={handleKeyDown}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        placeholder={
-          isPublic
-            ? 'release a thought into the fog...'
-            : appMode === 'rot'
-            ? 'dump your brainrot here...'
-            : 'capture a fragment...'
-        }
+        placeholder=""
         maxLength={1000}
         className={cn(
           'min-h-[100px] font-thought text-sm resize-none relative z-10',
@@ -92,7 +85,6 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
         aria-label={isPublic ? 'Public thought content' : 'Private thought content'}
       />
 
-      {/* Category selector (private only) */}
       {!isPublic && isFocused && (
         <motion.div
           className="flex gap-1 flex-wrap"
@@ -120,11 +112,10 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
         </motion.div>
       )}
 
-      {/* Public mode controls */}
       {isPublic && (
         <div className="flex flex-wrap gap-3 text-xs">
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground/50">mode:</span>
+            <span className="text-muted-foreground/50">mode</span>
             <div className="flex rounded-lg bg-secondary/20 p-0.5">
               {(['clean', 'rot'] as DecayMode[]).map((m) => (
                 <button
@@ -145,7 +136,7 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground/50">decay:</span>
+            <span className="text-muted-foreground/50">decay</span>
             <div className="flex rounded-lg bg-secondary/20 p-0.5">
               {(['normal', 'fast', 'sink'] as DecaySpeed[]).map((speed) => (
                 <button
@@ -165,7 +156,6 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
         </div>
       )}
 
-      {/* Submit row */}
       <div className="flex justify-between items-center">
         <span className="text-[10px] text-muted-foreground/30 tabular-nums">
           {content.length > 0 && `${content.length}/1000`}
@@ -186,7 +176,7 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
           whileTap={{ scale: 0.95 }}
         >
           <span className="relative z-10">
-            {isPublic ? 'release to fog' : 'capture'}
+            {isPublic ? 'release' : 'save'}
           </span>
         </motion.button>
       </div>

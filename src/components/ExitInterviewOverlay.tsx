@@ -11,18 +11,18 @@ interface ExitInterviewOverlayProps {
 const QUESTIONS = [
   {
     id: 'helped',
-    text: 'Did this help you think?',
-    options: ['yes', 'sometimes', 'no', 'I\'m not sure'],
+    text: 'did this help you think?',
+    options: ['yes', 'sometimes', 'no', 'uncertain'],
   },
   {
     id: 'replaced',
-    text: 'Did it ever replace thinking?',
-    options: ['never', 'occasionally', 'yes', 'that\'s why I\'m here'],
+    text: 'did it ever replace thinking?',
+    options: ['never', 'occasionally', 'yes'],
   },
   {
     id: 'keep',
-    text: 'Do you want to keep it?',
-    options: ['yes', 'not sure', 'no — help me leave'],
+    text: 'do you want to continue?',
+    options: ['yes', 'not sure', 'no, help me leave'],
   },
 ];
 
@@ -38,10 +38,8 @@ export function ExitInterviewOverlay({ isOpen, onComplete, onDismiss }: ExitInte
     if (currentQuestion < QUESTIONS.length - 1) {
       setTimeout(() => setCurrentQuestion(c => c + 1), 800);
     } else {
-      // Final question answered
       setTimeout(() => {
-        if (answer === 'no — help me leave') {
-          // Help them dissolve
+        if (answer === 'no, help me leave') {
           dissolveEverything();
           localStorage.clear();
         }
@@ -65,7 +63,6 @@ export function ExitInterviewOverlay({ isOpen, onComplete, onDismiss }: ExitInte
           <div className="absolute inset-0 bg-background/95 backdrop-blur-sm" />
 
           <div className="relative z-10 max-w-sm w-full text-center">
-            {/* Decorative line */}
             <motion.div
               className="w-8 h-[1px] mx-auto bg-muted-foreground/10 mb-8"
               initial={{ scaleX: 0 }}
@@ -73,7 +70,6 @@ export function ExitInterviewOverlay({ isOpen, onComplete, onDismiss }: ExitInte
               transition={{ duration: 2 }}
             />
 
-            {/* Progress */}
             <div className="flex justify-center gap-2 mb-10">
               {QUESTIONS.map((_, i) => (
                 <div
@@ -119,7 +115,6 @@ export function ExitInterviewOverlay({ isOpen, onComplete, onDismiss }: ExitInte
               </motion.div>
             </AnimatePresence>
 
-            {/* Dismiss */}
             <motion.button
               onClick={onDismiss}
               className="mt-10 text-[10px] text-muted-foreground/15 hover:text-muted-foreground/30 transition-colors"
