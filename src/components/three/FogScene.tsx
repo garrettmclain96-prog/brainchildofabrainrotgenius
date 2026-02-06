@@ -120,12 +120,7 @@ function FloatingOrbs({ count = 8 }) {
           position={orb.position}
         >
           <sphereGeometry args={[1, 32, 32]} />
-          <meshBasicMaterial
-            color={orb.color}
-            transparent
-            opacity={0.15}
-            blending={THREE.AdditiveBlending}
-          />
+          <meshBasicMaterial args={[{ color: orb.color, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending }]} />
         </mesh>
       ))}
     </>
@@ -147,13 +142,7 @@ function LightRays() {
   return (
     <mesh ref={meshRef} position={[0, 5, -10]} rotation={[0, 0, 0]}>
       <coneGeometry args={[15, 30, 32, 1, true]} />
-      <meshBasicMaterial
-        color="#c4b5fd"
-        transparent
-        opacity={0.04}
-        side={THREE.DoubleSide}
-        blending={THREE.AdditiveBlending}
-      />
+      <meshBasicMaterial args={[{ color: '#c4b5fd', transparent: true, opacity: 0.04, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }]} />
     </mesh>
   );
 }
@@ -173,12 +162,7 @@ function NebulaCloud({ position = [0, 0, -10] as [number, number, number] }) {
   return (
     <mesh ref={meshRef} position={position}>
       <planeGeometry args={[30, 30]} />
-      <meshBasicMaterial
-        color="#1e1b4b"
-        transparent
-        opacity={0.3}
-        blending={THREE.AdditiveBlending}
-      />
+      <meshBasicMaterial args={[{ color: '#1e1b4b', transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending }]} />
     </mesh>
   );
 }

@@ -52,14 +52,16 @@ export function usePublicFog() {
 
       // Transform data
       const thoughts: Thought[] = (thoughtsData || []).map((t) => ({
-        id: t.id,
-        content: t.content,
-        createdAt: new Date(t.created_at),
-        expiresAt: new Date(t.expires_at),
-        decayLevel: t.decay_level,
+        id: t.id!,
+        content: t.content!,
+        createdAt: new Date(t.created_at!),
+        expiresAt: new Date(t.expires_at!),
+        decayLevel: t.decay_level!,
         mode: t.mode as DecayMode,
         decaySpeed: t.decay_speed as DecaySpeed,
         visibility: 'public' as const,
+        category: 'uncategorized' as const,
+        waterCount: 0,
       }));
 
       // Group echoes by thought

@@ -1,16 +1,15 @@
-import { useState, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThoughtStore } from '@/stores/thoughtStore';
 import { usePublicFog } from '@/hooks/usePublicFog';
+import { useAppMode } from '@/hooks/useAppMode';
 import { ThoughtCard } from '@/components/ThoughtCard';
 import { ThoughtComposer } from '@/components/ThoughtComposer';
+import { CategoryFilter } from '@/components/CategoryFilter';
 import { AnimatedEmptyState } from '@/components/AnimatedEmptyState';
-import { FloatingParticles } from '@/components/FloatingParticles';
-import { GlowingOrb } from '@/components/GlowingOrb';
-import { DecaySpeed } from '@/types/thought';
+import { DecaySpeed, FragmentCategory } from '@/types/thought';
 import { cn } from '@/lib/utils';
 import { SubmitBurst } from '@/components/SubmitBurst';
-import { Reveal, StaggerChildren, StaggerItem } from '@/components/effects/MotionEffects';
 import {
   Dialog,
   DialogContent,
@@ -22,24 +21,47 @@ import {
 import { Button } from '@/components/ui/button';
 
 export function PrivateThoughtsView() {
-  const { privateThoughts, addPrivateThought, deletePrivateThought, releaseToFog } = useThoughtStore();
+  const { privateThoughts, addPrivateThought, deletePrivateThought, waterThought, releaseToFog } = useThoughtStore();
   const { addThought: addToPublicFog } = usePublicFog();
-  
+  const { mode } = useAppMode();
+
+  const [selectedCategory, setSelectedCategory] = useState<FragmentCategory | 'all'>('all');
   const [releaseDialog, setReleaseDialog] = useState<{ open: boolean; thoughtId: string | null }>({
     open: false,
     thoughtId: null,
   });
   const [selectedSpeed, setSelectedSpeed] = useState<DecaySpeed>('normal');
-   const [bursts, setBursts] = useState<Array<{ id: number; x: number; y: number }>>([]);
- 
-   const handleBurst = useCallback((x: number, y: number) => {
-     const id = Date.now();
-     setBursts(prev => [...prev, { id, x, y }]);
-   }, []);
- 
-   const removeBurst = useCallback((id: number) => {
-     setBursts(prev => prev.filter(b => b.id !== id));
-   }, []);
+  const [bursts, setBursts] = useState<Array<{ id: number; x: number; y: number }>>([]);
+
+  const handleBurst = useCallback((x: number, y: number) => {
+    const id = Date.now();
+    setBursts((prev) => [...prev, { id, x, y }]);
+  }, []);
+
+  const removeBurst = useCallback((id: number) => {
+    setBursts((prev) => prev.filter((b) => b.id !== id));
+  }, []);
+
+  // Calculate category counts
+  const categoryCounts = useMemo(() => {
+    const counts: Record<FragmentCategory, number> = {
+      ideas: 0,
+      tasks: 0,
+      journal: 0,
+      projects: 0,
+      uncategorized: 0,
+    };
+    privateThoughts.forEach((t) => {
+      counts[t.category] = (counts[t.category] || 0) + 1;
+    });
+    return counts;
+  }, [privateThoughts]);
+
+  // Filter by category
+  const filteredThoughts = useMemo(() => {
+    if (selectedCategory === 'all') return privateThoughts;
+    return privateThoughts.filter((t) => t.category === selectedCategory);
+  }, [privateThoughts, selectedCategory]);
 
   const handleRelease = () => {
     if (releaseDialog.thoughtId) {
@@ -52,144 +74,129 @@ export function PrivateThoughtsView() {
   };
 
   return (
-    <div className="min-h-screen relative">
-       {/* Submit burst effects */}
-       {bursts.map(burst => (
-         <SubmitBurst 
-           key={burst.id} 
-           x={burst.x} 
-           y={burst.y} 
-           onComplete={() => removeBurst(burst.id)} 
-         />
-       ))}
-       
-      {/* Ambient visual elements */}
-      <FloatingParticles />
-      <GlowingOrb className="top-20 left-10" color="primary" size="lg" intensity="low" />
-      <GlowingOrb className="bottom-40 right-10" color="accent" size="md" intensity="low" />
+    <div className="min-h-screen relative pb-28">
+      {/* Submit burst effects */}
+      <AnimatePresence>
+        {bursts.map((burst) => (
+          <SubmitBurst key={burst.id} x={burst.x} y={burst.y} onComplete={() => removeBurst(burst.id)} />
+        ))}
+      </AnimatePresence>
 
-      {/* Header with gradient border */}
-      <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b border-border/30 px-6 py-4 relative overflow-hidden">
-        {/* Animated gradient line */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
-        
-        <div className="max-w-2xl mx-auto">
-          <h1 className="text-lg font-thought text-foreground/90 text-gradient">private thoughts</h1>
-          <p className="text-xs text-muted-foreground mt-1 flex items-center gap-2">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary/50 animate-pulse" />
-            these never leave unless you release them
-          </p>
+      {/* Header */}
+      <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b border-border/20 px-4 py-3">
+        <div className="max-w-lg mx-auto">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h1 className={cn('text-lg font-thought text-foreground/90', mode === 'rot' && 'animate-glitch-subtle')}>
+                {mode === 'rot' ? 'brain dump' : 'fragments'}
+              </h1>
+              <p className="text-[10px] text-muted-foreground/50 mt-0.5 flex items-center gap-1.5">
+                <span className="inline-block w-1 h-1 rounded-full bg-primary/50 animate-pulse" />
+                {mode === 'rot' ? 'let the rot flow' : 'private · local · yours'}
+              </p>
+            </div>
+          </div>
+
+          {/* Category filter */}
+          <CategoryFilter selected={selectedCategory} onSelect={setSelectedCategory} counts={categoryCounts} />
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-6 py-8 relative">
-        {/* Composer with glow effect */}
-        <div className="mb-8 p-5 glass rounded-lg relative group hover-glow transition-all duration-500">
-          <div className="absolute -inset-1 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 rounded-lg blur opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <div className="relative">
-            <ThoughtComposer
-              onSubmit={(content, mode) => {
-                addPrivateThought(content, mode);
-              }}
-               onBurst={handleBurst}
-            />
-          </div>
+      <main className="max-w-lg mx-auto px-4 py-4 relative">
+        {/* Composer */}
+        <div className="mb-6 p-4 glass rounded-xl">
+          <ThoughtComposer
+            onSubmit={(content, decayMode, _speed, category) => {
+              addPrivateThought(content, decayMode, category);
+            }}
+            onBurst={handleBurst}
+          />
         </div>
 
         {/* Empty state */}
-        {privateThoughts.length === 0 && (
+        {filteredThoughts.length === 0 && (
           <AnimatedEmptyState
-            title="no thoughts captured yet."
-            subtitle="write something above."
+            title={selectedCategory === 'all' ? 'no fragments yet.' : `no ${selectedCategory} yet.`}
+            subtitle={mode === 'rot' ? 'feed the compost heap.' : 'write something above.'}
             icon="thought"
           />
         )}
 
-        {/* Thoughts list with stagger animation */}
-        <StaggerChildren className="space-y-4" staggerDelay={0.08}>
+        {/* Thoughts list */}
+        <div className="space-y-3">
           <AnimatePresence mode="popLayout">
-            {privateThoughts.map((thought) => (
-              <StaggerItem key={thought.id}>
+            {filteredThoughts.map((thought) => (
+              <motion.div
+                key={thought.id}
+                className="group relative"
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, x: -100, filter: 'blur(10px)' }}
+                transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] as [number, number, number, number] }}
+              >
+                <ThoughtCard
+                  thought={thought}
+                  showEchoButton={false}
+                  onWater={() => waterThought(thought.id)}
+                  showWaterButton
+                />
+
+                {/* Actions - visible on touch/hover */}
                 <motion.div
-                  className="group relative"
-                  layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, x: -100, filter: 'blur(10px)' }}
-                  transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                  className="flex gap-2 mt-2 px-1"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
                 >
-                  <ThoughtCard thought={thought} showEchoButton={false} />
-                  
-                  {/* Actions overlay */}
-                  <motion.div 
-                    className="absolute top-2 right-2 flex gap-2"
-                    initial={{ opacity: 0, x: 10 }}
-                    whileHover={{ opacity: 1, x: 0 }}
+                  <button
+                    onClick={() => setReleaseDialog({ open: true, thoughtId: thought.id })}
+                    className="px-3 py-1.5 rounded-lg text-[10px] font-thought bg-primary/10 text-primary/70 hover:bg-primary/20 transition-all"
                   >
-                    <motion.button
-                      onClick={() => setReleaseDialog({ open: true, thoughtId: thought.id })}
-                      className={cn(
-                        'px-3 py-1.5 rounded-lg text-xs',
-                        'bg-primary/20 text-primary backdrop-blur-sm',
-                        'hover:bg-primary/30 hover:shadow-lg hover:shadow-primary/20',
-                        'transition-all duration-300'
-                      )}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      title="Release to public fog"
-                    >
-                      release
-                    </motion.button>
-                    <motion.button
-                      onClick={() => deletePrivateThought(thought.id)}
-                      className={cn(
-                        'px-3 py-1.5 rounded-lg text-xs',
-                        'bg-destructive/20 text-destructive-foreground/70 backdrop-blur-sm',
-                        'hover:bg-destructive/30',
-                        'transition-all duration-300'
-                      )}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      title="Delete permanently"
-                    >
-                      delete
-                    </motion.button>
-                  </motion.div>
+                    release to fog
+                  </button>
+                  <button
+                    onClick={() => deletePrivateThought(thought.id)}
+                    className="px-3 py-1.5 rounded-lg text-[10px] font-thought bg-destructive/10 text-destructive-foreground/50 hover:bg-destructive/20 transition-all"
+                  >
+                    delete
+                  </button>
                 </motion.div>
-              </StaggerItem>
+              </motion.div>
             ))}
           </AnimatePresence>
-        </StaggerChildren>
+        </div>
       </main>
 
       {/* Release confirmation dialog */}
       <Dialog open={releaseDialog.open} onOpenChange={(open) => setReleaseDialog({ open, thoughtId: null })}>
-        <DialogContent className="bg-card border-border/50 max-w-md">
+        <DialogContent className="bg-card/95 backdrop-blur-xl border-border/50 max-w-sm mx-4">
           <DialogHeader>
             <DialogTitle className="font-thought text-foreground/90">release to fog</DialogTitle>
             <DialogDescription className="text-muted-foreground text-sm">
-              Once released, this thought becomes anonymous and will decay over time.
-              You cannot retrieve it.
+              {mode === 'rot'
+                ? 'once released, this thought dissolves into the collective unconscious. you cannot retrieve it.'
+                : 'Once released, this thought becomes anonymous and will decay. You cannot retrieve it.'}
             </DialogDescription>
           </DialogHeader>
-          
-          <div className="py-4">
-            <p className="text-xs text-muted-foreground mb-3">Choose decay speed:</p>
+
+          <div className="py-3">
+            <p className="text-xs text-muted-foreground/60 mb-2">decay speed:</p>
             <div className="flex gap-2">
               {(['normal', 'fast', 'sink'] as DecaySpeed[]).map((speed) => (
                 <button
                   key={speed}
                   onClick={() => setSelectedSpeed(speed)}
                   className={cn(
-                    'flex-1 px-3 py-2 rounded text-sm',
+                    'flex-1 px-3 py-2.5 rounded-xl text-xs font-thought',
                     'transition-all duration-200',
                     selectedSpeed === speed
                       ? 'bg-primary text-primary-foreground'
-                      : 'bg-secondary/50 text-secondary-foreground hover:bg-secondary'
+                      : 'bg-secondary/30 text-secondary-foreground hover:bg-secondary/50'
                   )}
                 >
                   <span className="block font-medium">{speed}</span>
-                  <span className="block text-xs opacity-60 mt-0.5">
+                  <span className="block text-[10px] opacity-50 mt-0.5">
                     {speed === 'normal' ? '1 hour' : speed === 'fast' ? '15 min' : '5 min'}
                   </span>
                 </button>
@@ -197,19 +204,16 @@ export function PrivateThoughtsView() {
             </div>
           </div>
 
-          <DialogFooter className="gap-2">
+          <DialogFooter className="flex-col gap-2 sm:flex-col">
+            <Button onClick={handleRelease} className="bg-primary text-primary-foreground hover:bg-primary/90 w-full">
+              release
+            </Button>
             <Button
               variant="ghost"
               onClick={() => setReleaseDialog({ open: false, thoughtId: null })}
-              className="text-muted-foreground"
+              className="text-muted-foreground w-full"
             >
               keep private
-            </Button>
-            <Button
-              onClick={handleRelease}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              release
             </Button>
           </DialogFooter>
         </DialogContent>
