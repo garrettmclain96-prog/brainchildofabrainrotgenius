@@ -4,12 +4,17 @@ import { useThoughtStore } from '@/stores/thoughtStore';
 import { usePublicFog } from '@/hooks/usePublicFog';
 import { useAppMode } from '@/hooks/useAppMode';
 import { useResonance } from '@/hooks/useResonance';
+import { useAncestralEchoes } from '@/hooks/useAncestralEchoes';
+import { useTimeGravity } from '@/hooks/useTimeGravity';
 import { ThoughtCard } from '@/components/ThoughtCard';
 import { ThoughtComposer } from '@/components/ThoughtComposer';
 import { CategoryFilter } from '@/components/CategoryFilter';
 import { AnimatedEmptyState } from '@/components/AnimatedEmptyState';
 import { ResonancePanel } from '@/components/ResonancePanel';
 import { ProductivityInsight } from '@/components/ProductivityInsight';
+import { AncestralEchoOverlay } from '@/components/AncestralEchoOverlay';
+import { CompassMode } from '@/components/CompassMode';
+import { ForgettingCeremony } from '@/components/ForgettingCeremony';
 import { DecaySpeed, FragmentCategory } from '@/types/thought';
 import { cn } from '@/lib/utils';
 import { SubmitBurst } from '@/components/SubmitBurst';
@@ -32,10 +37,14 @@ export function PrivateThoughtsView({ onAction }: PrivateThoughtsViewProps) {
   const { addThought: addToPublicFog } = usePublicFog();
   const { mode } = useAppMode();
 
-  // Phase 2: Cognitive systems
+  // Cognitive systems
   const resonancePatterns = useResonance(privateThoughts);
+  const ancestral = useAncestralEchoes();
+  const weightedThoughts = useTimeGravity(privateThoughts);
 
   const [selectedCategory, setSelectedCategory] = useState<FragmentCategory | 'all'>('all');
+  const [compassActive, setCompassActive] = useState(false);
+  const [ceremonyOpen, setCeremonyOpen] = useState(false);
   const [releaseDialog, setReleaseDialog] = useState<{ open: boolean; thoughtId: string | null }>({
     open: false,
     thoughtId: null,
@@ -52,14 +61,10 @@ export function PrivateThoughtsView({ onAction }: PrivateThoughtsViewProps) {
     setBursts((prev) => prev.filter((b) => b.id !== id));
   }, []);
 
-  // Calculate category counts
+  // Category counts
   const categoryCounts = useMemo(() => {
     const counts: Record<FragmentCategory, number> = {
-      ideas: 0,
-      tasks: 0,
-      journal: 0,
-      projects: 0,
-      uncategorized: 0,
+      ideas: 0, tasks: 0, journal: 0, projects: 0, uncategorized: 0,
     };
     privateThoughts.forEach((t) => {
       counts[t.category] = (counts[t.category] || 0) + 1;
@@ -67,18 +72,18 @@ export function PrivateThoughtsView({ onAction }: PrivateThoughtsViewProps) {
     return counts;
   }, [privateThoughts]);
 
-  // Filter by category
+  // Filter by category, apply gravity sorting
   const filteredThoughts = useMemo(() => {
-    if (selectedCategory === 'all') return privateThoughts;
-    return privateThoughts.filter((t) => t.category === selectedCategory);
-  }, [privateThoughts, selectedCategory]);
+    const weighted = selectedCategory === 'all'
+      ? weightedThoughts
+      : weightedThoughts.filter((w) => w.thought.category === selectedCategory);
+    return weighted;
+  }, [weightedThoughts, selectedCategory]);
 
   const handleRelease = () => {
     if (releaseDialog.thoughtId) {
       const publicThought = releaseToFog(releaseDialog.thoughtId, selectedSpeed);
-      if (publicThought) {
-        addToPublicFog(publicThought);
-      }
+      if (publicThought) addToPublicFog(publicThought);
       setReleaseDialog({ open: false, thoughtId: null });
     }
   };
@@ -86,19 +91,30 @@ export function PrivateThoughtsView({ onAction }: PrivateThoughtsViewProps) {
   const handleSubmit = useCallback(
     (content: string, decayMode: any, _speed: any, category?: FragmentCategory) => {
       addPrivateThought(content, decayMode, category);
+      ancestral.dismissEcho();
       onAction?.();
     },
-    [addPrivateThought, onAction]
+    [addPrivateThought, onAction, ancestral]
   );
+
+  const handleMerge = useCallback(() => {
+    const merged = ancestral.mergeWithAncestor();
+    if (merged) {
+      addPrivateThought(merged, mode === 'rot' ? 'rot' : 'clean', 'ideas');
+    }
+  }, [ancestral, addPrivateThought, mode]);
 
   return (
     <div className="min-h-screen relative pb-28">
-      {/* Submit burst effects */}
+      {/* Submit bursts */}
       <AnimatePresence>
         {bursts.map((burst) => (
           <SubmitBurst key={burst.id} x={burst.x} y={burst.y} onComplete={() => removeBurst(burst.id)} />
         ))}
       </AnimatePresence>
+
+      {/* Forgetting Ceremony */}
+      <ForgettingCeremony thoughts={privateThoughts} isOpen={ceremonyOpen} onClose={() => setCeremonyOpen(false)} />
 
       {/* Header */}
       <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b border-border/20 px-4 py-3">
@@ -113,30 +129,61 @@ export function PrivateThoughtsView({ onAction }: PrivateThoughtsViewProps) {
                 {mode === 'rot' ? 'let the rot flow' : 'private · local · yours'}
               </p>
             </div>
+
+            {/* Ceremony button */}
+            {privateThoughts.length > 0 && (
+              <motion.button
+                onClick={() => setCeremonyOpen(true)}
+                className="px-2.5 py-1.5 rounded-lg text-[10px] font-thought text-muted-foreground/30 hover:text-muted-foreground/60 hover:bg-secondary/20 transition-all"
+                whileTap={{ scale: 0.95 }}
+              >
+                🔥 ceremony
+              </motion.button>
+            )}
           </div>
 
-          {/* Category filter */}
           <CategoryFilter selected={selectedCategory} onSelect={setSelectedCategory} counts={categoryCounts} />
         </div>
       </header>
 
       <main className="max-w-lg mx-auto px-4 py-4 relative">
-        {/* Composer */}
-        <div className="mb-6 p-4 glass rounded-xl">
-          <ThoughtComposer
-            onSubmit={handleSubmit}
-            onBurst={handleBurst}
+        {/* Compass Mode */}
+        <div className="mb-4">
+          <CompassMode
+            thoughts={privateThoughts}
+            isActive={compassActive}
+            onToggle={() => setCompassActive(!compassActive)}
           />
         </div>
 
-        {/* Phase 2: Resonance patterns */}
-        <ResonancePanel patterns={resonancePatterns} />
+        {/* Composer */}
+        {!compassActive && (
+          <div className="mb-6 p-4 glass rounded-xl">
+            <ThoughtComposer
+              onSubmit={handleSubmit}
+              onBurst={handleBurst}
+              onTextChange={ancestral.checkForEchoes}
+            />
+            {/* Ancestral echo overlay */}
+            <AncestralEchoOverlay
+              echo={ancestral.echo}
+              onMerge={handleMerge}
+              onIgnore={ancestral.dismissEcho}
+              onEraseBoth={ancestral.eraseBoth}
+            />
+          </div>
+        )}
 
-        {/* Phase 2: Productivity insights */}
-        <ProductivityInsight thoughts={privateThoughts} />
+        {/* Resonance & Insights */}
+        {!compassActive && (
+          <>
+            <ResonancePanel patterns={resonancePatterns} />
+            <ProductivityInsight thoughts={privateThoughts} />
+          </>
+        )}
 
         {/* Empty state */}
-        {filteredThoughts.length === 0 && (
+        {!compassActive && filteredThoughts.length === 0 && (
           <AnimatedEmptyState
             title={selectedCategory === 'all' ? 'no fragments yet.' : `no ${selectedCategory} yet.`}
             subtitle={mode === 'rot' ? 'feed the compost heap.' : 'write something above.'}
@@ -144,59 +191,75 @@ export function PrivateThoughtsView({ onAction }: PrivateThoughtsViewProps) {
           />
         )}
 
-        {/* Thoughts list */}
-        <div className="space-y-3">
-          <AnimatePresence mode="popLayout">
-            {filteredThoughts.map((thought) => (
-              <motion.div
-                key={thought.id}
-                className="group relative"
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, x: -100, filter: 'blur(10px)' }}
-                transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] as [number, number, number, number] }}
-              >
-                <ThoughtCard
-                  thought={thought}
-                  showEchoButton={false}
-                  onWater={() => {
-                    waterThought(thought.id);
-                    onAction?.();
-                  }}
-                  showWaterButton
-                />
-
-                {/* Actions - visible on touch/hover */}
+        {/* Thoughts list — with time gravity */}
+        {!compassActive && (
+          <div className="space-y-3">
+            <AnimatePresence mode="popLayout">
+              {filteredThoughts.map(({ thought, weight, visualOffset }) => (
                 <motion.div
-                  className="flex gap-2 mt-2 px-1"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
+                  key={thought.id}
+                  className="group relative"
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: visualOffset }}
+                  exit={{ opacity: 0, x: -100, filter: 'blur(10px)' }}
+                  transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] as [number, number, number, number] }}
+                  style={{
+                    // Heavy thoughts have subtle visual weight
+                    transform: `translateY(${visualOffset}px)`,
+                  }}
                 >
-                  <button
-                    onClick={() => setReleaseDialog({ open: true, thoughtId: thought.id })}
-                    className="px-3 py-1.5 rounded-lg text-[10px] font-thought bg-primary/10 text-primary/70 hover:bg-primary/20 transition-all"
-                  >
-                    release to fog
-                  </button>
-                  <button
-                    onClick={() => {
-                      deletePrivateThought(thought.id);
+                  {/* Weight indicator */}
+                  {weight > 0.6 && (
+                    <motion.div
+                      className="absolute -left-2 top-1/2 -translate-y-1/2 w-1 rounded-full bg-muted-foreground/10"
+                      style={{ height: `${weight * 30}px` }}
+                      animate={{ opacity: [0.1, 0.2, 0.1] }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                    />
+                  )}
+
+                  <ThoughtCard
+                    thought={thought}
+                    showEchoButton={false}
+                    onWater={() => {
+                      waterThought(thought.id);
                       onAction?.();
                     }}
-                    className="px-3 py-1.5 rounded-lg text-[10px] font-thought bg-destructive/10 text-destructive-foreground/50 hover:bg-destructive/20 transition-all"
+                    showWaterButton
+                  />
+
+                  {/* Actions */}
+                  <motion.div
+                    className="flex gap-2 mt-2 px-1"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2 }}
                   >
-                    delete
-                  </button>
+                    <button
+                      onClick={() => setReleaseDialog({ open: true, thoughtId: thought.id })}
+                      className="px-3 py-1.5 rounded-lg text-[10px] font-thought bg-primary/10 text-primary/70 hover:bg-primary/20 transition-all"
+                    >
+                      release to fog
+                    </button>
+                    <button
+                      onClick={() => {
+                        deletePrivateThought(thought.id);
+                        onAction?.();
+                      }}
+                      className="px-3 py-1.5 rounded-lg text-[10px] font-thought bg-destructive/10 text-destructive-foreground/50 hover:bg-destructive/20 transition-all"
+                    >
+                      delete
+                    </button>
+                  </motion.div>
                 </motion.div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
       </main>
 
-      {/* Release confirmation dialog */}
+      {/* Release dialog */}
       <Dialog open={releaseDialog.open} onOpenChange={(open) => setReleaseDialog({ open, thoughtId: null })}>
         <DialogContent className="bg-card/95 backdrop-blur-xl border-border/50 max-w-sm mx-4">
           <DialogHeader>

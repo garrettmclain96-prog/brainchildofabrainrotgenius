@@ -4,6 +4,7 @@ import { usePublicFog } from '@/hooks/usePublicFog';
 import { useAppMode } from '@/hooks/useAppMode';
 import { useIdeaDrift } from '@/hooks/useIdeaDrift';
 import { useThoughtStore } from '@/stores/thoughtStore';
+import { useThoughtWeather } from '@/hooks/useThoughtWeather';
 import { ThoughtCard } from '@/components/ThoughtCard';
 import { EchoCard } from '@/components/EchoCard';
 import { EchoComposer } from '@/components/EchoComposer';
@@ -11,6 +12,7 @@ import { ThoughtComposer } from '@/components/ThoughtComposer';
 import { AnimatedEmptyState } from '@/components/AnimatedEmptyState';
 import { IdeaDriftNotification } from '@/components/IdeaDriftNotification';
 import { GraveyardView } from '@/components/GraveyardView';
+import { ThoughtWeatherIndicator } from '@/components/ThoughtWeatherIndicator';
 import { cn } from '@/lib/utils';
 import { SubmitBurst } from '@/components/SubmitBurst';
 
@@ -30,20 +32,14 @@ interface PublicFogViewProps {
 
 export function PublicFogView({ onAction }: PublicFogViewProps) {
   const {
-    thoughts,
-    echoes,
-    filter,
-    setFilter,
-    addEcho,
-    createPublicThought,
-    totalCount,
-    isLoading,
+    thoughts, echoes, filter, setFilter, addEcho, createPublicThought, totalCount, isLoading,
   } = usePublicFog();
   const { mode } = useAppMode();
   const { addPrivateThought } = useThoughtStore();
 
-  // Phase 2: Idea Drift
+  // Social systems
   const { driftedIdea, dismissDrift, saveDrift } = useIdeaDrift(thoughts);
+  const weather = useThoughtWeather();
 
   const [echoingThoughtId, setEchoingThoughtId] = useState<string | null>(null);
   const [showComposer, setShowComposer] = useState(false);
@@ -61,9 +57,7 @@ export function PublicFogView({ onAction }: PublicFogViewProps) {
 
   const handleFilterChange = (f: FogFilter) => {
     setActiveFilter(f);
-    if (f !== 'graveyard') {
-      setFilter(f as any);
-    }
+    if (f !== 'graveyard') setFilter(f as any);
   };
 
   const handleSaveDrift = useCallback(() => {
@@ -78,19 +72,15 @@ export function PublicFogView({ onAction }: PublicFogViewProps) {
 
   return (
     <div className="min-h-screen relative pb-28">
-      {/* Submit burst effects */}
+      {/* Submit bursts */}
       <AnimatePresence>
         {bursts.map((burst) => (
           <SubmitBurst key={burst.id} x={burst.x} y={burst.y} onComplete={() => removeBurst(burst.id)} />
         ))}
       </AnimatePresence>
 
-      {/* Phase 2: Idea Drift Notification */}
-      <IdeaDriftNotification
-        drift={driftedIdea}
-        onSave={handleSaveDrift}
-        onDismiss={dismissDrift}
-      />
+      {/* Idea Drift */}
+      <IdeaDriftNotification drift={driftedIdea} onSave={handleSaveDrift} onDismiss={dismissDrift} />
 
       {/* Header */}
       <header className="sticky top-10 z-20 bg-background/80 backdrop-blur-md border-b border-border/20 px-4 py-3">
@@ -104,9 +94,7 @@ export function PublicFogView({ onAction }: PublicFogViewProps) {
               </h1>
               <p className="text-[10px] text-muted-foreground/50 mt-0.5 flex items-center gap-1.5">
                 <span className="inline-block w-1 h-1 rounded-full bg-echo/50 animate-pulse" />
-                {isGraveyard
-                  ? 'where thoughts go to rest'
-                  : `${totalCount} thoughts drifting · all will fade`}
+                {isGraveyard ? 'where thoughts go to rest' : `${totalCount} thoughts drifting · all will fade`}
               </p>
             </div>
 
@@ -124,6 +112,11 @@ export function PublicFogView({ onAction }: PublicFogViewProps) {
                 {showComposer ? 'close' : 'release'}
               </motion.button>
             )}
+          </div>
+
+          {/* Thought Weather */}
+          <div className="mb-2">
+            <ThoughtWeatherIndicator weather={weather} />
           </div>
 
           {/* Filters */}
@@ -150,10 +143,8 @@ export function PublicFogView({ onAction }: PublicFogViewProps) {
       </header>
 
       <main className="max-w-lg mx-auto px-4 py-4 relative">
-        {/* Graveyard view */}
         {isGraveyard && <GraveyardView />}
 
-        {/* Regular fog view */}
         {!isGraveyard && (
           <>
             {/* Composer */}
@@ -186,7 +177,7 @@ export function PublicFogView({ onAction }: PublicFogViewProps) {
               </div>
             )}
 
-            {/* Empty state */}
+            {/* Empty */}
             {!isLoading && visibleThoughts.length === 0 && (
               <AnimatedEmptyState
                 title={filter === 'all' ? 'the fog is empty.' : 'no thoughts match this filter.'}
@@ -214,19 +205,14 @@ export function PublicFogView({ onAction }: PublicFogViewProps) {
                     showEchoButton={echoingThoughtId !== thought.id}
                   />
 
-                  {/* Echoes */}
                   {echoes.get(thought.id)?.length ? (
                     <div className="mt-2 ml-3 space-y-1.5">
-                      {echoes
-                        .get(thought.id)
-                        ?.slice(0, 3)
-                        .map((echo) => (
-                          <EchoCard key={echo.id} echo={echo} />
-                        ))}
+                      {echoes.get(thought.id)?.slice(0, 3).map((echo) => (
+                        <EchoCard key={echo.id} echo={echo} />
+                      ))}
                     </div>
                   ) : null}
 
-                  {/* Echo composer */}
                   {echoingThoughtId === thought.id && (
                     <div className="mt-2 ml-3">
                       <EchoComposer
@@ -244,7 +230,6 @@ export function PublicFogView({ onAction }: PublicFogViewProps) {
               ))}
             </div>
 
-            {/* More indicator */}
             {thoughts.length > 6 && (
               <div className="text-center mt-8 text-[10px] text-muted-foreground/25 font-thought">
                 {thoughts.length - 6} more thoughts hidden in the fog
@@ -254,7 +239,6 @@ export function PublicFogView({ onAction }: PublicFogViewProps) {
         )}
       </main>
 
-      {/* Footer */}
       <footer className="fixed bottom-16 left-0 right-0 text-center py-2 text-[10px] text-muted-foreground/15 pointer-events-none font-thought">
         everything here will fade
       </footer>
