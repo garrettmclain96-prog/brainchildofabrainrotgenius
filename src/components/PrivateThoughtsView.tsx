@@ -1,4 +1,5 @@
- import { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useThoughtStore } from '@/stores/thoughtStore';
 import { usePublicFog } from '@/hooks/usePublicFog';
 import { ThoughtCard } from '@/components/ThoughtCard';
@@ -8,7 +9,8 @@ import { FloatingParticles } from '@/components/FloatingParticles';
 import { GlowingOrb } from '@/components/GlowingOrb';
 import { DecaySpeed } from '@/types/thought';
 import { cn } from '@/lib/utils';
- import { SubmitBurst } from '@/components/SubmitBurst';
+import { SubmitBurst } from '@/components/SubmitBurst';
+import { Reveal, StaggerChildren, StaggerItem } from '@/components/effects/MotionEffects';
 import {
   Dialog,
   DialogContent,
