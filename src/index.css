@@ -151,14 +151,13 @@
   opacity: var(--grain-opacity);
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   mix-blend-mode: overlay;
-  /* Animate grain to feel alive */
-  animation: grain-shift 0.5s steps(3) infinite;
+  /* Reduced frequency for battery life — steps(2) not steps(3), slower */
+  animation: grain-shift 1s steps(2) infinite;
 }
 
 @keyframes grain-shift {
   0% { transform: translate(0, 0); }
-  33% { transform: translate(-1px, 1px); }
-  66% { transform: translate(1px, -1px); }
+  50% { transform: translate(-1px, 1px); }
   100% { transform: translate(0, 0); }
 }
 
@@ -1112,4 +1111,26 @@
 .float-3d {
   animation: float-3d 7s ease-in-out infinite;
   transform-style: preserve-3d;
+}
+
+/* =============================================
+   REDUCED MOTION — Accessibility & battery
+   ============================================= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .noise-overlay {
+    animation: none !important;
+  }
+
+  body {
+    animation: none !important;
+    filter: none !important;
+  }
 }

@@ -20,12 +20,12 @@ import { usePerceptualDrift } from '@/hooks/usePerceptualDrift';
 import { usePermanentConsequences } from '@/hooks/usePermanentConsequences';
 import { useIdentityDrift } from '@/hooks/useIdentityDrift';
 import { useTrueEnding } from '@/hooks/useTrueEnding';
+import { PoeticErrorBoundary } from '@/components/PoeticErrorBoundary';
 import { FogBackground } from '@/components/FogBackground';
 import { PublicFogView } from '@/components/PublicFogView';
 import { PrivateThoughtsView } from '@/components/PrivateThoughtsView';
 import { SettingsView } from '@/components/SettingsView';
 import { IntroScene } from '@/components/IntroScene';
-import { LoadingScreen } from '@/components/LoadingScreen';
 import { BottomNav } from '@/components/BottomNav';
 import { ModeToggle } from '@/components/ModeToggle';
 import { SystemKoan } from '@/components/SystemKoan';
@@ -45,13 +45,12 @@ import { DangerWarning, hasDismissedWarning } from '@/components/DangerWarning';
 import { OneTimeWhisper } from '@/components/OneTimeWhisper';
 import { TrueEndingScreen } from '@/components/TrueEndingScreen';
 
-// Lazy load heavy 3D scene
+// Lazy load heavy 3D scene — deferred for performance
 const FogScene = lazy(() => import('@/components/three/FogScene').then((m) => ({ default: m.FogScene })));
 
 type View = 'private' | 'fog' | 'settings';
 
 const INTRO_SEEN_KEY = 'brainchild-intro-seen';
-const LOADING_SEEN_KEY = 'brainchild-loading-seen';
 
 const smoothEase: [number, number, number, number] = [0.23, 1, 0.32, 1];
 
@@ -76,7 +75,6 @@ const Index = () => {
   const { socialEnabled, socialPermanentlyDisabled, toggleSocial, privateThoughts } = useThoughtStore();
   const { mode } = useAppMode();
   const [showIntro, setShowIntro] = useState(false);
-  const [showLoading, setShowLoading] = useState(false);
   const [is3DReady, setIs3DReady] = useState(false);
   const [showForbidden, setShowForbidden] = useState(false);
   const [showDangerWarning, setShowDangerWarning] = useState(!hasDismissedWarning());
@@ -132,15 +130,13 @@ const Index = () => {
       return;
     }
 
-    const hasSeenLoading = sessionStorage.getItem(LOADING_SEEN_KEY);
-
-    if (!hasSeenLoading) {
-      setShowLoading(true);
-    } else if (!localStorage.getItem(INTRO_SEEN_KEY)) {
+    // No loading screen — straight to intro or app (< 3s first launch)
+    if (!localStorage.getItem(INTRO_SEEN_KEY)) {
       setShowIntro(true);
     }
 
-    const timer = setTimeout(() => setIs3DReady(true), 2500);
+    // Defer 3D scene to keep first paint instant
+    const timer = setTimeout(() => setIs3DReady(true), 2000);
     return () => clearTimeout(timer);
   }, [showDangerWarning]);
 
@@ -150,14 +146,6 @@ const Index = () => {
 
   const handleDangerWarningAccept = useCallback(() => {
     setShowDangerWarning(false);
-  }, []);
-
-  const handleLoadingComplete = useCallback(() => {
-    sessionStorage.setItem(LOADING_SEEN_KEY, 'true');
-    setShowLoading(false);
-    if (!localStorage.getItem(INTRO_SEEN_KEY)) {
-      setShowIntro(true);
-    }
   }, []);
 
   const handleIntroComplete = useCallback(() => {
@@ -186,7 +174,7 @@ const Index = () => {
     return <TrueEndingScreen phase="complete" onBegin={() => {}} onAccept={() => {}} onDecline={() => {}} />;
   }
 
-  // Danger Warning — first gate
+  // Danger Warning — first gate (buttons appear quickly)
   if (showDangerWarning) {
     return <DangerWarning onAccept={handleDangerWarningAccept} />;
   }
@@ -197,192 +185,203 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Loading & Intro */}
-      <AnimatePresence mode="wait">
-        {showLoading && <LoadingScreen onComplete={handleLoadingComplete} />}
-      </AnimatePresence>
-      <AnimatePresence mode="wait">
-        {showIntro && <IntroScene onComplete={handleIntroComplete} />}
-      </AnimatePresence>
-
-      {/* True Ending — offering / ceremony */}
-      {(trueEnding.phase === 'offering' || trueEnding.phase === 'ceremony') && (
-        <TrueEndingScreen
-          phase={trueEnding.phase}
-          onBegin={trueEnding.beginCompletion}
-          onAccept={() => {
-            consequences.recordMark('completionAccepted');
-            trueEnding.acceptCompletion();
-          }}
-          onDecline={trueEnding.declineCompletion}
-        />
-      )}
-
-      {/* Quiet ending — welcome back */}
-      {quietEnding.isActive && !quietEnding.isInert && (
-        <QuietEndingScreen state={quietEnding} onDismiss={() => {}} />
-      )}
-
-      {/* Background layers */}
-      <FogBackground />
-      <Suspense fallback={null}>{is3DReady && <FogScene />}</Suspense>
-
-      {/* Film grain & vignette */}
-      <div className="noise-overlay" />
-      <div className="vignette" />
-
-      {/* One-time whispers (permanent consequences) */}
-      <OneTimeWhisper whisper={consequences.oneTimeWhisper} onDismiss={consequences.dismissWhisper} />
-
-      {/* Easter eggs */}
-      <SystemKoan egg={activeEgg} onDismiss={dismissEgg} />
-
-      {/* Rare cognitive events */}
-      <RareEventOverlay event={activeEvent} onDismiss={dismissEvent} />
-
-      {/* Co-thinking presence */}
-      <CoThinkingIndicator presence={coThinking} />
-
-      {/* Cognitive hauntings */}
-      <HauntingOverlay haunting={haunting} onDismiss={dismissHaunting} />
-
-      {/* Temporal inversions */}
-      <TemporalInversionOverlay inversion={inversion} onDismiss={dismissInversion} />
-
-      {/* Intentional boredom */}
-      <BoredomOverlay boredom={boredom} />
-
-      {/* Exit interview */}
-      <ExitInterviewOverlay
-        isOpen={exitInterview.shouldShow}
-        onComplete={(answers) => {
-          consequences.recordMark('interviewCompleted');
-          exitInterview.completeInterview(answers);
-        }}
-        onDismiss={exitInterview.dismissInterview}
-      />
-
-      {/* Overload sensor */}
-      <OverloadOverlay
-        isOverloaded={overload.isOverloaded}
-        intensity={overload.intensity}
-        onChoose={overload.choosePath}
-        onDismiss={overload.dismiss}
-      />
-
-      {/* Overnight synthesis */}
-      <OvernightSynthesisOverlay
-        hasSynthesis={synthesis.hasSynthesis}
-        synthesis={synthesis.synthesis}
-        decayedCount={synthesis.decayedCount}
-        onDismiss={synthesis.dismissSynthesis}
-      />
-
-      {/* End of day compost */}
-      <EndOfDayCompost thoughts={privateThoughts} />
-
-      {/* Forbidden screen */}
-      <ForbiddenScreen isOpen={showForbidden} onClose={() => setShowForbidden(false)} />
-
-      {/* Top bar */}
-      <header className="fixed top-0 left-0 right-0 z-30 safe-area-top">
-        <div className="flex items-center justify-between px-4 py-2.5">
-          <div className="flex items-center gap-3">
-            <motion.h1
-              className="font-thought text-[10px] text-muted-foreground/30 tracking-[0.25em] uppercase cursor-default select-none"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8, duration: 1.2 }}
-              onClick={() => setHeaderTaps((t) => t + 1)}
-            >
-              brainchild
-            </motion.h1>
-            <AppMoodIndicator moodState={appMood} />
-          </div>
-          <ModeToggle />
-        </div>
-      </header>
-
-      {/* Main content */}
-      <div className="relative z-10 pt-10">
+    <PoeticErrorBoundary>
+      <div className="min-h-screen bg-background relative overflow-hidden">
+        {/* Intro — max 3 screens, no loading gate */}
         <AnimatePresence mode="wait">
-          {view === 'private' && (
-            <motion.div key="private" variants={pageVariants} initial="initial" animate="enter" exit="exit">
-              <PrivateThoughtsView
-                onAction={overload.recordAction}
-                appMood={appMood}
-                drift={drift}
-                identity={identity}
-                consequences={consequences.consequences}
-                onNearDeletion={exitInterview.recordNearDeletion}
-                onRecordMark={consequences.recordMark}
-              />
-            </motion.div>
-          )}
-
-          {view === 'fog' && socialEnabled && !socialPermanentlyDisabled && (
-            <motion.div key="fog" variants={pageVariants} initial="initial" animate="enter" exit="exit">
-              <PublicFogView onAction={overload.recordAction} appMood={appMood} />
-            </motion.div>
-          )}
-
-          {view === 'fog' && !socialEnabled && !socialPermanentlyDisabled && (
-            <motion.div
-              key="disabled"
-              variants={pageVariants}
-              initial="initial"
-              animate="enter"
-              exit="exit"
-              className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6"
-            >
-              <p className="text-muted-foreground/40 font-thought text-sm mb-4 tracking-wide">the social layer is dormant</p>
-              <motion.button
-                onClick={toggleSocial}
-                className="px-5 py-2.5 rounded-xl bg-primary/8 text-primary/70 hover:bg-primary/15 transition-all duration-700 text-sm font-thought tracking-wider"
-                whileTap={{ scale: 0.95 }}
-              >
-                awaken the fog
-              </motion.button>
-            </motion.div>
-          )}
-
-          {view === 'settings' && (
-            <motion.div key="settings" variants={pageVariants} initial="initial" animate="enter" exit="exit">
-              <SettingsView
-                onReplayIntro={handleReplayIntro}
-                audio={audio}
-                appMood={appMood}
-                identity={identity}
-                consequences={consequences.consequences}
-              />
-            </motion.div>
-          )}
+          {showIntro && <IntroScene onComplete={handleIntroComplete} />}
         </AnimatePresence>
+
+        {/* True Ending — offering / ceremony */}
+        {(trueEnding.phase === 'offering' || trueEnding.phase === 'ceremony') && (
+          <TrueEndingScreen
+            phase={trueEnding.phase}
+            onBegin={trueEnding.beginCompletion}
+            onAccept={() => {
+              consequences.recordMark('completionAccepted');
+              trueEnding.acceptCompletion();
+            }}
+            onDecline={trueEnding.declineCompletion}
+          />
+        )}
+
+        {/* Quiet ending — welcome back */}
+        {quietEnding.isActive && !quietEnding.isInert && (
+          <QuietEndingScreen state={quietEnding} onDismiss={() => {}} />
+        )}
+
+        {/* Background layers */}
+        <FogBackground />
+        <Suspense fallback={null}>{is3DReady && <FogScene />}</Suspense>
+
+        {/* Film grain & vignette */}
+        <div className="noise-overlay" />
+        <div className="vignette" />
+
+        {/* One-time whispers (permanent consequences) */}
+        <OneTimeWhisper whisper={consequences.oneTimeWhisper} onDismiss={consequences.dismissWhisper} />
+
+        {/* Easter eggs */}
+        <SystemKoan egg={activeEgg} onDismiss={dismissEgg} />
+
+        {/* Rare cognitive events */}
+        <PoeticErrorBoundary silent>
+          <RareEventOverlay event={activeEvent} onDismiss={dismissEvent} />
+        </PoeticErrorBoundary>
+
+        {/* Co-thinking presence */}
+        <CoThinkingIndicator presence={coThinking} />
+
+        {/* Cognitive hauntings */}
+        <PoeticErrorBoundary silent>
+          <HauntingOverlay haunting={haunting} onDismiss={dismissHaunting} />
+        </PoeticErrorBoundary>
+
+        {/* Temporal inversions */}
+        <PoeticErrorBoundary silent>
+          <TemporalInversionOverlay inversion={inversion} onDismiss={dismissInversion} />
+        </PoeticErrorBoundary>
+
+        {/* Intentional boredom */}
+        <BoredomOverlay boredom={boredom} />
+
+        {/* Exit interview */}
+        <ExitInterviewOverlay
+          isOpen={exitInterview.shouldShow}
+          onComplete={(answers) => {
+            consequences.recordMark('interviewCompleted');
+            exitInterview.completeInterview(answers);
+          }}
+          onDismiss={exitInterview.dismissInterview}
+        />
+
+        {/* Overload sensor */}
+        <OverloadOverlay
+          isOverloaded={overload.isOverloaded}
+          intensity={overload.intensity}
+          onChoose={overload.choosePath}
+          onDismiss={overload.dismiss}
+        />
+
+        {/* Overnight synthesis */}
+        <OvernightSynthesisOverlay
+          hasSynthesis={synthesis.hasSynthesis}
+          synthesis={synthesis.synthesis}
+          decayedCount={synthesis.decayedCount}
+          onDismiss={synthesis.dismissSynthesis}
+        />
+
+        {/* End of day compost */}
+        <EndOfDayCompost thoughts={privateThoughts} />
+
+        {/* Forbidden screen */}
+        <ForbiddenScreen isOpen={showForbidden} onClose={() => setShowForbidden(false)} />
+
+        {/* Top bar */}
+        <header className="fixed top-0 left-0 right-0 z-30 safe-area-top">
+          <div className="flex items-center justify-between px-4 py-2.5">
+            <div className="flex items-center gap-3">
+              <motion.h1
+                className="font-thought text-[10px] text-muted-foreground/30 tracking-[0.25em] uppercase cursor-default select-none"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8, duration: 1.2 }}
+                onClick={() => setHeaderTaps((t) => t + 1)}
+              >
+                brainchild
+              </motion.h1>
+              <AppMoodIndicator moodState={appMood} />
+            </div>
+            <ModeToggle />
+          </div>
+        </header>
+
+        {/* Main content */}
+        <div className="relative z-10 pt-10">
+          <AnimatePresence mode="wait">
+            {view === 'private' && (
+              <motion.div key="private" variants={pageVariants} initial="initial" animate="enter" exit="exit">
+                <PoeticErrorBoundary>
+                  <PrivateThoughtsView
+                    onAction={overload.recordAction}
+                    appMood={appMood}
+                    drift={drift}
+                    identity={identity}
+                    consequences={consequences.consequences}
+                    onNearDeletion={exitInterview.recordNearDeletion}
+                    onRecordMark={consequences.recordMark}
+                  />
+                </PoeticErrorBoundary>
+              </motion.div>
+            )}
+
+            {view === 'fog' && socialEnabled && !socialPermanentlyDisabled && (
+              <motion.div key="fog" variants={pageVariants} initial="initial" animate="enter" exit="exit">
+                <PoeticErrorBoundary>
+                  <PublicFogView onAction={overload.recordAction} appMood={appMood} />
+                </PoeticErrorBoundary>
+              </motion.div>
+            )}
+
+            {view === 'fog' && !socialEnabled && !socialPermanentlyDisabled && (
+              <motion.div
+                key="disabled"
+                variants={pageVariants}
+                initial="initial"
+                animate="enter"
+                exit="exit"
+                className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6"
+              >
+                <p className="text-muted-foreground/40 font-thought text-sm mb-4 tracking-wide">the social layer is dormant</p>
+                <motion.button
+                  onClick={toggleSocial}
+                  className="px-5 py-2.5 rounded-xl bg-primary/8 text-primary/70 hover:bg-primary/15 transition-all duration-700 text-sm font-thought tracking-wider"
+                  whileTap={{ scale: 0.95 }}
+                >
+                  awaken the fog
+                </motion.button>
+              </motion.div>
+            )}
+
+            {view === 'settings' && (
+              <motion.div key="settings" variants={pageVariants} initial="initial" animate="enter" exit="exit">
+                <PoeticErrorBoundary>
+                  <SettingsView
+                    onReplayIntro={handleReplayIntro}
+                    audio={audio}
+                    appMood={appMood}
+                    identity={identity}
+                    consequences={consequences.consequences}
+                  />
+                </PoeticErrorBoundary>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Permanent whisper scar */}
+        {consequences.consequences.scars.permanentWhisper && (
+          <motion.div
+            className="fixed top-14 right-4 z-20"
+            animate={{ opacity: [0, 0.15, 0] }}
+            transition={{ duration: 8, repeat: Infinity, repeatDelay: 30 }}
+          >
+            <span className="text-[8px] text-muted-foreground/10 font-thought italic">
+              {consequences.consequences.scars.permanentWhisper}
+            </span>
+          </motion.div>
+        )}
+
+        {/* Bottom navigation */}
+        <BottomNav
+          view={view}
+          onViewChange={handleViewChange}
+          socialEnabled={socialEnabled}
+          socialPermanentlyDisabled={socialPermanentlyDisabled}
+          navOrder={drift.navOrder}
+        />
       </div>
-
-      {/* Permanent whisper scar */}
-      {consequences.consequences.scars.permanentWhisper && (
-        <motion.div
-          className="fixed top-14 right-4 z-20"
-          animate={{ opacity: [0, 0.15, 0] }}
-          transition={{ duration: 8, repeat: Infinity, repeatDelay: 30 }}
-        >
-          <span className="text-[8px] text-muted-foreground/10 font-thought italic">
-            {consequences.consequences.scars.permanentWhisper}
-          </span>
-        </motion.div>
-      )}
-
-      {/* Bottom navigation */}
-      <BottomNav
-        view={view}
-        onViewChange={handleViewChange}
-        socialEnabled={socialEnabled}
-        socialPermanentlyDisabled={socialPermanentlyDisabled}
-        navOrder={drift.navOrder}
-      />
-    </div>
+    </PoeticErrorBoundary>
   );
 };
 

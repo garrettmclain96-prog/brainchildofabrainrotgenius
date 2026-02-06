@@ -21,9 +21,9 @@ export function FogBackground() {
     setMounted(true);
   }, []);
 
-  // Generate fog particles with mode-aware colors
+  // Generate fog particles — reduced count for mobile performance
   const particles = useMemo(() => {
-    const count = 10;
+    const count = 6;
     return Array.from({ length: count }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
