@@ -3,6 +3,7 @@ import { useThoughtStore } from '@/stores/thoughtStore';
 import { useAppMode } from '@/hooks/useAppMode';
 import { ModeToggle } from '@/components/ModeToggle';
 import { DissolveButton } from '@/components/DissolveButton';
+import { FinitudeDial } from '@/components/FinitudeDial';
 import { cn } from '@/lib/utils';
 import {
   AlertDialog,
@@ -40,6 +41,12 @@ export function SettingsView({ onReplayIntro }: SettingsViewProps) {
             shape how your mind breathes here
           </p>
         </header>
+
+        {/* Phase 2: Finitude Dial */}
+        <section className="space-y-3">
+          <h2 className="text-sm font-thought text-muted-foreground">finitude</h2>
+          <FinitudeDial thoughts={privateThoughts} />
+        </section>
 
         {/* Mode Toggle */}
         <section className="space-y-3">

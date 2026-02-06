@@ -3,10 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useThoughtStore } from '@/stores/thoughtStore';
 import { usePublicFog } from '@/hooks/usePublicFog';
 import { useAppMode } from '@/hooks/useAppMode';
+import { useResonance } from '@/hooks/useResonance';
 import { ThoughtCard } from '@/components/ThoughtCard';
 import { ThoughtComposer } from '@/components/ThoughtComposer';
 import { CategoryFilter } from '@/components/CategoryFilter';
 import { AnimatedEmptyState } from '@/components/AnimatedEmptyState';
+import { ResonancePanel } from '@/components/ResonancePanel';
+import { ProductivityInsight } from '@/components/ProductivityInsight';
 import { DecaySpeed, FragmentCategory } from '@/types/thought';
 import { cn } from '@/lib/utils';
 import { SubmitBurst } from '@/components/SubmitBurst';
@@ -20,10 +23,17 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
-export function PrivateThoughtsView() {
+interface PrivateThoughtsViewProps {
+  onAction?: () => void;
+}
+
+export function PrivateThoughtsView({ onAction }: PrivateThoughtsViewProps) {
   const { privateThoughts, addPrivateThought, deletePrivateThought, waterThought, releaseToFog } = useThoughtStore();
   const { addThought: addToPublicFog } = usePublicFog();
   const { mode } = useAppMode();
+
+  // Phase 2: Cognitive systems
+  const resonancePatterns = useResonance(privateThoughts);
 
   const [selectedCategory, setSelectedCategory] = useState<FragmentCategory | 'all'>('all');
   const [releaseDialog, setReleaseDialog] = useState<{ open: boolean; thoughtId: string | null }>({
@@ -73,6 +83,14 @@ export function PrivateThoughtsView() {
     }
   };
 
+  const handleSubmit = useCallback(
+    (content: string, decayMode: any, _speed: any, category?: FragmentCategory) => {
+      addPrivateThought(content, decayMode, category);
+      onAction?.();
+    },
+    [addPrivateThought, onAction]
+  );
+
   return (
     <div className="min-h-screen relative pb-28">
       {/* Submit burst effects */}
@@ -106,12 +124,16 @@ export function PrivateThoughtsView() {
         {/* Composer */}
         <div className="mb-6 p-4 glass rounded-xl">
           <ThoughtComposer
-            onSubmit={(content, decayMode, _speed, category) => {
-              addPrivateThought(content, decayMode, category);
-            }}
+            onSubmit={handleSubmit}
             onBurst={handleBurst}
           />
         </div>
+
+        {/* Phase 2: Resonance patterns */}
+        <ResonancePanel patterns={resonancePatterns} />
+
+        {/* Phase 2: Productivity insights */}
+        <ProductivityInsight thoughts={privateThoughts} />
 
         {/* Empty state */}
         {filteredThoughts.length === 0 && (
@@ -138,7 +160,10 @@ export function PrivateThoughtsView() {
                 <ThoughtCard
                   thought={thought}
                   showEchoButton={false}
-                  onWater={() => waterThought(thought.id)}
+                  onWater={() => {
+                    waterThought(thought.id);
+                    onAction?.();
+                  }}
                   showWaterButton
                 />
 
@@ -156,7 +181,10 @@ export function PrivateThoughtsView() {
                     release to fog
                   </button>
                   <button
-                    onClick={() => deletePrivateThought(thought.id)}
+                    onClick={() => {
+                      deletePrivateThought(thought.id);
+                      onAction?.();
+                    }}
                     className="px-3 py-1.5 rounded-lg text-[10px] font-thought bg-destructive/10 text-destructive-foreground/50 hover:bg-destructive/20 transition-all"
                   >
                     delete
