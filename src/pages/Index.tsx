@@ -5,6 +5,8 @@ import { useAppMode } from '@/hooks/useAppMode';
 import { useEasterEggs } from '@/hooks/useEasterEggs';
 import { useOverloadSensor } from '@/hooks/useOverloadSensor';
 import { useOvernightSynthesis } from '@/hooks/useOvernightSynthesis';
+import { useAmbientAudio } from '@/hooks/useAmbientAudio';
+import { useHaptics } from '@/hooks/useHaptics';
 import { FogBackground } from '@/components/FogBackground';
 import { PublicFogView } from '@/components/PublicFogView';
 import { PrivateThoughtsView } from '@/components/PrivateThoughtsView';
@@ -28,18 +30,18 @@ const LOADING_SEEN_KEY = 'brainchild-loading-seen';
 const smoothEase: [number, number, number, number] = [0.23, 1, 0.32, 1];
 
 const pageVariants = {
-  initial: { opacity: 0, y: 20, filter: 'blur(8px)' },
+  initial: { opacity: 0, y: 15, filter: 'blur(6px)' },
   enter: {
     opacity: 1,
     y: 0,
     filter: 'blur(0px)',
-    transition: { duration: 0.5, ease: smoothEase },
+    transition: { duration: 0.6, ease: smoothEase },
   },
   exit: {
     opacity: 0,
-    y: -15,
-    filter: 'blur(8px)',
-    transition: { duration: 0.3, ease: smoothEase },
+    y: -10,
+    filter: 'blur(6px)',
+    transition: { duration: 0.35, ease: smoothEase },
   },
 };
 
@@ -51,7 +53,9 @@ const Index = () => {
   const [showLoading, setShowLoading] = useState(false);
   const [is3DReady, setIs3DReady] = useState(false);
 
-  // Phase 2: Cognitive systems
+  // Sensory systems
+  const audio = useAmbientAudio();
+  const haptics = useHaptics();
   const { activeEgg, dismissEgg } = useEasterEggs(privateThoughts);
   const overload = useOverloadSensor();
   const synthesis = useOvernightSynthesis(privateThoughts);
@@ -74,9 +78,16 @@ const Index = () => {
     }
 
     // Delay 3D scene for performance
-    const timer = setTimeout(() => setIs3DReady(true), 2000);
+    const timer = setTimeout(() => setIs3DReady(true), 2500);
     return () => clearTimeout(timer);
   }, []);
+
+  // Trigger haptics on easter egg discovery
+  useEffect(() => {
+    if (activeEgg) {
+      haptics.discoveryPattern();
+    }
+  }, [activeEgg, haptics]);
 
   const handleLoadingComplete = useCallback(() => {
     sessionStorage.setItem(LOADING_SEEN_KEY, 'true');
@@ -120,17 +131,17 @@ const Index = () => {
       {/* Background layers */}
       <FogBackground />
 
-      {/* 3D Scene - lazy loaded, reduced on mobile */}
+      {/* 3D Scene — lazy loaded, reduced on mobile */}
       <Suspense fallback={null}>{is3DReady && <FogScene />}</Suspense>
 
-      {/* Subtle overlays */}
+      {/* Film grain & vignette */}
       <div className="noise-overlay" />
       <div className="vignette" />
 
-      {/* Phase 2: Easter eggs */}
+      {/* Easter eggs */}
       <SystemKoan egg={activeEgg} onDismiss={dismissEgg} />
 
-      {/* Phase 2: Overload sensor */}
+      {/* Overload sensor */}
       <OverloadOverlay
         isOverloaded={overload.isOverloaded}
         intensity={overload.intensity}
@@ -138,7 +149,7 @@ const Index = () => {
         onDismiss={overload.dismiss}
       />
 
-      {/* Phase 2: Overnight synthesis */}
+      {/* Overnight synthesis */}
       <OvernightSynthesisOverlay
         hasSynthesis={synthesis.hasSynthesis}
         synthesis={synthesis.synthesis}
@@ -146,14 +157,14 @@ const Index = () => {
         onDismiss={synthesis.dismissSynthesis}
       />
 
-      {/* Top bar - minimal, mobile-friendly */}
+      {/* Top bar — minimal, organic */}
       <header className="fixed top-0 left-0 right-0 z-30 safe-area-top">
-        <div className="flex items-center justify-between px-4 py-2">
+        <div className="flex items-center justify-between px-4 py-2.5">
           <motion.h1
-            className="font-thought text-xs text-muted-foreground/40 tracking-[0.2em] uppercase"
+            className="font-thought text-[10px] text-muted-foreground/30 tracking-[0.25em] uppercase"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.8, duration: 1.2 }}
           >
             brainchild
           </motion.h1>
@@ -185,20 +196,23 @@ const Index = () => {
               exit="exit"
               className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6"
             >
-              <p className="text-muted-foreground font-thought text-sm mb-4">the social layer is disabled</p>
+              <p className="text-muted-foreground/40 font-thought text-sm mb-4 tracking-wide">the social layer is dormant</p>
               <motion.button
                 onClick={toggleSocial}
-                className="px-4 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-sm"
+                className="px-5 py-2.5 rounded-xl bg-primary/8 text-primary/70 hover:bg-primary/15 transition-all duration-700 text-sm font-thought tracking-wider"
                 whileTap={{ scale: 0.95 }}
               >
-                enable public fog
+                awaken the fog
               </motion.button>
             </motion.div>
           )}
 
           {view === 'settings' && (
             <motion.div key="settings" variants={pageVariants} initial="initial" animate="enter" exit="exit">
-              <SettingsView onReplayIntro={handleReplayIntro} />
+              <SettingsView 
+                onReplayIntro={handleReplayIntro} 
+                audio={audio}
+              />
             </motion.div>
           )}
         </AnimatePresence>
