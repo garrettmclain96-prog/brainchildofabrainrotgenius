@@ -121,17 +121,7 @@ export function ThoughtCard({ thought, onEcho, onWater, showEchoButton = true, s
           {/* Footer */}
           <footer className="mt-3 flex items-center justify-between text-[10px] text-muted-foreground/40 relative z-10">
             <div className="flex items-center gap-2">
-              {decayState === 'extinct' ? (
-                <motion.span 
-                  className="text-muted-foreground/20"
-                  animate={{ opacity: [0.2, 0.4, 0.2] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                >
-                  dissolving...
-                </motion.span>
-              ) : (
-                <span className="tabular-nums font-thought">{100 - thought.decayLevel}%</span>
-              )}
+              <span className="tabular-nums font-thought">{100 - thought.decayLevel}%</span>
 
               {thought.waterCount > 0 && (
                 <span className="text-primary/35">💧×{thought.waterCount}</span>

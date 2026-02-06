@@ -74,7 +74,6 @@ export function ModeToggle() {
         }}
       />
 
-      {/* Label with mode-appropriate animation */}
       <AnimatePresence mode="wait">
         <motion.span 
           key={mode}
@@ -84,7 +83,7 @@ export function ModeToggle() {
           exit={{ opacity: 0, y: -5 }}
           transition={{ duration: 0.3 }}
         >
-          {isRot ? 'embrace rot' : 'prune decay'}
+          {isRot ? 'rot' : 'prune'}
         </motion.span>
       </AnimatePresence>
     </motion.button>

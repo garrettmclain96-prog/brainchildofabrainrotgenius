@@ -24,7 +24,7 @@ const filters: { value: FogFilter; label: string }[] = [
   { value: 'fading', label: 'fading' },
   { value: 'near-extinction', label: 'near extinction' },
   { value: 'recently-disturbed', label: 'echoed' },
-  { value: 'graveyard', label: '⟡ graveyard' },
+  { value: 'graveyard', label: '⟡' },
 ];
 
 interface PublicFogViewProps {
@@ -39,7 +39,6 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
   const { mode } = useAppMode();
   const { addPrivateThought } = useThoughtStore();
 
-  // Social systems
   const { driftedIdea, dismissDrift, saveDrift } = useIdeaDrift(thoughts);
   const weather = useThoughtWeather();
 
@@ -69,39 +68,28 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
     }
   }, [saveDrift, addPrivateThought, mode]);
 
-  const visibleThoughts = thoughts.slice(0, 6);
-  const isGraveyard = activeFilter === 'graveyard';
-
-  // App mood affects visual density
   const thoughtLimit = appMood?.mood === 'silent' ? 3 : appMood?.mood === 'fragmented' ? 8 : 6;
   const displayThoughts = thoughts.slice(0, thoughtLimit);
+  const isGraveyard = activeFilter === 'graveyard';
 
   return (
     <div className="min-h-screen relative pb-28">
-      {/* Submit bursts */}
       <AnimatePresence>
         {bursts.map((burst) => (
           <SubmitBurst key={burst.id} x={burst.x} y={burst.y} onComplete={() => removeBurst(burst.id)} />
         ))}
       </AnimatePresence>
 
-      {/* Idea Drift */}
       <IdeaDriftNotification drift={driftedIdea} onSave={handleSaveDrift} onDismiss={dismissDrift} />
 
-      {/* Header */}
       <header className="sticky top-10 z-20 bg-background/80 backdrop-blur-md border-b border-border/20 px-4 py-3">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-3">
-            <div>
+            <div className="flex items-center gap-3">
               <h1 className={cn('text-lg font-thought text-foreground/90', mode === 'rot' && 'animate-glitch-subtle')}>
-                {isGraveyard
-                  ? mode === 'rot' ? 'the graveyard' : 'resting place'
-                  : mode === 'rot' ? 'the void' : 'public fog'}
+                {isGraveyard ? '⟡' : mode === 'rot' ? 'the void' : 'fog'}
               </h1>
-              <p className="text-[10px] text-muted-foreground/50 mt-0.5 flex items-center gap-1.5">
-                <span className="inline-block w-1 h-1 rounded-full bg-echo/50 animate-pulse" />
-                {isGraveyard ? 'where thoughts go to rest' : `${totalCount} thoughts drifting · all will fade`}
-              </p>
+              <ThoughtWeatherIndicator weather={weather} />
             </div>
 
             {!isGraveyard && appMood?.mood !== 'withholding' && (
@@ -115,17 +103,11 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
                 )}
                 whileTap={{ scale: 0.95 }}
               >
-                {showComposer ? 'close' : 'release'}
+                {showComposer ? '×' : '+'}
               </motion.button>
             )}
           </div>
 
-          {/* Thought Weather */}
-          <div className="mb-2">
-            <ThoughtWeatherIndicator weather={weather} />
-          </div>
-
-          {/* Filters */}
           <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
             {filters.map((f) => (
               <button
@@ -135,9 +117,7 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
                   'px-2.5 py-1 rounded-full text-[10px] font-thought whitespace-nowrap',
                   'transition-all duration-300',
                   activeFilter === f.value
-                    ? f.value === 'graveyard'
-                      ? 'bg-destructive/20 text-destructive-foreground/70'
-                      : 'bg-secondary/50 text-secondary-foreground'
+                    ? 'bg-secondary/50 text-secondary-foreground'
                     : 'text-muted-foreground/50 hover:text-muted-foreground'
                 )}
               >
@@ -153,7 +133,6 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
 
         {!isGraveyard && (
           <>
-            {/* Composer */}
             <AnimatePresence>
               {showComposer && (
                 <motion.div
@@ -176,23 +155,10 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
               )}
             </AnimatePresence>
 
-            {/* Loading */}
-            {isLoading && (
-              <div className="text-center py-20">
-                <span className="text-muted-foreground/40 text-sm font-thought">gathering fog...</span>
-              </div>
-            )}
-
-            {/* Empty */}
             {!isLoading && displayThoughts.length === 0 && (
-              <AnimatedEmptyState
-                title={filter === 'all' ? 'the fog is empty.' : 'no thoughts match this filter.'}
-                subtitle={filter === 'all' ? 'release a thought.' : undefined}
-                icon="fog"
-              />
+              <AnimatedEmptyState icon="fog" />
             )}
 
-            {/* Thoughts */}
             <div className="space-y-4">
               {displayThoughts.map((thought, index) => (
                 <motion.div
@@ -235,19 +201,9 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
                 </motion.div>
               ))}
             </div>
-
-            {thoughts.length > thoughtLimit && (
-              <div className="text-center mt-8 text-[10px] text-muted-foreground/25 font-thought">
-                {thoughts.length - thoughtLimit} more thoughts hidden in the fog
-              </div>
-            )}
           </>
         )}
       </main>
-
-      <footer className="fixed bottom-16 left-0 right-0 text-center py-2 text-[10px] text-muted-foreground/15 pointer-events-none font-thought">
-        everything here will fade
-      </footer>
     </div>
   );
 }
