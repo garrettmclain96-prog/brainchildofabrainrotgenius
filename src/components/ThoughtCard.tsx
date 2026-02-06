@@ -124,7 +124,7 @@ export function ThoughtCard({ thought, onEcho, onWater, showEchoButton = true, s
               <span className="tabular-nums font-thought">{100 - thought.decayLevel}%</span>
 
               {thought.waterCount > 0 && (
-                <span className="text-primary/35">💧×{thought.waterCount}</span>
+                <span className="text-primary/35">+{thought.waterCount}</span>
               )}
             </div>
 
@@ -133,11 +133,10 @@ export function ThoughtCard({ thought, onEcho, onWater, showEchoButton = true, s
               {showWaterButton && thought.decayLevel > 10 && (
                 <motion.button
                   onClick={handleWater}
-                  className="px-2 py-1 rounded-lg bg-primary/8 text-primary/50 hover:bg-primary/15 hover:text-primary/80 transition-all duration-500"
+                  className="px-2 py-1 rounded-lg text-[10px] font-thought bg-primary/8 text-primary/50 hover:bg-primary/15 hover:text-primary/80 transition-all duration-500"
                   whileTap={{ scale: 0.92 }}
-                  title="Water this thought (extend life)"
                 >
-                  💧
+                  tend
                 </motion.button>
               )}
 

@@ -37,7 +37,7 @@ export function OneTimeWhisper({ whisper, onDismiss }: OneTimeWhisperProps) {
             transition={{ duration: 1.5, delay: 0.5 }}
           >
             {/* The message — only appears once ever */}
-            <p className="text-sm font-thought text-foreground/50 leading-relaxed tracking-wide italic">
+            <p className="text-sm font-thought text-foreground/50 leading-relaxed tracking-wide">
               {whisper.text}
             </p>
 

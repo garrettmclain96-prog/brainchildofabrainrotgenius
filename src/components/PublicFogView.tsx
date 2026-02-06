@@ -87,7 +87,7 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <h1 className={cn('text-lg font-thought text-foreground/90', mode === 'rot' && 'animate-glitch-subtle')}>
-                {isGraveyard ? '⟡' : mode === 'rot' ? 'the void' : 'fog'}
+                fog
               </h1>
               <ThoughtWeatherIndicator weather={weather} />
             </div>

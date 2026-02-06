@@ -22,13 +22,11 @@ export function OverloadOverlay({ isOverloaded, intensity, onChoose, onDismiss }
           exit={{ opacity: 0 }}
           transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
         >
-          {/* Backdrop — sacred darkening */}
           <motion.div
             className="absolute inset-0 bg-background/85 backdrop-blur-2xl"
             onClick={onDismiss}
           />
 
-          {/* Content */}
           <motion.div
             className="relative z-10 max-w-sm w-full text-center space-y-10"
             initial={{ scale: 0.92, y: 30 }}
@@ -36,24 +34,15 @@ export function OverloadOverlay({ isOverloaded, intensity, onChoose, onDismiss }
             exit={{ scale: 0.95, y: 15 }}
             transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
           >
-            {/* Sacred breathing guide */}
             <div className="relative mx-auto w-28 h-28">
-              {/* Outer ring */}
               <motion.div
                 className="absolute inset-0 rounded-full sacred-breathe"
-                style={{
-                  border: '1px solid hsl(var(--primary) / 0.15)',
-                }}
+                style={{ border: '1px solid hsl(var(--primary) / 0.15)' }}
               />
-              {/* Middle ring */}
               <motion.div
                 className="absolute inset-4 rounded-full sacred-breathe"
-                style={{
-                  border: '1px solid hsl(var(--primary) / 0.1)',
-                  animationDelay: '1s',
-                }}
+                style={{ border: '1px solid hsl(var(--primary) / 0.1)', animationDelay: '1s' }}
               />
-              {/* Inner glow */}
               <motion.div
                 className="absolute inset-8 rounded-full sacred-breathe"
                 style={{
@@ -61,7 +50,6 @@ export function OverloadOverlay({ isOverloaded, intensity, onChoose, onDismiss }
                   animationDelay: '2s',
                 }}
               />
-              {/* Center symbol */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <motion.span
                   className="text-xl text-primary/60"
@@ -73,25 +61,16 @@ export function OverloadOverlay({ isOverloaded, intensity, onChoose, onDismiss }
               </div>
             </div>
 
-            {/* Message */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.8 }}
             >
-              <p className="font-thought text-sm text-foreground/70 mb-3 tracking-wide">
-                {mode === 'rot'
-                  ? 'the rot is accelerating.'
-                  : 'your mind is moving fast.'}
-              </p>
-              <p className="text-xs text-muted-foreground/50 leading-relaxed max-w-xs mx-auto">
-                {mode === 'rot'
-                  ? 'the compost heap is overflowing. what do you want to do with all this?'
-                  : 'take a breath. what would serve you right now?'}
+              <p className="font-thought text-sm text-foreground/70 tracking-wide">
+                a lot is happening.
               </p>
             </motion.div>
 
-            {/* Choices — staggered, organic */}
             <div className="flex flex-col gap-3">
               <motion.button
                 onClick={() => onChoose('amplify')}
@@ -103,9 +82,9 @@ export function OverloadOverlay({ isOverloaded, intensity, onChoose, onDismiss }
                 whileTap={{ scale: 0.97 }}
                 initial={{ opacity: 0, x: -15 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.7, duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+                transition={{ delay: 0.7, duration: 0.6 }}
               >
-                {mode === 'rot' ? 'amplify the rot' : 'keep going'}
+                continue
               </motion.button>
 
               <motion.button
@@ -118,12 +97,11 @@ export function OverloadOverlay({ isOverloaded, intensity, onChoose, onDismiss }
                 whileTap={{ scale: 0.97 }}
                 initial={{ opacity: 0, x: 15 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.85, duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+                transition={{ delay: 0.85, duration: 0.6 }}
               >
-                {mode === 'rot' ? 'prune it back' : 'slow down'}
+                reduce
               </motion.button>
 
-              {/* Breathing option */}
               <motion.button
                 onClick={onDismiss}
                 className="text-[10px] text-muted-foreground/25 hover:text-muted-foreground/40 transition-all duration-700 py-3 font-thought tracking-widest uppercase"
@@ -131,7 +109,7 @@ export function OverloadOverlay({ isOverloaded, intensity, onChoose, onDismiss }
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.1, duration: 0.8 }}
               >
-                just breathe
+                dismiss
               </motion.button>
             </div>
           </motion.div>

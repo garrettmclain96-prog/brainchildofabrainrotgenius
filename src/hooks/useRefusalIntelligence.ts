@@ -15,14 +15,14 @@ export interface Refusal {
 }
 
 const REFUSAL_MESSAGES = [
-  "You've already said this. Sit with it.",
-  "This doesn't need to be captured.",
-  "Not everything deserves a container.",
-  "The thought is complete without being written.",
-  "Let this one pass through you.",
-  "Your mind already holds this. The app doesn't need to.",
-  "Some thoughts are meant to be felt, not filed.",
-  "This space is listening. It doesn't always need to record.",
+  "You already said this.",
+  "This does not need to be recorded.",
+  "Not now.",
+  "The thought is sufficient without being written.",
+  "Let this one pass.",
+  "You know what you mean. That is enough.",
+  "This space is not always available.",
+  "Consider whether this is for you, or for the container.",
 ];
 
 const SIMILARITY_THRESHOLD = 0.4;
@@ -106,7 +106,7 @@ export function useRefusalIntelligence(thoughts: Thought[]) {
     for (const thought of thoughts) {
       const similarity = computeSimilarity(text, thought.content);
       if (similarity > SIMILARITY_THRESHOLD) {
-        return "You've already said this. Sit with it.";
+        return "You already said this.";
       }
     }
     return null;

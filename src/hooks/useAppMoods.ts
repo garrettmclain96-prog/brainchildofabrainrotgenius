@@ -25,29 +25,29 @@ export interface AppMoodState {
 
 const MOOD_DESCRIPTIONS: Record<AppMood, string[]> = {
   lucid: [
-    'the app is unusually clear today',
-    'everything feels sharply defined',
-    'a rare moment of total coherence',
+    'unusually clear',
+    'sharp edges',
+    'coherent',
   ],
   fragmented: [
-    'thoughts arrive in scattered pieces',
-    'the interface feels splintered',
-    'edges blur. boundaries soften.',
+    'scattered',
+    'edges are soft',
+    'loosely held',
   ],
   withholding: [
-    'the app is keeping something from you',
-    'responses feel measured. deliberate.',
-    'not everything is being shown',
+    'measured',
+    'deliberate',
+    'selective',
   ],
   attentive: [
-    'the app is watching closely',
-    'every gesture feels noticed',
-    'something is paying attention',
+    'present',
+    'watching',
+    'aware',
   ],
   silent: [
-    'the app has gone quiet',
-    'nothing to say right now',
-    'comfortable emptiness',
+    'quiet',
+    'nothing to add',
+    'still',
   ],
 };
 

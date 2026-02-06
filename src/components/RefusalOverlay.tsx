@@ -36,7 +36,7 @@ export function RefusalOverlay({ refusal, onDismiss }: RefusalOverlayProps) {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 1, delay: 0.5 }}
           >
-            <p className="text-foreground/60 font-thought text-sm leading-relaxed tracking-wide italic">
+            <p className="text-foreground/60 font-thought text-sm leading-relaxed tracking-wide">
               {refusal.message}
             </p>
             

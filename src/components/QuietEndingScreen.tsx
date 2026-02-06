@@ -36,7 +36,7 @@ export function QuietEndingScreen({ state, onDismiss }: QuietEndingScreenProps) 
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.5 }}
               >
-                {state.daysAway} days since your last visit
+                {state.daysAway} days absent
               </motion.p>
             )}
 
@@ -57,15 +57,12 @@ export function QuietEndingScreen({ state, onDismiss }: QuietEndingScreenProps) 
             >
               {state.isInert ? (
                 <>
-                  <button
-                    onClick={handleReawaken}
-                    className="px-6 py-3 rounded-xl font-thought text-sm bg-primary/10 text-primary/60 hover:bg-primary/20 transition-all"
-                  >
-                    start fresh
-                  </button>
-                  <p className="text-[9px] text-muted-foreground/15 font-thought">
-                    this will clear everything and begin again
-                  </p>
+                    <button
+                      onClick={handleReawaken}
+                      className="px-6 py-3 rounded-xl font-thought text-sm bg-primary/10 text-primary/60 hover:bg-primary/20 transition-all"
+                    >
+                      begin again
+                    </button>
                 </>
               ) : (
                 <button

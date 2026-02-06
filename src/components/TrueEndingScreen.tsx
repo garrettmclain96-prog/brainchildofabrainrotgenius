@@ -9,19 +9,12 @@ interface TrueEndingScreenProps {
   onDecline: () => void;
 }
 
-/**
- * The True Ending — No app has the balls to do this.
- * 
- * "You don't need this anymore."
- * Not a deletion. A completion. A graduation.
- */
 export function TrueEndingScreen({ phase, onBegin, onAccept, onDecline }: TrueEndingScreenProps) {
   const { dissolveEverything } = useThoughtStore();
   const [ceremonyStep, setCeremonyStep] = useState(0);
 
   const handleAccept = useCallback(() => {
     dissolveEverything();
-    // Clear all brainchild localStorage
     const keysToKeep = ['brainchild-true-ending', 'brainchild-permanent-consequences'];
     const allKeys = Object.keys(localStorage).filter(k => k.startsWith('brainchild-'));
     allKeys.forEach(k => {
@@ -45,7 +38,7 @@ export function TrueEndingScreen({ phase, onBegin, onAccept, onDecline }: TrueEn
             animate={{ opacity: 1 }}
             transition={{ delay: 1, duration: 2 }}
           >
-            you graduated.
+            complete.
           </motion.p>
 
           <motion.div
@@ -56,25 +49,14 @@ export function TrueEndingScreen({ phase, onBegin, onAccept, onDecline }: TrueEn
           />
 
           <motion.p
-            className="text-xs text-muted-foreground/20 font-thought italic leading-relaxed"
+            className="text-xs text-muted-foreground/20 font-thought leading-relaxed"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 4, duration: 2 }}
           >
-            the thoughts you had here shaped you in ways you can't measure.
+            what was here is no longer held.
             <br /><br />
-            they decayed, as all thoughts do.
-            <br /><br />
-            but you are different now.
-          </motion.p>
-
-          <motion.p
-            className="text-[10px] text-muted-foreground/10 font-thought tracking-[0.3em] uppercase"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 7, duration: 2 }}
-          >
-            take care of your mind
+            that is not the same as gone.
           </motion.p>
         </div>
       </motion.div>
@@ -83,11 +65,11 @@ export function TrueEndingScreen({ phase, onBegin, onAccept, onDecline }: TrueEn
 
   if (phase === 'ceremony') {
     const ceremonyTexts = [
-      'every fragment you wrote was a small act of courage.',
-      'the thoughts that decayed weren\'t lost — they became part of how you think.',
-      'the fog received your words without judgment.',
-      'you learned that forgetting is not failure.',
-      'you are ready to think without this.',
+      'each fragment was a decision to externalize.',
+      'what decayed was not wasted.',
+      'the container served its purpose.',
+      'you are not the same as when you started.',
+      'this can end now.',
     ];
 
     return (
@@ -101,7 +83,7 @@ export function TrueEndingScreen({ phase, onBegin, onAccept, onDecline }: TrueEn
           <AnimatePresence mode="wait">
             <motion.p
               key={ceremonyStep}
-              className="text-foreground/50 font-thought text-base leading-relaxed italic"
+              className="text-foreground/50 font-thought text-base leading-relaxed"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -111,7 +93,6 @@ export function TrueEndingScreen({ phase, onBegin, onAccept, onDecline }: TrueEn
             </motion.p>
           </AnimatePresence>
 
-          {/* Progress */}
           <div className="flex justify-center gap-2">
             {ceremonyTexts.map((_, i) => (
               <div
@@ -128,7 +109,7 @@ export function TrueEndingScreen({ phase, onBegin, onAccept, onDecline }: TrueEn
               onClick={() => setCeremonyStep(s => s + 1)}
               className="text-xs text-muted-foreground/30 hover:text-muted-foreground/50 font-thought transition-colors"
             >
-              continue →
+              continue
             </motion.button>
           ) : (
             <div className="space-y-4">
@@ -143,7 +124,7 @@ export function TrueEndingScreen({ phase, onBegin, onAccept, onDecline }: TrueEn
                 transition={{ delay: 1 }}
                 whileTap={{ scale: 0.97 }}
               >
-                complete my journey
+                end
               </motion.button>
 
               <motion.button
@@ -190,7 +171,7 @@ export function TrueEndingScreen({ phase, onBegin, onAccept, onDecline }: TrueEn
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 2, duration: 1.5 }}
           >
-            You don't need this anymore.
+            you may not need this anymore.
           </motion.p>
 
           <motion.p
@@ -199,9 +180,7 @@ export function TrueEndingScreen({ phase, onBegin, onAccept, onDecline }: TrueEn
             animate={{ opacity: 1 }}
             transition={{ delay: 4, duration: 1.5 }}
           >
-            You've been here long enough to learn how to think without it.
-            <br /><br />
-            This is not a deletion. It's a completion.
+            this is not a deletion. it is a completion.
           </motion.p>
 
           <motion.div
@@ -218,7 +197,7 @@ export function TrueEndingScreen({ phase, onBegin, onAccept, onDecline }: TrueEn
                 transition-all duration-700 tracking-wider"
               whileTap={{ scale: 0.97 }}
             >
-              I'm ready
+              begin
             </motion.button>
 
             <motion.button
@@ -227,18 +206,9 @@ export function TrueEndingScreen({ phase, onBegin, onAccept, onDecline }: TrueEn
                 text-muted-foreground/15 hover:text-muted-foreground/30
                 transition-colors duration-700"
             >
-              not yet — I still need this
+              not yet
             </motion.button>
           </motion.div>
-
-          <motion.p
-            className="text-[8px] text-muted-foreground/8 tracking-[0.3em] uppercase"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 8, duration: 2 }}
-          >
-            this offer is not permanent
-          </motion.p>
         </div>
       </motion.div>
     </AnimatePresence>

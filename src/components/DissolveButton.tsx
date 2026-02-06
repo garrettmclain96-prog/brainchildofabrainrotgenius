@@ -9,7 +9,6 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -24,13 +23,10 @@ export function DissolveButton() {
 
   const handleDissolve = () => {
     dissolveEverything();
-
-    if (mode === 'rot') {
-      const message = FAREWELL_MESSAGES[Math.floor(Math.random() * FAREWELL_MESSAGES.length)];
-      setFarewellMessage(message);
-      setShowFarewell(true);
-      setTimeout(() => setShowFarewell(false), 4000);
-    }
+    const message = FAREWELL_MESSAGES[Math.floor(Math.random() * FAREWELL_MESSAGES.length)];
+    setFarewellMessage(message);
+    setShowFarewell(true);
+    setTimeout(() => setShowFarewell(false), 4000);
   };
 
   if (privateThoughts.length === 0) return null;
@@ -51,7 +47,7 @@ export function DissolveButton() {
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
           >
-            <span className="relative z-10">dissolve everything</span>
+            <span className="relative z-10">dissolve all</span>
             <motion.div
               className="absolute inset-0 bg-gradient-to-r from-destructive/0 via-destructive/10 to-destructive/0"
               animate={{ x: ['-100%', '100%'] }}
@@ -62,29 +58,23 @@ export function DissolveButton() {
         <AlertDialogContent className="bg-card/95 backdrop-blur-xl border-destructive/20 max-w-sm mx-4">
           <AlertDialogHeader>
             <AlertDialogTitle className="font-thought text-foreground text-center">
-              {mode === 'rot' ? 'let it all go?' : 'dissolve all thoughts?'}
+              this cannot be undone
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-muted-foreground text-center text-sm">
-              {mode === 'rot'
-                ? 'every fragment, every half-formed idea, every task you never finished. gone. no undo. the soil accepts it all.'
-                : 'This permanently deletes all your local thoughts. This action cannot be undone.'}
-            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-col gap-2 sm:flex-col">
             <AlertDialogAction
               onClick={handleDissolve}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90 w-full"
             >
-              {mode === 'rot' ? 'dissolve' : 'confirm dissolve'}
+              dissolve
             </AlertDialogAction>
             <AlertDialogCancel className="bg-secondary text-secondary-foreground hover:bg-secondary/80 w-full mt-0">
-              {mode === 'rot' ? 'not yet' : 'cancel'}
+              cancel
             </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Farewell message overlay (rot mode only) */}
       <AnimatePresence>
         {showFarewell && (
           <motion.div

@@ -16,7 +16,6 @@ export function ForgettingCeremony({ thoughts, isOpen, onClose }: ForgettingCere
   const [phase, setPhase] = useState<'select' | 'ceremony' | 'farewell'>('select');
   const { deletePrivateThought } = useThoughtStore();
   const { mode } = useAppMode();
-  const isRot = mode === 'rot';
 
   const toggleSelection = (id: string) => {
     setSelectedIds((prev) => {
@@ -31,7 +30,6 @@ export function ForgettingCeremony({ thoughts, isOpen, onClose }: ForgettingCere
     if (selectedIds.size === 0) return;
     setPhase('ceremony');
 
-    // Ceremony lasts 3 seconds, then farewell
     setTimeout(() => {
       selectedIds.forEach((id) => deletePrivateThought(id));
       setPhase('farewell');
@@ -59,7 +57,6 @@ export function ForgettingCeremony({ thoughts, isOpen, onClose }: ForgettingCere
           exit={{ opacity: 0 }}
           transition={{ duration: 0.6 }}
         >
-          {/* Select phase */}
           {phase === 'select' && (
             <motion.div
               className="flex-1 flex flex-col p-6 pb-28 max-w-lg mx-auto w-full"
@@ -69,11 +66,8 @@ export function ForgettingCeremony({ thoughts, isOpen, onClose }: ForgettingCere
             >
               <div className="mb-6">
                 <h2 className="text-lg font-thought text-foreground/80 tracking-wider">
-                  {isRot ? 'choose what rots tonight' : 'intentional forgetting'}
+                  select
                 </h2>
-                <p className="text-xs text-muted-foreground/40 mt-1">
-                  {isRot ? 'select the thoughts you wish to release to the soil' : 'select thoughts to permanently release'}
-                </p>
               </div>
 
               <div className="flex-1 overflow-y-auto space-y-2 mb-4">
@@ -93,7 +87,7 @@ export function ForgettingCeremony({ thoughts, isOpen, onClose }: ForgettingCere
                       {thought.content}
                     </p>
                     <p className="text-[9px] text-muted-foreground/25 mt-1">
-                      {thought.decayLevel}% decayed
+                      {thought.decayLevel}%
                     </p>
                   </motion.button>
                 ))}
@@ -111,7 +105,7 @@ export function ForgettingCeremony({ thoughts, isOpen, onClose }: ForgettingCere
                   )}
                   whileTap={{ scale: 0.98 }}
                 >
-                  {isRot ? `compost ${selectedIds.size} thought${selectedIds.size !== 1 ? 's' : ''}` : `release ${selectedIds.size} selected`}
+                  dissolve {selectedIds.size > 0 ? selectedIds.size : ''}
                 </motion.button>
                 <motion.button
                   onClick={handleClose}
@@ -124,7 +118,6 @@ export function ForgettingCeremony({ thoughts, isOpen, onClose }: ForgettingCere
             </motion.div>
           )}
 
-          {/* Ceremony phase — animated dissolution */}
           {phase === 'ceremony' && (
             <motion.div
               className="flex-1 flex items-center justify-center"
@@ -132,7 +125,6 @@ export function ForgettingCeremony({ thoughts, isOpen, onClose }: ForgettingCere
               animate={{ opacity: 1 }}
             >
               <div className="text-center">
-                {/* Dissolving particles */}
                 {Array.from({ length: selectedIds.size * 3 }).map((_, i) => (
                   <motion.div
                     key={i}
@@ -156,22 +148,12 @@ export function ForgettingCeremony({ thoughts, isOpen, onClose }: ForgettingCere
                   animate={{ opacity: [0.3, 0.6, 0.3] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  {isRot ? 'composting...' : 'releasing...'}
-                </motion.p>
-
-                <motion.p
-                  className="text-muted-foreground/20 font-thought text-xs mt-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 1 }}
-                >
-                  {selectedIds.size} thought{selectedIds.size !== 1 ? 's' : ''} returning to earth
+                  ...
                 </motion.p>
               </div>
             </motion.div>
           )}
 
-          {/* Farewell phase */}
           {phase === 'farewell' && (
             <motion.div
               className="flex-1 flex items-center justify-center px-8"
