@@ -16,7 +16,7 @@ interface PublicFogState {
 const getSessionId = (): string => {
   let sessionId = sessionStorage.getItem('brainchild-session');
   if (!sessionId) {
-    sessionId = `${Date.now()}-${Math.random().toString(36).substr(2, 12)}`;
+    sessionId = crypto.randomUUID();
     sessionStorage.setItem('brainchild-session', sessionId);
   }
   return sessionId;
