@@ -207,19 +207,41 @@ export function usePublicFog() {
 
   const addEcho = useCallback(async (thoughtId: string, text: string) => {
     const sessionId = getSessionId();
+    
+    // Client-side validation
+    const trimmedText = text.trim();
+    if (trimmedText.length < 1 || trimmedText.length > 500) {
+      throw new Error('Echo must be between 1 and 500 characters');
+    }
+    
     const now = new Date();
     const expiresAt = new Date(now.getTime() + ECHO_DECAY_DURATION * 60 * 1000);
+
+    // Record rate limit
+    const { error: rateLimitError } = await supabase
+      .from('rate_limits')
+      .insert({
+        session_id: sessionId,
+        action_type: 'echo',
+      });
+
+    if (rateLimitError) {
+      console.error('Rate limit tracking error:', rateLimitError);
+    }
 
     const { error } = await supabase
       .from('echoes')
       .insert({
         thought_id: thoughtId,
-        fragment_text: text,
+        fragment_text: trimmedText,
         expires_at: expiresAt.toISOString(),
         session_id: sessionId,
       });
 
     if (error) {
+      if (error.message?.includes('rate') || error.code === '42501') {
+        throw new Error('Rate limit exceeded. Please wait before echoing again.');
+      }
       console.error('Error creating echo:', error);
       throw error;
     }

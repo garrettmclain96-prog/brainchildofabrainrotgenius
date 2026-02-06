@@ -133,7 +133,7 @@ interface ThoughtComposerProps {
 
       <div className="flex justify-between items-center">
         <span className="text-xs text-muted-foreground/50">
-          {content.length > 0 && `${content.length} chars`}
+          {content.length > 0 && `${content.length}/1000`}
         </span>
         
         <Button
