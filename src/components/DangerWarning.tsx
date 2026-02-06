@@ -15,7 +15,7 @@ interface DangerWarningProps {
 }
 
 export function DangerWarning({ onAccept }: DangerWarningProps) {
-  const [phase, setPhase] = useState<'warning' | 'fading'>('warning');
+  const [phase, setPhase] = useState<'warning' | 'fading' | 'left'>('warning');
 
   const handleAccept = () => {
     setPhase('fading');
@@ -24,18 +24,22 @@ export function DangerWarning({ onAccept }: DangerWarningProps) {
   };
 
   const handleLeave = () => {
-    // They chose to leave. Respect it.
     window.close();
-    // If window.close doesn't work (most browsers block it), show a gentle message
     setPhase('fading');
-    setTimeout(() => {
-      document.body.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0E0E11;color:#666;font-family:system-ui;text-align:center;padding:2rem;">
-          <p style="font-size:14px;letter-spacing:0.1em;">you can close this tab now.<br/><br/>take care of your thoughts.</p>
-        </div>
-      `;
-    }, 1000);
+    setTimeout(() => setPhase('left'), 1000);
   };
+
+  if (phase === 'left') {
+    return (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background p-8">
+        <p className="text-sm text-muted-foreground/40 tracking-wider text-center leading-relaxed">
+          you can close this tab now.
+          <br /><br />
+          take care of your thoughts.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <motion.div
