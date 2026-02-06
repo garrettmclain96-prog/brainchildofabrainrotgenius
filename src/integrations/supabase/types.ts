@@ -89,6 +89,27 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          action_type: string
+          created_at: string
+          id: string
+          session_id: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          id?: string
+          session_id: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          id?: string
+          session_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       echoes_with_info: {
@@ -166,6 +187,11 @@ export type Database = {
         Args: { created_at: string; expires_at: string }
         Returns: number
       }
+      check_rate_limit: {
+        Args: { p_action_type: string; p_session_id: string }
+        Returns: boolean
+      }
+      cleanup_rate_limits: { Args: never; Returns: undefined }
       is_own_session: {
         Args: { current_session_id: string; thought_session_id: string }
         Returns: boolean
