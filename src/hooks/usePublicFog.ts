@@ -155,13 +155,33 @@ export function usePublicFog() {
 
   const createPublicThought = useCallback(async (content: string, mode: DecayMode, decaySpeed: DecaySpeed) => {
     const sessionId = getSessionId();
+    
+    // Client-side validation (server enforces these too)
+    const trimmedContent = content.trim();
+    if (trimmedContent.length < 1 || trimmedContent.length > 1000) {
+      throw new Error('Content must be between 1 and 1000 characters');
+    }
+    
     const now = new Date();
     const expiresAt = new Date(now.getTime() + DECAY_DURATIONS[decaySpeed] * 60 * 1000);
+
+    // First, record the rate limit (insert into rate_limits table)
+    const { error: rateLimitError } = await supabase
+      .from('rate_limits')
+      .insert({
+        session_id: sessionId,
+        action_type: 'thought',
+      });
+
+    if (rateLimitError) {
+      console.error('Rate limit tracking error:', rateLimitError);
+      // Continue anyway - the main insert will fail if rate limited
+    }
 
     const { data, error } = await supabase
       .from('public_thoughts')
       .insert({
-        content,
+        content: trimmedContent,
         mode,
         decay_speed: decaySpeed,
         expires_at: expiresAt.toISOString(),
@@ -171,6 +191,10 @@ export function usePublicFog() {
       .single();
 
     if (error) {
+      // Check if it's a rate limit error
+      if (error.message?.includes('rate') || error.code === '42501') {
+        throw new Error('Rate limit exceeded. Please wait before posting again.');
+      }
       console.error('Error creating thought:', error);
       throw error;
     }
@@ -183,19 +207,41 @@ export function usePublicFog() {
 
   const addEcho = useCallback(async (thoughtId: string, text: string) => {
     const sessionId = getSessionId();
+    
+    // Client-side validation
+    const trimmedText = text.trim();
+    if (trimmedText.length < 1 || trimmedText.length > 500) {
+      throw new Error('Echo must be between 1 and 500 characters');
+    }
+    
     const now = new Date();
     const expiresAt = new Date(now.getTime() + ECHO_DECAY_DURATION * 60 * 1000);
+
+    // Record rate limit
+    const { error: rateLimitError } = await supabase
+      .from('rate_limits')
+      .insert({
+        session_id: sessionId,
+        action_type: 'echo',
+      });
+
+    if (rateLimitError) {
+      console.error('Rate limit tracking error:', rateLimitError);
+    }
 
     const { error } = await supabase
       .from('echoes')
       .insert({
         thought_id: thoughtId,
-        fragment_text: text,
+        fragment_text: trimmedText,
         expires_at: expiresAt.toISOString(),
         session_id: sessionId,
       });
 
     if (error) {
+      if (error.message?.includes('rate') || error.code === '42501') {
+        throw new Error('Rate limit exceeded. Please wait before echoing again.');
+      }
       console.error('Error creating echo:', error);
       throw error;
     }
