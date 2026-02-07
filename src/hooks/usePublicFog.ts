@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Thought, Echo, DecaySpeed, DecayMode, DECAY_DURATIONS, ECHO_DECAY_DURATION } from '@/types/thought';
+import { getSessionId } from '@/hooks/useSessionId';
 
 type FogFilter = 'all' | 'fading' | 'near-extinction' | 'recently-disturbed';
 
@@ -11,16 +12,6 @@ interface PublicFogState {
   isLoading: boolean;
   error: string | null;
 }
-
-// Generate or get session ID for anonymous rate limiting
-const getSessionId = (): string => {
-  let sessionId = sessionStorage.getItem('brainchild-session');
-  if (!sessionId) {
-    sessionId = crypto.randomUUID();
-    sessionStorage.setItem('brainchild-session', sessionId);
-  }
-  return sessionId;
-};
 
 export function usePublicFog() {
   const [state, setState] = useState<PublicFogState>({

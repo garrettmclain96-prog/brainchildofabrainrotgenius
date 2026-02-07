@@ -271,7 +271,7 @@ export function PrivateThoughtsView({ onAction, appMood, drift, identity, conseq
                       onClick={() => setReleaseDialog({ open: true, thoughtId: thought.id })}
                       className="px-3 py-1.5 rounded-lg text-[10px] font-thought bg-primary/10 text-primary/70 hover:bg-primary/20 transition-all"
                     >
-                      release
+                      share to fog
                     </button>
                     <button
                       onClick={() => handleDelete(thought.id)}
@@ -292,10 +292,24 @@ export function PrivateThoughtsView({ onAction, appMood, drift, identity, conseq
       <Dialog open={releaseDialog.open} onOpenChange={(open) => setReleaseDialog({ open, thoughtId: null })}>
         <DialogContent className="bg-card/95 backdrop-blur-xl border-border/50 max-w-sm mx-4">
           <DialogHeader>
-            <DialogTitle className="font-thought text-foreground/90">release</DialogTitle>
+            <DialogTitle className="font-thought text-foreground/90">share to fog</DialogTitle>
           </DialogHeader>
 
-          <div className="py-3">
+          {/* Content preview */}
+          {releaseDialog.thoughtId && (
+            <div className="p-3 rounded-lg bg-secondary/20 border border-border/30">
+              <p className="text-xs font-thought text-foreground/60 leading-relaxed line-clamp-4">
+                {privateThoughts.find(t => t.id === releaseDialog.thoughtId)?.content}
+              </p>
+            </div>
+          )}
+
+          <p className="text-[11px] text-muted-foreground/40 font-thought leading-relaxed">
+            once shared, this thought enters the fog anonymously and decays on its own timeline
+          </p>
+
+          <div className="py-2">
+            <span className="text-[10px] text-muted-foreground/50 font-thought mb-2 block">decay speed</span>
             <div className="flex gap-2">
               {(['normal', 'fast', 'sink'] as DecaySpeed[]).map((speed) => (
                 <button
@@ -316,15 +330,15 @@ export function PrivateThoughtsView({ onAction, appMood, drift, identity, conseq
           </div>
 
           <DialogFooter className="flex-col gap-2 sm:flex-col">
-            <Button onClick={handleRelease} className="bg-primary text-primary-foreground hover:bg-primary/90 w-full">
-              release
+            <Button onClick={handleRelease} className="bg-primary text-primary-foreground hover:bg-primary/90 w-full font-thought">
+              share to fog
             </Button>
             <Button
               variant="ghost"
               onClick={() => setReleaseDialog({ open: false, thoughtId: null })}
-              className="text-muted-foreground w-full"
+              className="text-muted-foreground w-full font-thought"
             >
-              keep
+              keep private
             </Button>
           </DialogFooter>
         </DialogContent>
