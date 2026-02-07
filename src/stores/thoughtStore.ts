@@ -2,14 +2,19 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Thought, DecayMode, DecaySpeed, FragmentCategory, PRIVATE_DECAY_DURATION, WATER_EXTENSION_MINUTES, DECAY_DURATIONS, calculateDecayLevel } from '@/types/thought';
 import { incrementStat } from '@/components/ForbiddenScreen';
+import { supabase } from '@/integrations/supabase/client';
+import { getSessionId, isUUID } from '@/hooks/useSessionId';
 
 interface ThoughtStore {
-  // Private thoughts (stored locally)
+  // Private thoughts (local + DB synced)
   privateThoughts: Thought[];
   
   // Settings
   socialEnabled: boolean;
   socialPermanentlyDisabled: boolean;
+  
+  // DB sync state
+  isDBLoaded: boolean;
   
   // Actions
   addPrivateThought: (content: string, mode: DecayMode, category?: FragmentCategory) => void;
@@ -20,13 +25,14 @@ interface ThoughtStore {
   toggleSocial: () => void;
   nuclearDisableSocial: () => void;
   dissolveEverything: () => void;
+  loadFromDB: () => Promise<void>;
   
   // Decay management
   updateDecayLevels: () => void;
   removeExpiredThoughts: () => void;
 }
 
-const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+const generateId = () => crypto.randomUUID();
 
 export const useThoughtStore = create<ThoughtStore>()(
   persist(
@@ -34,17 +40,21 @@ export const useThoughtStore = create<ThoughtStore>()(
       privateThoughts: [],
       socialEnabled: false,
       socialPermanentlyDisabled: false,
+      isDBLoaded: false,
 
       addPrivateThought: (content, mode, category = 'uncategorized') => {
         const now = new Date();
+        const id = generateId();
+        const expiresAt = new Date(now.getTime() + PRIVATE_DECAY_DURATION * 60 * 1000);
+        
         const thought: Thought = {
-          id: generateId(),
+          id,
           content,
           createdAt: now,
           decayLevel: 0,
           mode,
           visibility: 'private',
-          expiresAt: new Date(now.getTime() + PRIVATE_DECAY_DURATION * 60 * 1000),
+          expiresAt,
           decaySpeed: 'normal',
           category,
           waterCount: 0,
@@ -52,10 +62,22 @@ export const useThoughtStore = create<ThoughtStore>()(
         };
         
         incrementStat('totalCreated');
-        
         set((state) => ({
           privateThoughts: [thought, ...state.privateThoughts],
         }));
+
+        // Persist to database (fire-and-forget)
+        const sessionId = getSessionId();
+        supabase.from('private_notes').insert({
+          id,
+          session_id: sessionId,
+          content,
+          category,
+          mode,
+          expires_at: expiresAt.toISOString(),
+        }).then(({ error }) => {
+          if (error) console.error('[brainchild] DB save failed:', error);
+        });
       },
 
       deletePrivateThought: (id) => {
@@ -63,6 +85,17 @@ export const useThoughtStore = create<ThoughtStore>()(
         set((state) => ({
           privateThoughts: state.privateThoughts.filter((t) => t.id !== id),
         }));
+
+        // Delete from DB if it's a UUID (DB-synced thought)
+        if (isUUID(id)) {
+          const sessionId = getSessionId();
+          (supabase.rpc as any)('delete_private_note', {
+            p_session_id: sessionId,
+            p_note_id: id,
+          }).then(({ error }: any) => {
+            if (error) console.error('[brainchild] DB delete failed:', error);
+          });
+        }
       },
 
       waterThought: (id) => {
@@ -75,21 +108,32 @@ export const useThoughtStore = create<ThoughtStore>()(
               ...t,
               lastWateredAt: now,
               waterCount: t.waterCount + 1,
-              // Extend expiration by WATER_EXTENSION_MINUTES
               expiresAt: new Date(t.expiresAt.getTime() + WATER_EXTENSION_MINUTES * 60 * 1000),
-              // Reduce decay level slightly
               decayLevel: Math.max(0, t.decayLevel - 15),
             };
           }),
         }));
+
+        // Sync water to DB
+        if (isUUID(id)) {
+          const sessionId = getSessionId();
+          (supabase.rpc as any)('water_private_note', {
+            p_session_id: sessionId,
+            p_note_id: id,
+          }).then(({ error }: any) => {
+            if (error) console.error('[brainchild] DB water failed:', error);
+          });
+        }
       },
 
       starThought: (id) => {
+        const thought = get().privateThoughts.find(t => t.id === id);
+        const willBeStar = thought ? !thought.starred : false;
+
         set((state) => ({
           privateThoughts: state.privateThoughts.map((t) => {
             if (t.id !== id) return t;
             const isNowStarred = !t.starred;
-            // When starring, extend expiration massively (48h); when unstarring, revert to normal
             const extension = isNowStarred ? 48 * 60 * 60 * 1000 : 0;
             return {
               ...t,
@@ -101,6 +145,18 @@ export const useThoughtStore = create<ThoughtStore>()(
             };
           }),
         }));
+
+        // Sync star to DB
+        if (isUUID(id)) {
+          const sessionId = getSessionId();
+          (supabase.rpc as any)('toggle_note_star', {
+            p_session_id: sessionId,
+            p_note_id: id,
+            p_starred: willBeStar,
+          }).then(({ error }: any) => {
+            if (error) console.error('[brainchild] DB star failed:', error);
+          });
+        }
       },
 
       releaseToFog: (id, decaySpeed) => {
@@ -126,7 +182,6 @@ export const useThoughtStore = create<ThoughtStore>()(
       toggleSocial: () => {
         const { socialPermanentlyDisabled } = get();
         if (socialPermanentlyDisabled) return;
-        
         set((state) => ({
           socialEnabled: !state.socialEnabled,
         }));
@@ -140,9 +195,55 @@ export const useThoughtStore = create<ThoughtStore>()(
       },
 
       dissolveEverything: () => {
-        set({
-          privateThoughts: [],
-        });
+        set({ privateThoughts: [] });
+        // DB notes will expire naturally — no bulk delete needed
+      },
+
+      loadFromDB: async () => {
+        try {
+          const sessionId = getSessionId();
+          const { data, error } = await (supabase.rpc as any)('get_private_notes', {
+            p_session_id: sessionId,
+          });
+
+          if (error) {
+            console.error('[brainchild] Failed to load from DB:', error);
+            set({ isDBLoaded: true });
+            return;
+          }
+
+          if (data && Array.isArray(data) && data.length > 0) {
+            const dbThoughts: Thought[] = data.map((row: any) => ({
+              id: row.id,
+              content: row.content,
+              createdAt: new Date(row.created_at),
+              expiresAt: new Date(row.expires_at),
+              decayLevel: calculateDecayLevel(new Date(row.created_at), new Date(row.expires_at)),
+              mode: (row.mode || 'clean') as DecayMode,
+              visibility: 'private' as const,
+              decaySpeed: 'normal' as DecaySpeed,
+              category: (row.category || 'uncategorized') as FragmentCategory,
+              waterCount: row.water_count || 0,
+              starred: row.starred || false,
+              lastWateredAt: row.last_watered_at ? new Date(row.last_watered_at) : undefined,
+            }));
+
+            set((state) => {
+              const dbIds = new Set(dbThoughts.map(t => t.id));
+              // Keep local-only thoughts (non-UUID or not in DB)
+              const localOnly = state.privateThoughts.filter(t => !dbIds.has(t.id));
+              return {
+                privateThoughts: [...dbThoughts, ...localOnly],
+                isDBLoaded: true,
+              };
+            });
+          } else {
+            set({ isDBLoaded: true });
+          }
+        } catch (err) {
+          console.error('[brainchild] DB load error:', err);
+          set({ isDBLoaded: true });
+        }
       },
 
       updateDecayLevels: () => {
@@ -178,6 +279,7 @@ export const useThoughtStore = create<ThoughtStore>()(
         })),
         socialEnabled: state.socialEnabled,
         socialPermanentlyDisabled: state.socialPermanentlyDisabled,
+        // isDBLoaded is NOT persisted — always starts false
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {

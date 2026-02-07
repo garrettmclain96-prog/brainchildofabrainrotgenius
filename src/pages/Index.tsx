@@ -72,7 +72,7 @@ const pageVariants = {
 
 const Index = () => {
   const [view, setView] = useState<View>('private');
-  const { socialEnabled, socialPermanentlyDisabled, toggleSocial, privateThoughts } = useThoughtStore();
+  const { socialEnabled, socialPermanentlyDisabled, toggleSocial, privateThoughts, loadFromDB } = useThoughtStore();
   const { mode } = useAppMode();
   const [showIntro, setShowIntro] = useState(false);
   const [is3DReady, setIs3DReady] = useState(false);
@@ -118,6 +118,11 @@ const Index = () => {
       return () => clearTimeout(timer);
     }
   }, [headerTaps, consequences]);
+
+  // Load notes from database on mount
+  useEffect(() => {
+    loadFromDB();
+  }, [loadFromDB]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);

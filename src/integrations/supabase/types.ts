@@ -56,6 +56,45 @@ export type Database = {
           },
         ]
       }
+      private_notes: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          expires_at: string
+          id: string
+          last_watered_at: string | null
+          mode: string
+          session_id: string
+          starred: boolean
+          water_count: number
+        }
+        Insert: {
+          category?: string
+          content: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          last_watered_at?: string | null
+          mode?: string
+          session_id: string
+          starred?: boolean
+          water_count?: number
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          last_watered_at?: string | null
+          mode?: string
+          session_id?: string
+          starred?: boolean
+          water_count?: number
+        }
+        Relationships: []
+      }
       public_thoughts: {
         Row: {
           content: string
@@ -191,10 +230,38 @@ export type Database = {
         Args: { p_action_type: string; p_session_id: string }
         Returns: boolean
       }
+      cleanup_expired_notes: { Args: never; Returns: undefined }
       cleanup_rate_limits: { Args: never; Returns: undefined }
+      delete_private_note: {
+        Args: { p_note_id: string; p_session_id: string }
+        Returns: undefined
+      }
+      get_private_notes: {
+        Args: { p_session_id: string }
+        Returns: {
+          category: string
+          content: string
+          created_at: string
+          expires_at: string
+          id: string
+          last_watered_at: string
+          mode: string
+          session_id: string
+          starred: boolean
+          water_count: number
+        }[]
+      }
       is_own_session: {
         Args: { current_session_id: string; thought_session_id: string }
         Returns: boolean
+      }
+      toggle_note_star: {
+        Args: { p_note_id: string; p_session_id: string; p_starred: boolean }
+        Returns: undefined
+      }
+      water_private_note: {
+        Args: { p_note_id: string; p_session_id: string }
+        Returns: undefined
       }
     }
     Enums: {
