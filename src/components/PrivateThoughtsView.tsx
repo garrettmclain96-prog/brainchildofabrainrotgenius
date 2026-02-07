@@ -1,12 +1,10 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThoughtStore } from '@/stores/thoughtStore';
 import { usePublicFog } from '@/hooks/usePublicFog';
 import { useAppMode } from '@/hooks/useAppMode';
 import { useAncestralEchoes } from '@/hooks/useAncestralEchoes';
 import { useTimeGravity } from '@/hooks/useTimeGravity';
-import { useRefusalIntelligence } from '@/hooks/useRefusalIntelligence';
-import { useSelectiveAmnesia } from '@/hooks/useSelectiveAmnesia';
 import { ThoughtCard } from '@/components/ThoughtCard';
 import { ThoughtComposer } from '@/components/ThoughtComposer';
 import { CategoryFilter } from '@/components/CategoryFilter';
@@ -14,14 +12,12 @@ import { AnimatedEmptyState } from '@/components/AnimatedEmptyState';
 import { AncestralEchoOverlay } from '@/components/AncestralEchoOverlay';
 import { CompassMode } from '@/components/CompassMode';
 import { ForgettingCeremony } from '@/components/ForgettingCeremony';
-import { RefusalOverlay } from '@/components/RefusalOverlay';
 import { DecaySpeed, FragmentCategory } from '@/types/thought';
 import { AppMoodState } from '@/hooks/useAppMoods';
-import { DriftState } from '@/hooks/usePerceptualDrift';
 import { IdentityState } from '@/hooks/useIdentityDrift';
-import { PermanentConsequences } from '@/hooks/usePermanentConsequences';
 import { cn } from '@/lib/utils';
 import { SubmitBurst } from '@/components/SubmitBurst';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -34,34 +30,36 @@ import { Button } from '@/components/ui/button';
 interface PrivateThoughtsViewProps {
   onAction?: () => void;
   appMood?: AppMoodState;
-  drift?: DriftState;
   identity?: IdentityState;
-  consequences?: PermanentConsequences;
-  onNearDeletion?: () => void;
-  onRecordMark?: (mark: string, value?: any) => void;
 }
 
-export function PrivateThoughtsView({ onAction, appMood, drift, identity, consequences, onNearDeletion, onRecordMark }: PrivateThoughtsViewProps) {
+export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThoughtsViewProps) {
   const { privateThoughts, addPrivateThought, deletePrivateThought, waterThought, starThought, releaseToFog } = useThoughtStore();
   const { addThought: addToPublicFog } = usePublicFog();
   const { mode } = useAppMode();
 
   const ancestral = useAncestralEchoes();
   const weightedThoughts = useTimeGravity(privateThoughts);
-  const refusal = useRefusalIntelligence(privateThoughts);
-  const amnesia = useSelectiveAmnesia(privateThoughts);
 
   const [selectedCategory, setSelectedCategory] = useState<FragmentCategory | 'all'>('all');
   const [compassActive, setCompassActive] = useState(false);
   const [ceremonyOpen, setCeremonyOpen] = useState(false);
-  const [composerBlocked, setComposerBlocked] = useState(false);
-  const [similarityHint, setSimilarityHint] = useState<string | null>(null);
   const [releaseDialog, setReleaseDialog] = useState<{ open: boolean; thoughtId: string | null }>({
     open: false,
     thoughtId: null,
   });
   const [selectedSpeed, setSelectedSpeed] = useState<DecaySpeed>('normal');
   const [bursts, setBursts] = useState<Array<{ id: number; x: number; y: number }>>([]);
+
+  // Undo delete — 5s grace period before permanent removal
+  const [pendingDeleteIds, setPendingDeleteIds] = useState<Set<string>>(new Set());
+  const deleteTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+
+  useEffect(() => {
+    return () => {
+      deleteTimers.current.forEach(timer => clearTimeout(timer));
+    };
+  }, []);
 
   const handleBurst = useCallback((x: number, y: number) => {
     const id = Date.now();
@@ -72,36 +70,26 @@ export function PrivateThoughtsView({ onAction, appMood, drift, identity, conseq
     setBursts((prev) => prev.filter((b) => b.id !== id));
   }, []);
 
-  const handleComposerFocus = useCallback(() => {
-    if (refusal.shouldRefuse()) {
-      setComposerBlocked(true);
-    }
-  }, [refusal]);
-
   const handleTextChange = useCallback((text: string) => {
     ancestral.checkForEchoes(text);
-    const hint = refusal.checkSimilarity(text);
-    setSimilarityHint(hint);
-  }, [ancestral, refusal]);
-
-  const visibleThoughts = useMemo(() => amnesia.filterThoughts(privateThoughts), [amnesia, privateThoughts]);
+  }, [ancestral]);
 
   const categoryCounts = useMemo(() => {
     const counts: Record<FragmentCategory, number> = {
       ideas: 0, tasks: 0, journal: 0, projects: 0, uncategorized: 0,
     };
-    visibleThoughts.forEach((t) => {
-      counts[t.category] = (counts[t.category] || 0) + 1;
-    });
+    privateThoughts
+      .filter(t => !pendingDeleteIds.has(t.id))
+      .forEach((t) => { counts[t.category] = (counts[t.category] || 0) + 1; });
     return counts;
-  }, [visibleThoughts]);
+  }, [privateThoughts, pendingDeleteIds]);
 
   const filteredThoughts = useMemo(() => {
-    const weighted = selectedCategory === 'all'
-      ? weightedThoughts.filter(w => visibleThoughts.some(t => t.id === w.thought.id))
-      : weightedThoughts.filter((w) => w.thought.category === selectedCategory && visibleThoughts.some(t => t.id === w.thought.id));
-    return weighted;
-  }, [weightedThoughts, selectedCategory, visibleThoughts]);
+    const base = selectedCategory === 'all'
+      ? weightedThoughts
+      : weightedThoughts.filter(w => w.thought.category === selectedCategory);
+    return base.filter(w => !pendingDeleteIds.has(w.thought.id));
+  }, [weightedThoughts, selectedCategory, pendingDeleteIds]);
 
   const handleRelease = () => {
     if (releaseDialog.thoughtId) {
@@ -115,7 +103,6 @@ export function PrivateThoughtsView({ onAction, appMood, drift, identity, conseq
     (content: string, decayMode: any, _speed: any, category?: FragmentCategory) => {
       addPrivateThought(content, decayMode, category);
       ancestral.dismissEcho();
-      setSimilarityHint(null);
       onAction?.();
     },
     [addPrivateThought, onAction, ancestral]
@@ -129,54 +116,44 @@ export function PrivateThoughtsView({ onAction, appMood, drift, identity, conseq
   }, [ancestral, addPrivateThought, mode]);
 
   const handleDelete = useCallback((id: string) => {
-    deletePrivateThought(id);
+    // Hide immediately (optimistic) but delay actual deletion
+    setPendingDeleteIds(prev => new Set(prev).add(id));
+
+    const timer = setTimeout(() => {
+      deletePrivateThought(id);
+      setPendingDeleteIds(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      deleteTimers.current.delete(id);
+    }, 5000);
+
+    deleteTimers.current.set(id, timer);
+
+    toast('thought released', {
+      description: 'it has returned to silence',
+      action: {
+        label: 'undo',
+        onClick: () => {
+          const existingTimer = deleteTimers.current.get(id);
+          if (existingTimer) clearTimeout(existingTimer);
+          deleteTimers.current.delete(id);
+          setPendingDeleteIds(prev => {
+            const next = new Set(prev);
+            next.delete(id);
+            return next;
+          });
+        },
+      },
+      duration: 5000,
+    });
+
     onAction?.();
-    onNearDeletion?.();
-  }, [deletePrivateThought, onAction, onNearDeletion]);
-
-  const composerAtBottom = drift?.composerPosition === 'bottom';
-  const actionsFlipped = drift?.actionsFlipped ?? false;
-
-  const composerElement = !compassActive && !composerBlocked && (
-    <div className="mb-6 p-4 glass rounded-xl">
-      <div onClick={handleComposerFocus}>
-        <ThoughtComposer
-          onSubmit={handleSubmit}
-          onBurst={handleBurst}
-          onTextChange={handleTextChange}
-        />
-      </div>
-
-      <AnimatePresence>
-        {similarityHint && (
-          <motion.p
-            className="mt-2 text-[10px] text-muted-foreground/30 font-thought italic text-center"
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            {similarityHint}
-          </motion.p>
-        )}
-      </AnimatePresence>
-
-      <AncestralEchoOverlay
-        echo={ancestral.echo}
-        onMerge={handleMerge}
-        onIgnore={ancestral.dismissEcho}
-        onEraseBoth={ancestral.eraseBoth}
-      />
-    </div>
-  );
+  }, [deletePrivateThought, onAction]);
 
   return (
     <div className="min-h-screen relative pb-28">
-      <RefusalOverlay refusal={refusal.refusal} onDismiss={() => {
-        refusal.dismissRefusal();
-        setComposerBlocked(false);
-      }} />
-
       <AnimatePresence>
         {bursts.map((burst) => (
           <SubmitBurst key={burst.id} x={burst.x} y={burst.y} onComplete={() => removeBurst(burst.id)} />
@@ -193,7 +170,7 @@ export function PrivateThoughtsView({ onAction, appMood, drift, identity, conseq
               Brainchild
             </h1>
             <p className="text-[11px] font-thought text-muted-foreground/40 tracking-wider mt-0.5 italic">
-              If it matters, it survives. If not, it rots.
+              if it matters, it survives
             </p>
           </div>
 
@@ -226,7 +203,22 @@ export function PrivateThoughtsView({ onAction, appMood, drift, identity, conseq
           />
         </div>
 
-        {!composerAtBottom && composerElement}
+        {!compassActive && (
+          <div className="mb-6 p-4 glass rounded-xl">
+            <ThoughtComposer
+              onSubmit={handleSubmit}
+              onBurst={handleBurst}
+              onTextChange={handleTextChange}
+            />
+
+            <AncestralEchoOverlay
+              echo={ancestral.echo}
+              onMerge={handleMerge}
+              onIgnore={ancestral.dismissEcho}
+              onEraseBoth={ancestral.eraseBoth}
+            />
+          </div>
+        )}
 
         {!compassActive && filteredThoughts.length === 0 && (
           <AnimatedEmptyState icon="thought" />
@@ -262,22 +254,22 @@ export function PrivateThoughtsView({ onAction, appMood, drift, identity, conseq
                   />
 
                   <motion.div
-                    className={cn('flex gap-2 mt-2 px-1', actionsFlipped && 'flex-row-reverse')}
+                    className="flex gap-2 mt-2 px-1"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.2 }}
                   >
                     <button
                       onClick={() => setReleaseDialog({ open: true, thoughtId: thought.id })}
-                      className="px-3 py-1.5 rounded-lg text-[10px] font-thought bg-primary/10 text-primary/70 hover:bg-primary/20 transition-all"
+                      className="px-4 py-2 rounded-xl text-xs font-thought bg-primary/10 text-primary/70 hover:bg-primary/20 transition-all"
                     >
                       share to fog
                     </button>
                     <button
                       onClick={() => handleDelete(thought.id)}
-                      className="px-3 py-1.5 rounded-lg text-[10px] font-thought bg-destructive/10 text-destructive-foreground/50 hover:bg-destructive/20 transition-all"
+                      className="px-4 py-2 rounded-xl text-xs font-thought bg-destructive/10 text-destructive-foreground/50 hover:bg-destructive/20 transition-all"
                     >
-                      delete
+                      release
                     </button>
                   </motion.div>
                 </motion.div>
@@ -285,8 +277,6 @@ export function PrivateThoughtsView({ onAction, appMood, drift, identity, conseq
             </AnimatePresence>
           </div>
         )}
-
-        {composerAtBottom && composerElement}
       </main>
 
       <Dialog open={releaseDialog.open} onOpenChange={(open) => setReleaseDialog({ open, thoughtId: null })}>
@@ -295,7 +285,6 @@ export function PrivateThoughtsView({ onAction, appMood, drift, identity, conseq
             <DialogTitle className="font-thought text-foreground/90">share to fog</DialogTitle>
           </DialogHeader>
 
-          {/* Content preview */}
           {releaseDialog.thoughtId && (
             <div className="p-3 rounded-lg bg-secondary/20 border border-border/30">
               <p className="text-xs font-thought text-foreground/60 leading-relaxed line-clamp-4">
