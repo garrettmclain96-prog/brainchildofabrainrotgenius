@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState, useEffect, useCallback } from 'react';
+import { Suspense, lazy, useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThoughtStore } from '@/stores/thoughtStore';
 import { useAppMode } from '@/hooks/useAppMode';
@@ -17,7 +17,7 @@ import { FogBackground } from '@/components/FogBackground';
 import { PublicFogView } from '@/components/PublicFogView';
 import { PrivateThoughtsView } from '@/components/PrivateThoughtsView';
 import { SettingsView } from '@/components/SettingsView';
-import { IntroScene } from '@/components/IntroScene';
+import { HomeScreen } from '@/components/HomeScreen';
 import { BottomNav } from '@/components/BottomNav';
 import { ModeToggle } from '@/components/ModeToggle';
 import { SystemKoan } from '@/components/SystemKoan';
@@ -27,13 +27,15 @@ import { RareEventOverlay } from '@/components/RareEventOverlay';
 import { CoThinkingIndicator } from '@/components/CoThinkingIndicator';
 import { EndOfDayCompost } from '@/components/EndOfDayCompost';
 import { SyncIndicator } from '@/components/SyncIndicator';
+import { AmbientLog } from '@/components/AmbientLog';
 
 // Lazy load heavy 3D scene — deferred for performance
 const FogScene = lazy(() => import('@/components/three/FogScene').then((m) => ({ default: m.FogScene })));
 
 type View = 'private' | 'fog' | 'settings';
 
-const INTRO_SEEN_KEY = 'brainchild-intro-seen';
+const HOME_SEEN_KEY = 'brainchild-home-seen';
+const FIRST_VISIT_KEY = 'brainchild-first-visit';
 
 const smoothEase: [number, number, number, number] = [0.23, 1, 0.32, 1];
 
@@ -57,7 +59,8 @@ const Index = () => {
   const [view, setView] = useState<View>('private');
   const { socialEnabled, socialPermanentlyDisabled, toggleSocial, privateThoughts, loadFromDB } = useThoughtStore();
   const { mode } = useAppMode();
-  const [showIntro, setShowIntro] = useState(false);
+  const [showHome, setShowHome] = useState(false);
+  const [isFirstVisit, setIsFirstVisit] = useState(false);
   const [is3DReady, setIs3DReady] = useState(false);
 
   // Sensory systems
@@ -76,6 +79,12 @@ const Index = () => {
   const appMood = useAppMoods();
   const identity = useIdentityDrift(privateThoughts);
 
+  // Derived counts for ambient log
+  const starredCount = useMemo(
+    () => privateThoughts.filter((t) => t.starred).length,
+    [privateThoughts]
+  );
+
   // Load notes from database on mount
   useEffect(() => {
     loadFromDB();
@@ -84,15 +93,21 @@ const Index = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('reset') === 'intro') {
-      localStorage.removeItem(INTRO_SEEN_KEY);
+      localStorage.removeItem(HOME_SEEN_KEY);
+      localStorage.removeItem(FIRST_VISIT_KEY);
       window.history.replaceState({}, '', '/');
-      setShowIntro(true);
+      setIsFirstVisit(true);
+      setShowHome(true);
       return;
     }
 
-    if (!localStorage.getItem(INTRO_SEEN_KEY)) {
-      setShowIntro(true);
+    // Always show home screen on app open — it's the entry ritual
+    const hasSeenBefore = localStorage.getItem(FIRST_VISIT_KEY);
+    if (!hasSeenBefore) {
+      setIsFirstVisit(true);
+      localStorage.setItem(FIRST_VISIT_KEY, 'true');
     }
+    setShowHome(true);
 
     const timer = setTimeout(() => setIs3DReady(true), 2000);
     return () => clearTimeout(timer);
@@ -102,14 +117,15 @@ const Index = () => {
     if (activeEgg) haptics.discoveryPattern();
   }, [activeEgg, haptics]);
 
-  const handleIntroComplete = useCallback(() => {
-    localStorage.setItem(INTRO_SEEN_KEY, 'true');
-    setShowIntro(false);
+  const handleHomeComplete = useCallback(() => {
+    localStorage.setItem(HOME_SEEN_KEY, 'true');
+    setShowHome(false);
   }, []);
 
   const handleReplayIntro = useCallback(() => {
-    localStorage.removeItem(INTRO_SEEN_KEY);
-    setShowIntro(true);
+    localStorage.removeItem(HOME_SEEN_KEY);
+    setIsFirstVisit(false);
+    setShowHome(true);
   }, []);
 
   const handleViewChange = useCallback(
@@ -126,9 +142,14 @@ const Index = () => {
   return (
     <PoeticErrorBoundary>
       <div className="min-h-screen bg-background relative overflow-hidden">
-        {/* Intro — max 3 screens, no loading gate */}
+        {/* Home screen — atmospheric entry */}
         <AnimatePresence mode="wait">
-          {showIntro && <IntroScene onComplete={handleIntroComplete} />}
+          {showHome && (
+            <HomeScreen
+              onEnter={handleHomeComplete}
+              isFirstVisit={isFirstVisit}
+            />
+          )}
         </AnimatePresence>
 
         {/* Background layers */}
@@ -171,6 +192,9 @@ const Index = () => {
 
         {/* End of day compost */}
         <EndOfDayCompost thoughts={privateThoughts} />
+
+        {/* Ambient log — subtle status line */}
+        <AmbientLog thoughtCount={privateThoughts.length} starredCount={starredCount} />
 
         {/* Top bar */}
         <header className="fixed top-0 left-0 right-0 z-30 safe-area-top">

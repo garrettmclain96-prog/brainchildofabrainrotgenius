@@ -4,6 +4,7 @@ import { useAppMode } from '@/hooks/useAppMode';
 import { ModeToggle } from '@/components/ModeToggle';
 import { DissolveButton } from '@/components/DissolveButton';
 import { FinitudeDial } from '@/components/FinitudeDial';
+import { SelfReflection } from '@/components/SelfReflection';
 import { AppMoodState } from '@/hooks/useAppMoods';
 import { IdentityState } from '@/hooks/useIdentityDrift';
 import { cn } from '@/lib/utils';
@@ -47,6 +48,9 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
         <header>
           <h1 className="text-xl font-thought text-foreground/80 tracking-wider">controls</h1>
         </header>
+
+        {/* Self Reflection — quiet status signals */}
+        <SelfReflection thoughts={privateThoughts} />
 
         {/* Finitude Dial */}
         <section>
@@ -159,6 +163,17 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
               fog disabled
             </p>
           )}
+        </section>
+
+        {/* Replay intro */}
+        <section className="glass-premium rounded-xl p-4">
+          <motion.button
+            onClick={onReplayIntro}
+            className="w-full text-xs text-muted-foreground/40 font-thought tracking-wide hover:text-muted-foreground/60 transition-all py-2"
+            whileTap={{ scale: 0.98 }}
+          >
+            replay entrance
+          </motion.button>
         </section>
 
         {/* Dissolve */}
