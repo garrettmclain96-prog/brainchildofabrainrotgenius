@@ -1,4 +1,4 @@
-import { useRef, useMemo, useEffect, useState } from 'react';
+import { useRef, useMemo, useEffect, useState, forwardRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
 import * as THREE from 'three';
@@ -126,7 +126,7 @@ function FloatingOrbs({ count = 3 }) {
   );
 }
 
-export function FogScene() {
+export const FogScene = forwardRef<HTMLDivElement>(function FogScene(_props, ref) {
   const [shouldRender, setShouldRender] = useState(false);
 
   useEffect(() => {
@@ -163,4 +163,4 @@ export function FogScene() {
       </Canvas>
     </div>
   );
-}
+});
