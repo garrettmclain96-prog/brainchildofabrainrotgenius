@@ -79,11 +79,11 @@ export function FogBackground() {
         />
       ))}
       
-      {/* Deep vignette */}
+      {/* Soft vignette */}
       <div 
         className="absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse 65% 65% at center, transparent 30%, hsl(240 8% 3% / 0.5) 100%)'
+          background: 'radial-gradient(ellipse 75% 75% at center, transparent 40%, hsl(240 8% 5% / 0.25) 100%)'
         }}
       />
     </div>
