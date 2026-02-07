@@ -6,7 +6,6 @@ import { DissolveButton } from '@/components/DissolveButton';
 import { FinitudeDial } from '@/components/FinitudeDial';
 import { AppMoodState } from '@/hooks/useAppMoods';
 import { IdentityState } from '@/hooks/useIdentityDrift';
-import { PermanentConsequences } from '@/hooks/usePermanentConsequences';
 import { cn } from '@/lib/utils';
 import {
   AlertDialog,
@@ -30,10 +29,9 @@ interface SettingsViewProps {
   };
   appMood?: AppMoodState;
   identity?: IdentityState;
-  consequences?: PermanentConsequences;
 }
 
-export function SettingsView({ onReplayIntro, audio, appMood, identity, consequences }: SettingsViewProps) {
+export function SettingsView({ onReplayIntro, audio, appMood, identity }: SettingsViewProps) {
   const {
     socialEnabled,
     socialPermanentlyDisabled,

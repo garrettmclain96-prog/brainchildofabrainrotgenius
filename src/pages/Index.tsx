@@ -26,6 +26,7 @@ import { OvernightSynthesisOverlay } from '@/components/OvernightSynthesis';
 import { RareEventOverlay } from '@/components/RareEventOverlay';
 import { CoThinkingIndicator } from '@/components/CoThinkingIndicator';
 import { EndOfDayCompost } from '@/components/EndOfDayCompost';
+import { SyncIndicator } from '@/components/SyncIndicator';
 
 // Lazy load heavy 3D scene — deferred for performance
 const FogScene = lazy(() => import('@/components/three/FogScene').then((m) => ({ default: m.FogScene })));
@@ -137,6 +138,9 @@ const Index = () => {
         {/* Film grain & vignette */}
         <div className="noise-overlay" />
         <div className="vignette" />
+
+        {/* Sync status */}
+        <SyncIndicator />
 
         {/* Easter eggs */}
         <SystemKoan egg={activeEgg} onDismiss={dismissEgg} />
