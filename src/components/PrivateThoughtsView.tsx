@@ -5,6 +5,8 @@ import { usePublicFog } from '@/hooks/usePublicFog';
 import { useAppMode } from '@/hooks/useAppMode';
 import { useAncestralEchoes } from '@/hooks/useAncestralEchoes';
 import { useTimeGravity } from '@/hooks/useTimeGravity';
+import { usePreservationFriction } from '@/hooks/usePreservationFriction';
+import { useNightDecay } from '@/hooks/useNightDecay';
 import { ThoughtCard } from '@/components/ThoughtCard';
 import { ThoughtComposer } from '@/components/ThoughtComposer';
 import { CategoryFilter } from '@/components/CategoryFilter';
@@ -40,6 +42,11 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
 
   const ancestral = useAncestralEchoes();
   const weightedThoughts = useTimeGravity(privateThoughts);
+  const nightDecay = useNightDecay();
+
+  // Preservation friction
+  const starredCount = useMemo(() => privateThoughts.filter(t => t.starred).length, [privateThoughts]);
+  const friction = usePreservationFriction(starredCount);
 
   const [selectedCategory, setSelectedCategory] = useState<FragmentCategory | 'all'>('all');
   const [compassActive, setCompassActive] = useState(false);
@@ -115,9 +122,36 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
     }
   }, [ancestral, addPrivateThought, mode]);
 
+  // Star with emotional friction
+  const handleStarRequest = useCallback((id: string) => {
+    const thought = privateThoughts.find(t => t.id === id);
+    if (!thought) return;
+
+    // Unstarring is always allowed without friction
+    if (thought.starred) {
+      starThought(id);
+      onAction?.();
+      return;
+    }
+
+    // Starring requires confirmation
+    friction.requestStar(id);
+  }, [privateThoughts, starThought, onAction, friction]);
+
+  const handleStarConfirm = useCallback(() => {
+    const id = friction.confirmStar();
+    if (id) {
+      starThought(id);
+      onAction?.();
+    }
+  }, [friction, starThought, onAction]);
+
   const handleDelete = useCallback((id: string) => {
     // Hide immediately (optimistic) but delay actual deletion
     setPendingDeleteIds(prev => new Set(prev).add(id));
+
+    // Get a release reward message
+    const reward = friction.getReleaseReward();
 
     const timer = setTimeout(() => {
       deletePrivateThought(id);
@@ -131,7 +165,7 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
 
     deleteTimers.current.set(id, timer);
 
-    toast('thought released', {
+    toast(reward, {
       description: 'it has returned to silence',
       action: {
         label: 'undo',
@@ -150,7 +184,7 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
     });
 
     onAction?.();
-  }, [deletePrivateThought, onAction]);
+  }, [deletePrivateThought, onAction, friction]);
 
   return (
     <div className="min-h-screen relative pb-28">
@@ -162,6 +196,33 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
 
       <ForgettingCeremony thoughts={privateThoughts} isOpen={ceremonyOpen} onClose={() => setCeremonyOpen(false)} />
 
+      {/* Preservation friction dialog */}
+      <Dialog open={friction.showConfirmation} onOpenChange={(open) => !open && friction.cancelStar()}>
+        <DialogContent className="bg-card/95 backdrop-blur-xl border-border/50 max-w-xs mx-4">
+          <DialogHeader>
+            <DialogTitle className="font-thought text-foreground/70 text-sm tracking-wide">
+              {friction.confirmationPrompt}
+            </DialogTitle>
+          </DialogHeader>
+          <DialogFooter className="flex-col gap-2 sm:flex-col">
+            <Button
+              onClick={handleStarConfirm}
+              className="bg-amber-500/20 text-amber-400/90 hover:bg-amber-500/30 w-full font-thought text-xs"
+              variant="ghost"
+            >
+              yes, preserve it
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={friction.cancelStar}
+              className="text-muted-foreground/50 w-full font-thought text-xs"
+            >
+              let it rot
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b border-border/20 px-4 py-3">
         <div className="max-w-lg mx-auto">
           {/* App title and subtitle */}
@@ -170,7 +231,9 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
               Brainchild
             </h1>
             <p className="text-[11px] font-thought text-muted-foreground/40 tracking-wider mt-0.5 italic">
-              if it matters, it survives
+              {nightDecay.isNight
+                ? 'the rot moves faster at night.'
+                : 'if it matters, it survives'}
             </p>
           </div>
 
@@ -242,15 +305,13 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
                     thought={thought}
                     showEchoButton={false}
                     showStarButton
-                    onStar={() => {
-                      starThought(thought.id);
-                      onAction?.();
-                    }}
+                    onStar={() => handleStarRequest(thought.id)}
                     onWater={() => {
                       waterThought(thought.id);
                       onAction?.();
                     }}
                     showWaterButton
+                    
                   />
 
                   <motion.div
@@ -269,7 +330,7 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
                       onClick={() => handleDelete(thought.id)}
                       className="px-4 py-2 rounded-xl text-xs font-thought bg-destructive/10 text-destructive-foreground/50 hover:bg-destructive/20 transition-all"
                     >
-                      release
+                      let it go
                     </button>
                   </motion.div>
                 </motion.div>
