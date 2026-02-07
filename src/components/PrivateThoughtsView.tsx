@@ -42,7 +42,7 @@ interface PrivateThoughtsViewProps {
 }
 
 export function PrivateThoughtsView({ onAction, appMood, drift, identity, consequences, onNearDeletion, onRecordMark }: PrivateThoughtsViewProps) {
-  const { privateThoughts, addPrivateThought, deletePrivateThought, waterThought, releaseToFog } = useThoughtStore();
+  const { privateThoughts, addPrivateThought, deletePrivateThought, waterThought, starThought, releaseToFog } = useThoughtStore();
   const { addThought: addToPublicFog } = usePublicFog();
   const { mode } = useAppMode();
 
@@ -187,10 +187,20 @@ export function PrivateThoughtsView({ onAction, appMood, drift, identity, conseq
 
       <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b border-border/20 px-4 py-3">
         <div className="max-w-lg mx-auto">
-          <div className="flex items-center justify-between mb-3">
-            <h1 className={cn('text-lg font-thought text-foreground/90', mode === 'rot' && 'animate-glitch-subtle')}>
-              {mode === 'rot' ? 'dump' : 'local'}
+          {/* App title and subtitle */}
+          <div className="mb-3">
+            <h1 className={cn('text-xl font-thought text-foreground/90 tracking-wide', mode === 'rot' && 'animate-glitch-subtle')}>
+              Brainchild
             </h1>
+            <p className="text-[11px] font-thought text-muted-foreground/40 tracking-wider mt-0.5 italic">
+              If it matters, it survives. If not, it rots.
+            </p>
+          </div>
+
+          <div className="flex items-center justify-between mb-3">
+            <span className={cn('text-xs font-thought text-muted-foreground/50')}>
+              {mode === 'rot' ? 'dump' : 'local'}
+            </span>
 
             {privateThoughts.length > 0 && (
               <motion.button
@@ -239,6 +249,11 @@ export function PrivateThoughtsView({ onAction, appMood, drift, identity, conseq
                   <ThoughtCard
                     thought={thought}
                     showEchoButton={false}
+                    showStarButton
+                    onStar={() => {
+                      starThought(thought.id);
+                      onAction?.();
+                    }}
                     onWater={() => {
                       waterThought(thought.id);
                       onAction?.();

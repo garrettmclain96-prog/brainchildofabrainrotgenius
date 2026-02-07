@@ -10,14 +10,33 @@ interface ThoughtCardProps {
   thought: Thought;
   onEcho?: (thoughtId: string) => void;
   onWater?: () => void;
+  onStar?: () => void;
   showEchoButton?: boolean;
   showWaterButton?: boolean;
+  showStarButton?: boolean;
 }
 
 // Organic spring transition
 const spring = { type: 'spring' as const, stiffness: 200, damping: 25, mass: 0.8 };
 
-export function ThoughtCard({ thought, onEcho, onWater, showEchoButton = true, showWaterButton = false }: ThoughtCardProps) {
+/** Format remaining time as human-readable countdown */
+function formatTimeRemaining(expiresAt: Date): string {
+  const diff = expiresAt.getTime() - Date.now();
+  if (diff <= 0) return 'expired';
+  
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  
+  if (hours > 24) {
+    const days = Math.floor(hours / 24);
+    return `${days}d ${hours % 24}h`;
+  }
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  if (minutes > 0) return `${minutes}m`;
+  return '<1m';
+}
+
+export function ThoughtCard({ thought, onEcho, onWater, onStar, showEchoButton = true, showWaterButton = false, showStarButton = false }: ThoughtCardProps) {
   const [isWatered, setIsWatered] = useState(false);
   const { mode: appMode } = useAppMode();
   const decayState = getDecayState(thought.decayLevel);
@@ -35,9 +54,10 @@ export function ThoughtCard({ thought, onEcho, onWater, showEchoButton = true, s
   const handleWater = useCallback(() => {
     setIsWatered(true);
     onWater?.();
-    // Reset reconstitution animation after it plays
     setTimeout(() => setIsWatered(false), 1500);
   }, [onWater]);
+
+  const timeRemaining = formatTimeRemaining(thought.expiresAt);
 
   const stateStyles = {
     fresh: 'thought-fresh',
@@ -46,7 +66,6 @@ export function ThoughtCard({ thought, onEcho, onWater, showEchoButton = true, s
     extinct: 'thought-extinct',
   };
 
-  // Should we use per-character animation?
   const useTypographyDecay = isRotMode && thought.decayLevel > 25;
 
   return (
@@ -120,8 +139,14 @@ export function ThoughtCard({ thought, onEcho, onWater, showEchoButton = true, s
 
           {/* Footer */}
           <footer className="mt-3 flex items-center justify-between text-[10px] text-muted-foreground/40 relative z-10">
-            <div className="flex items-center gap-2">
-              <span className="tabular-nums font-thought">{100 - thought.decayLevel}%</span>
+            <div className="flex items-center gap-3">
+              {/* Time remaining countdown */}
+              <span className="tabular-nums font-thought flex items-center gap-1">
+                <span className="opacity-50">⏳</span>
+                {thought.starred ? '∞ saved' : timeRemaining}
+              </span>
+
+              <span className="tabular-nums font-thought opacity-50">{100 - thought.decayLevel}%</span>
 
               {thought.waterCount > 0 && (
                 <span className="text-primary/35">+{thought.waterCount}</span>
@@ -129,8 +154,25 @@ export function ThoughtCard({ thought, onEcho, onWater, showEchoButton = true, s
             </div>
 
             <div className="flex items-center gap-2">
+              {/* Star button */}
+              {showStarButton && (
+                <motion.button
+                  onClick={onStar}
+                  className={cn(
+                    'px-2 py-1 rounded-lg text-sm transition-all duration-500',
+                    thought.starred
+                      ? 'text-amber-400/90 hover:text-amber-400'
+                      : 'text-muted-foreground/30 hover:text-amber-400/60'
+                  )}
+                  whileTap={{ scale: 0.88 }}
+                  aria-label={thought.starred ? 'Unstar thought' : 'Star thought'}
+                >
+                  {thought.starred ? '⭐' : '☆'}
+                </motion.button>
+              )}
+
               {/* Water button */}
-              {showWaterButton && thought.decayLevel > 10 && (
+              {showWaterButton && thought.decayLevel > 10 && !thought.starred && (
                 <motion.button
                   onClick={handleWater}
                   className="px-2 py-1 rounded-lg text-[10px] font-thought bg-primary/8 text-primary/50 hover:bg-primary/15 hover:text-primary/80 transition-all duration-500"
@@ -154,8 +196,21 @@ export function ThoughtCard({ thought, onEcho, onWater, showEchoButton = true, s
             </div>
           </footer>
 
+          {/* Starred indicator — gentle glow */}
+          {thought.starred && (
+            <motion.div
+              className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full"
+              style={{ background: 'hsl(45 80% 55% / 0.6)' }}
+              animate={{ 
+                scale: [1, 1.3, 1], 
+                opacity: [0.4, 0.7, 0.4] 
+              }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          )}
+
           {/* Rot mode indicator — breathing dot */}
-          {isRotMode && (
+          {isRotMode && !thought.starred && (
             <motion.div
               className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full"
               style={{ background: 'hsl(var(--destructive) / 0.5)' }}
