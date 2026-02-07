@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AncestralEcho } from '@/hooks/useAncestralEchoes';
 import { cn } from '@/lib/utils';
@@ -9,7 +10,7 @@ interface AncestralEchoOverlayProps {
   onEraseBoth: () => void;
 }
 
-export function AncestralEchoOverlay({ echo, onMerge, onIgnore, onEraseBoth }: AncestralEchoOverlayProps) {
+export const AncestralEchoOverlay = forwardRef<HTMLDivElement, AncestralEchoOverlayProps>(function AncestralEchoOverlay({ echo, onMerge, onIgnore, onEraseBoth }, ref) {
   return (
     <AnimatePresence>
       {echo && (
@@ -71,4 +72,4 @@ export function AncestralEchoOverlay({ echo, onMerge, onIgnore, onEraseBoth }: A
       )}
     </AnimatePresence>
   );
-}
+});
