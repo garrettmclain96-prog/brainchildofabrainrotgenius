@@ -17,6 +17,22 @@ const AMBIENT_MESSAGES = [
   'the fog shifted.',
   'something was released.',
   'silence is also an answer.',
+  'you\'re seeing what remains.',
+  'not everything is meant to last.',
+  'something faded while you were reading.',
+  'the overflow doesn\'t judge.',
+  'most of this will be gone by morning.',
+  'the quiet ones tend to stay longer.',
+  'survival here is rare and unexplained.',
+  'this room fills faster than it empties.',
+  'speed doesn\'t mean urgency.',
+  'the noise is always temporary.',
+  'someone preserved something you didn\'t.',
+  'a rare card survived longer than expected.',
+  'the fog shifted while you were here.',
+  'something was let go. it felt intentional.',
+  'a thought from the quiet period resurfaced.',
+  'the preserved room rarely changes.',
 ];
 
 const CONTEXTUAL_MESSAGES: Array<{
@@ -37,6 +53,7 @@ const CONTEXTUAL_MESSAGES: Array<{
       'you\'re holding onto a lot.',
       'some things get heavy.',
       'preservation has a cost.',
+      'too heavy to keep.',
     ],
   },
   {
@@ -55,24 +72,20 @@ export function AmbientLog({ thoughtCount, starredCount }: AmbientLogProps) {
 
   // Pick a message that fits the current state
   const pickMessage = useMemo(() => {
-    // Check contextual messages first
     for (const ctx of CONTEXTUAL_MESSAGES) {
       if (ctx.condition({ thoughtCount, starredCount })) {
         return ctx.messages[Math.floor(Math.random() * ctx.messages.length)];
       }
     }
-    // Fallback to ambient
     return AMBIENT_MESSAGES[Math.floor(Math.random() * AMBIENT_MESSAGES.length)];
   }, [thoughtCount, starredCount]);
 
   useEffect(() => {
-    // Show after a delay
     const showTimer = setTimeout(() => {
       setCurrentMessage(pickMessage);
       setIsVisible(true);
     }, 3000);
 
-    // Cycle messages every 20-40 seconds
     const cycleTimer = setInterval(() => {
       setIsVisible(false);
       setTimeout(() => {
