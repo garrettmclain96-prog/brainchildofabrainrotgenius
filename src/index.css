@@ -10,105 +10,105 @@
 @layer base {
   :root {
     /* Core palette — fungal darkness, decomposing library */
-    --background: 240 8% 4%;
-    --foreground: 45 8% 68%;
+    --background: 240 8% 9%;
+    --foreground: 45 10% 80%;
     
     /* Surface layers — like strata of compost */
-    --card: 240 6% 7%;
-    --card-foreground: 45 10% 72%;
+    --card: 240 6% 12%;
+    --card-foreground: 45 10% 82%;
     
-    --popover: 240 6% 9%;
-    --popover-foreground: 45 10% 72%;
+    --popover: 240 6% 14%;
+    --popover-foreground: 45 10% 82%;
     
     /* Primary — mycelium green, the living network */
-    --primary: 155 25% 38%;
-    --primary-foreground: 240 8% 4%;
+    --primary: 155 25% 42%;
+    --primary-foreground: 240 8% 6%;
     
     /* Secondary — deep humus */
-    --secondary: 240 5% 10%;
-    --secondary-foreground: 45 8% 60%;
+    --secondary: 240 5% 15%;
+    --secondary-foreground: 45 8% 72%;
     
     /* Muted — decomposed matter */
-    --muted: 240 5% 13%;
-    --muted-foreground: 45 6% 40%;
+    --muted: 240 5% 18%;
+    --muted-foreground: 45 6% 55%;
     
     /* Accent — bone white with warmth */
-    --accent: 35 15% 25%;
-    --accent-foreground: 40 15% 80%;
+    --accent: 35 15% 28%;
+    --accent-foreground: 40 15% 85%;
     
     /* Destructive — rust red, organic decay */
-    --destructive: 8 50% 32%;
-    --destructive-foreground: 8 10% 90%;
+    --destructive: 8 50% 38%;
+    --destructive-foreground: 8 10% 92%;
     
     /* Decay state spectrum */
     --decay-fresh: 155 30% 55%;
     --decay-fading: 45 20% 50%;
-    --decay-rotting: 20 25% 35%;
-    --decay-extinct: 0 10% 20%;
+    --decay-rotting: 20 25% 38%;
+    --decay-extinct: 0 10% 25%;
     
     /* Echo — spore dispersal color */
-    --echo: 270 20% 50%;
-    --echo-foreground: 270 15% 88%;
+    --echo: 270 20% 55%;
+    --echo-foreground: 270 15% 90%;
     
     /* Fog layers — depth of field */
-    --fog-light: 240 6% 18%;
-    --fog-mid: 240 5% 12%;
-    --fog-dark: 240 8% 5%;
+    --fog-light: 240 6% 22%;
+    --fog-mid: 240 5% 16%;
+    --fog-dark: 240 8% 10%;
     
     /* UI chrome */
-    --border: 240 5% 14%;
-    --input: 240 5% 10%;
-    --ring: 155 25% 38%;
+    --border: 240 5% 20%;
+    --input: 240 5% 15%;
+    --ring: 155 25% 42%;
     
     --radius: 0.5rem;
     
     /* Sidebar */
-    --sidebar-background: 240 8% 5%;
-    --sidebar-foreground: 45 8% 60%;
-    --sidebar-primary: 155 25% 38%;
-    --sidebar-primary-foreground: 240 8% 4%;
-    --sidebar-accent: 240 5% 10%;
-    --sidebar-accent-foreground: 45 8% 60%;
-    --sidebar-border: 240 5% 12%;
-    --sidebar-ring: 155 25% 38%;
+    --sidebar-background: 240 8% 10%;
+    --sidebar-foreground: 45 8% 72%;
+    --sidebar-primary: 155 25% 42%;
+    --sidebar-primary-foreground: 240 8% 6%;
+    --sidebar-accent: 240 5% 15%;
+    --sidebar-accent-foreground: 45 8% 72%;
+    --sidebar-border: 240 5% 18%;
+    --sidebar-ring: 155 25% 42%;
     
     /* Mode-specific accent tokens */
-    --rot-glitch: 280 60% 45%;
-    --rot-accent: 340 40% 35%;
-    --rot-mold: 90 30% 20%;
-    --prune-calm: 200 15% 50%;
-    --prune-accent: 155 20% 45%;
+    --rot-glitch: 280 60% 50%;
+    --rot-accent: 340 40% 40%;
+    --rot-mold: 90 30% 25%;
+    --prune-calm: 200 15% 55%;
+    --prune-accent: 155 20% 48%;
     
     /* Organic texture tokens */
-    --grain-opacity: 0.035;
-    --vignette-strength: 0.5;
+    --grain-opacity: 0.02;
+    --vignette-strength: 0.3;
     --hue-drift-speed: 120s;
   }
   
   /* ═══ Embrace the Rot ═══ */
   .mode-rot {
-    --primary: 280 35% 40%;
-    --accent: 340 30% 30%;
-    --decay-fresh: 280 30% 55%;
-    --decay-fading: 320 25% 45%;
-    --decay-rotting: 350 30% 30%;
-    --decay-extinct: 0 15% 15%;
-    --echo: 90 25% 40%;
-    --grain-opacity: 0.055;
-    --vignette-strength: 0.65;
+    --primary: 280 35% 45%;
+    --accent: 340 30% 35%;
+    --decay-fresh: 280 30% 58%;
+    --decay-fading: 320 25% 48%;
+    --decay-rotting: 350 30% 35%;
+    --decay-extinct: 0 15% 22%;
+    --echo: 90 25% 45%;
+    --grain-opacity: 0.03;
+    --vignette-strength: 0.35;
   }
   
   /* ═══ Prune the Decay ═══ */
   .mode-prune {
-    --primary: 155 25% 42%;
-    --accent: 45 15% 28%;
-    --decay-fresh: 155 25% 55%;
-    --decay-fading: 45 20% 48%;
-    --decay-rotting: 20 20% 35%;
-    --decay-extinct: 0 8% 20%;
-    --echo: 200 20% 50%;
-    --grain-opacity: 0.025;
-    --vignette-strength: 0.4;
+    --primary: 155 25% 45%;
+    --accent: 45 15% 32%;
+    --decay-fresh: 155 25% 58%;
+    --decay-fading: 45 20% 52%;
+    --decay-rotting: 20 20% 38%;
+    --decay-extinct: 0 8% 25%;
+    --echo: 200 20% 55%;
+    --grain-opacity: 0.015;
+    --vignette-strength: 0.25;
   }
 }
 
