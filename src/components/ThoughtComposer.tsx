@@ -71,7 +71,7 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
         onKeyDown={handleKeyDown}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        placeholder=""
+        placeholder="Speak or type a thought…"
         maxLength={1000}
         className={cn(
           'min-h-[100px] font-thought text-sm resize-none relative z-10',
@@ -176,7 +176,7 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
           whileTap={{ scale: 0.95 }}
         >
           <span className="relative z-10">
-            {isPublic ? 'release' : 'save'}
+            {isPublic ? 'Release to Fog' : 'Add Thought'}
           </span>
         </motion.button>
       </div>

@@ -18,6 +18,7 @@ export interface Thought {
   category: FragmentCategory;
   lastWateredAt?: Date; // "Watering" resets decay timer
   waterCount: number; // How many times this thought has been revisited
+  starred: boolean; // Starred thoughts decay much slower
 }
 
 export interface Echo {

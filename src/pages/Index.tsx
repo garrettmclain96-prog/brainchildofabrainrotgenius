@@ -265,18 +265,9 @@ const Index = () => {
         {/* Forbidden screen */}
         <ForbiddenScreen isOpen={showForbidden} onClose={() => setShowForbidden(false)} />
 
-        {/* Top bar */}
+        {/* Top bar — minimal since PrivateThoughtsView has the title */}
         <header className="fixed top-0 left-0 right-0 z-30 safe-area-top">
-          <div className="flex items-center justify-between px-4 py-2.5">
-            <motion.h1
-              className="font-thought text-[10px] text-muted-foreground/30 tracking-[0.25em] uppercase cursor-default select-none"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8, duration: 1.2 }}
-              onClick={() => setHeaderTaps((t) => t + 1)}
-            >
-              brainchild
-            </motion.h1>
+          <div className="flex items-center justify-end px-4 py-2.5">
             <ModeToggle />
           </div>
         </header>

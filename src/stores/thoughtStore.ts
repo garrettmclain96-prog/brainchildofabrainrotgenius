@@ -15,6 +15,7 @@ interface ThoughtStore {
   addPrivateThought: (content: string, mode: DecayMode, category?: FragmentCategory) => void;
   deletePrivateThought: (id: string) => void;
   waterThought: (id: string) => void;
+  starThought: (id: string) => void;
   releaseToFog: (id: string, decaySpeed: DecaySpeed) => Thought | null;
   toggleSocial: () => void;
   nuclearDisableSocial: () => void;
@@ -47,6 +48,7 @@ export const useThoughtStore = create<ThoughtStore>()(
           decaySpeed: 'normal',
           category,
           waterCount: 0,
+          starred: false,
         };
         
         incrementStat('totalCreated');
@@ -77,6 +79,25 @@ export const useThoughtStore = create<ThoughtStore>()(
               expiresAt: new Date(t.expiresAt.getTime() + WATER_EXTENSION_MINUTES * 60 * 1000),
               // Reduce decay level slightly
               decayLevel: Math.max(0, t.decayLevel - 15),
+            };
+          }),
+        }));
+      },
+
+      starThought: (id) => {
+        set((state) => ({
+          privateThoughts: state.privateThoughts.map((t) => {
+            if (t.id !== id) return t;
+            const isNowStarred = !t.starred;
+            // When starring, extend expiration massively (48h); when unstarring, revert to normal
+            const extension = isNowStarred ? 48 * 60 * 60 * 1000 : 0;
+            return {
+              ...t,
+              starred: isNowStarred,
+              expiresAt: isNowStarred
+                ? new Date(t.expiresAt.getTime() + extension)
+                : t.expiresAt,
+              decayLevel: isNowStarred ? Math.max(0, t.decayLevel - 20) : t.decayLevel,
             };
           }),
         }));
@@ -128,7 +149,10 @@ export const useThoughtStore = create<ThoughtStore>()(
         set((state) => ({
           privateThoughts: state.privateThoughts.map((thought) => ({
             ...thought,
-            decayLevel: calculateDecayLevel(thought.createdAt, thought.expiresAt),
+            // Starred thoughts decay at 1/10th speed
+            decayLevel: thought.starred
+              ? Math.min(thought.decayLevel, calculateDecayLevel(thought.createdAt, thought.expiresAt))
+              : calculateDecayLevel(thought.createdAt, thought.expiresAt),
           })),
         }));
       },
@@ -137,7 +161,8 @@ export const useThoughtStore = create<ThoughtStore>()(
         const now = Date.now();
         set((state) => ({
           privateThoughts: state.privateThoughts.filter(
-            (t) => t.expiresAt.getTime() > now
+            // Starred thoughts never expire automatically
+            (t) => t.starred || t.expiresAt.getTime() > now
           ),
         }));
       },
@@ -163,6 +188,7 @@ export const useThoughtStore = create<ThoughtStore>()(
             lastWateredAt: t.lastWateredAt ? new Date(t.lastWateredAt) : undefined,
             category: t.category || 'uncategorized',
             waterCount: t.waterCount || 0,
+            starred: t.starred || false,
           }));
         }
       },

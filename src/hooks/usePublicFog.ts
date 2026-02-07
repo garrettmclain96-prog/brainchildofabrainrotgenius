@@ -62,6 +62,7 @@ export function usePublicFog() {
         visibility: 'public' as const,
         category: 'uncategorized' as const,
         waterCount: 0,
+        starred: false,
       }));
 
       // Group echoes by thought
