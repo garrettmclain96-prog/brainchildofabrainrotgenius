@@ -5,6 +5,7 @@ export type AppMode = 'prune' | 'rot';
 export type Visibility = 'private' | 'public';
 export type DecaySpeed = 'normal' | 'fast' | 'sink';
 export type FragmentCategory = 'ideas' | 'tasks' | 'journal' | 'projects' | 'uncategorized';
+export type ThoughtZone = 'overflow' | 'quiet' | 'noise' | 'preserved';
 
 export interface Thought {
   id: string;
@@ -19,6 +20,7 @@ export interface Thought {
   lastWateredAt?: Date; // "Watering" resets decay timer
   waterCount: number; // How many times this thought has been revisited
   starred: boolean; // Starred thoughts decay much slower
+  zone?: ThoughtZone; // Room/zone in the fog
 }
 
 export interface Echo {
@@ -119,3 +121,39 @@ export const FAREWELL_MESSAGES = [
   "the container is empty. that is not the same as nothing.",
   "done.",
 ];
+
+// Zone metadata — pre-existing rooms users discover
+export const ZONE_META: Record<ThoughtZone, { label: string; description: string; icon: string }> = {
+  overflow: { label: 'overflow', description: 'thoughts that no one wanted to keep', icon: '≋' },
+  quiet: { label: 'quiet ones', description: 'short, heavy, rarely saved', icon: '·' },
+  noise: { label: 'noise', description: 'impulsive, messy, fast-decay', icon: '⌇' },
+  preserved: { label: 'preserved', description: 'rare saved fragments', icon: '◈' },
+};
+
+// Pattern language per zone — soft norms, not stats
+export const ZONE_PATTERNS: Record<ThoughtZone, string[]> = {
+  overflow: [
+    'most people let this go.',
+    'this room fills faster than it empties.',
+    'nothing here was meant to stay.',
+    'the overflow doesn\'t judge.',
+  ],
+  quiet: [
+    'very few thoughts survive here.',
+    'this room rarely updates.',
+    'the quiet ones tend to stay longer.',
+    'heaviness is not the same as importance.',
+  ],
+  noise: [
+    'this room empties quickly.',
+    'most of this will be gone by morning.',
+    'speed doesn\'t mean urgency.',
+    'the noise is always temporary.',
+  ],
+  preserved: [
+    'something kept this alive.',
+    'survival here is rare and unexplained.',
+    'not everything that lasts deserves to.',
+    'preservation is not the same as meaning.',
+  ],
+};

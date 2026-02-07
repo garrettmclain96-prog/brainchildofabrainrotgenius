@@ -105,6 +105,7 @@ export type Database = {
           id: string
           mode: Database["public"]["Enums"]["decay_mode"]
           session_id: string
+          zone: string
         }
         Insert: {
           content: string
@@ -115,6 +116,7 @@ export type Database = {
           id?: string
           mode?: Database["public"]["Enums"]["decay_mode"]
           session_id: string
+          zone?: string
         }
         Update: {
           content?: string
@@ -125,6 +127,7 @@ export type Database = {
           id?: string
           mode?: Database["public"]["Enums"]["decay_mode"]
           session_id?: string
+          zone?: string
         }
         Relationships: []
       }
@@ -199,6 +202,7 @@ export type Database = {
           expires_at: string | null
           id: string | null
           mode: Database["public"]["Enums"]["decay_mode"] | null
+          zone: string | null
         }
         Insert: {
           content?: string | null
@@ -208,6 +212,7 @@ export type Database = {
           expires_at?: string | null
           id?: string | null
           mode?: Database["public"]["Enums"]["decay_mode"] | null
+          zone?: string | null
         }
         Update: {
           content?: string | null
@@ -217,6 +222,7 @@ export type Database = {
           expires_at?: string | null
           id?: string | null
           mode?: Database["public"]["Enums"]["decay_mode"] | null
+          zone?: string | null
         }
         Relationships: []
       }
@@ -232,6 +238,7 @@ export type Database = {
       }
       cleanup_expired_notes: { Args: never; Returns: undefined }
       cleanup_rate_limits: { Args: never; Returns: undefined }
+      count_faded_thoughts: { Args: never; Returns: number }
       delete_private_note: {
         Args: { p_note_id: string; p_session_id: string }
         Returns: undefined

@@ -1,25 +1,25 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Thought, Echo, DecaySpeed, DecayMode, DECAY_DURATIONS, ECHO_DECAY_DURATION } from '@/types/thought';
+import { Thought, Echo, DecaySpeed, DecayMode, ThoughtZone, DECAY_DURATIONS, ECHO_DECAY_DURATION } from '@/types/thought';
 import { getSessionId } from '@/hooks/useSessionId';
-
-type FogFilter = 'all' | 'fading' | 'near-extinction' | 'recently-disturbed';
 
 interface PublicFogState {
   thoughts: Thought[];
   echoes: Map<string, Echo[]>;
-  filter: FogFilter;
+  activeZone: ThoughtZone;
   isLoading: boolean;
   error: string | null;
+  fadedCount: number;
 }
 
 export function usePublicFog() {
   const [state, setState] = useState<PublicFogState>({
     thoughts: [],
     echoes: new Map(),
-    filter: 'all',
+    activeZone: 'overflow',
     isLoading: true,
     error: null,
+    fadedCount: 0,
   });
 
   // Fetch thoughts and echoes
@@ -41,8 +41,11 @@ export function usePublicFog() {
 
       if (echoesError) throw echoesError;
 
+      // Fetch faded count
+      const { data: fadedData } = await supabase.rpc('count_faded_thoughts');
+
       // Transform data
-      const thoughts: Thought[] = (thoughtsData || []).map((t) => ({
+      const thoughts: Thought[] = (thoughtsData || []).map((t: any) => ({
         id: t.id!,
         content: t.content!,
         createdAt: new Date(t.created_at!),
@@ -54,11 +57,12 @@ export function usePublicFog() {
         category: 'uncategorized' as const,
         waterCount: 0,
         starred: false,
+        zone: (t.zone || 'overflow') as ThoughtZone,
       }));
 
       // Group echoes by thought
       const echoMap = new Map<string, Echo[]>();
-      (echoesData || []).forEach((e) => {
+      (echoesData || []).forEach((e: any) => {
         const echo: Echo = {
           id: e.id,
           thoughtId: e.thought_id,
@@ -76,6 +80,7 @@ export function usePublicFog() {
         echoes: echoMap,
         isLoading: false,
         error: null,
+        fadedCount: typeof fadedData === 'number' ? fadedData : 0,
       }));
     } catch (err) {
       console.error('Error fetching fog data:', err);
@@ -90,10 +95,7 @@ export function usePublicFog() {
   // Initial fetch and periodic refresh
   useEffect(() => {
     fetchData();
-    
-    // Refresh every 10 seconds to update decay levels
     const interval = setInterval(fetchData, 10000);
-    
     return () => clearInterval(interval);
   }, [fetchData]);
 
@@ -123,34 +125,29 @@ export function usePublicFog() {
     };
   }, [fetchData]);
 
-  // Filter thoughts based on selected filter
+  // Filter thoughts by active zone
   const filteredThoughts = useMemo(() => {
-    let result = [...state.thoughts];
-    
-    switch (state.filter) {
-      case 'fading':
-        result = result.filter((t) => t.decayLevel >= 25 && t.decayLevel < 75);
-        break;
-      case 'near-extinction':
-        result = result.filter((t) => t.decayLevel >= 75);
-        break;
-      case 'recently-disturbed':
-        result = result.filter((t) => (state.echoes.get(t.id)?.length || 0) > 0);
-        break;
-    }
-    
+    const result = state.thoughts.filter((t) => t.zone === state.activeZone);
     // Randomize order for anti-feed behavior
     return result.sort(() => Math.random() - 0.5);
-  }, [state.thoughts, state.filter, state.echoes]);
+  }, [state.thoughts, state.activeZone]);
 
-  const setFilter = useCallback((filter: FogFilter) => {
-    setState((prev) => ({ ...prev, filter }));
+  // Zone counts for subtle indicators
+  const zoneCounts = useMemo(() => {
+    const counts: Record<ThoughtZone, number> = { overflow: 0, quiet: 0, noise: 0, preserved: 0 };
+    state.thoughts.forEach((t) => {
+      if (t.zone) counts[t.zone]++;
+    });
+    return counts;
+  }, [state.thoughts]);
+
+  const setZone = useCallback((zone: ThoughtZone) => {
+    setState((prev) => ({ ...prev, activeZone: zone }));
   }, []);
 
   const createPublicThought = useCallback(async (content: string, mode: DecayMode, decaySpeed: DecaySpeed) => {
     const sessionId = getSessionId();
     
-    // Client-side validation (server enforces these too)
     const trimmedContent = content.trim();
     if (trimmedContent.length < 1 || trimmedContent.length > 1000) {
       throw new Error('Content must be between 1 and 1000 characters');
@@ -159,7 +156,11 @@ export function usePublicFog() {
     const now = new Date();
     const expiresAt = new Date(now.getTime() + DECAY_DURATIONS[decaySpeed] * 60 * 1000);
 
-    // First, record the rate limit (insert into rate_limits table)
+    // Determine zone based on decay speed and content length
+    let zone: ThoughtZone = 'overflow';
+    if (decaySpeed === 'fast') zone = 'noise';
+    else if (trimmedContent.length < 40) zone = 'quiet';
+
     const { error: rateLimitError } = await supabase
       .from('rate_limits')
       .insert({
@@ -169,7 +170,6 @@ export function usePublicFog() {
 
     if (rateLimitError) {
       console.error('Rate limit tracking error:', rateLimitError);
-      // Continue anyway - the main insert will fail if rate limited
     }
 
     const { data, error } = await supabase
@@ -180,12 +180,12 @@ export function usePublicFog() {
         decay_speed: decaySpeed,
         expires_at: expiresAt.toISOString(),
         session_id: sessionId,
-      })
+        zone,
+      } as any)
       .select()
       .single();
 
     if (error) {
-      // Check if it's a rate limit error
       if (error.message?.includes('rate') || error.code === '42501') {
         throw new Error('Rate limit exceeded. Please wait before posting again.');
       }
@@ -193,16 +193,13 @@ export function usePublicFog() {
       throw error;
     }
 
-    // Refresh data after insert
     await fetchData();
-    
     return data;
   }, [fetchData]);
 
   const addEcho = useCallback(async (thoughtId: string, text: string) => {
     const sessionId = getSessionId();
     
-    // Client-side validation
     const trimmedText = text.trim();
     if (trimmedText.length < 1 || trimmedText.length > 500) {
       throw new Error('Echo must be between 1 and 500 characters');
@@ -211,7 +208,6 @@ export function usePublicFog() {
     const now = new Date();
     const expiresAt = new Date(now.getTime() + ECHO_DECAY_DURATION * 60 * 1000);
 
-    // Record rate limit
     const { error: rateLimitError } = await supabase
       .from('rate_limits')
       .insert({
@@ -240,22 +236,23 @@ export function usePublicFog() {
       throw error;
     }
 
-    // Refresh data
     await fetchData();
   }, [fetchData]);
 
-  // Add thought from private store (for releasing to fog)
   const addThought = useCallback(async (thought: Thought) => {
     await createPublicThought(thought.content, thought.mode, thought.decaySpeed);
   }, [createPublicThought]);
 
   return {
     thoughts: filteredThoughts,
+    allThoughts: state.thoughts,
     echoes: state.echoes,
-    filter: state.filter,
+    activeZone: state.activeZone,
     isLoading: state.isLoading,
     error: state.error,
-    setFilter,
+    fadedCount: state.fadedCount,
+    zoneCounts,
+    setZone,
     addThought,
     addEcho,
     createPublicThought,
