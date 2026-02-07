@@ -154,12 +154,12 @@ export function ThoughtCard({ thought, onEcho, onWater, onStar, showEchoButton =
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Star button */}
+              {/* Star button — min 44x44 tap target */}
               {showStarButton && (
                 <motion.button
                   onClick={onStar}
                   className={cn(
-                    'px-2 py-1 rounded-lg text-sm transition-all duration-500',
+                    'min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-base transition-all duration-500',
                     thought.starred
                       ? 'text-amber-400/90 hover:text-amber-400'
                       : 'text-muted-foreground/30 hover:text-amber-400/60'
@@ -171,22 +171,23 @@ export function ThoughtCard({ thought, onEcho, onWater, onStar, showEchoButton =
                 </motion.button>
               )}
 
-              {/* Water button */}
+              {/* Water/tend button — min 44px tap target */}
               {showWaterButton && thought.decayLevel > 10 && !thought.starred && (
                 <motion.button
                   onClick={handleWater}
-                  className="px-2 py-1 rounded-lg text-[10px] font-thought bg-primary/8 text-primary/50 hover:bg-primary/15 hover:text-primary/80 transition-all duration-500"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center px-3 rounded-xl text-xs font-thought bg-primary/8 text-primary/50 hover:bg-primary/15 hover:text-primary/80 transition-all duration-500"
                   whileTap={{ scale: 0.92 }}
+                  aria-label="Tend to this thought"
                 >
                   tend
                 </motion.button>
               )}
 
-              {/* Echo button */}
+              {/* Echo button — min 44px tap target */}
               {showEchoButton && thought.visibility === 'public' && thought.decayLevel < 90 && (
                 <motion.button
                   onClick={() => onEcho?.(thought.id)}
-                  className="px-2.5 py-1 rounded-lg bg-echo/8 text-echo/50 hover:bg-echo/15 hover:text-echo/80 transition-all duration-500 font-thought"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center px-3 rounded-xl bg-echo/8 text-echo/50 hover:bg-echo/15 hover:text-echo/80 transition-all duration-500 font-thought"
                   whileTap={{ scale: 0.92 }}
                   aria-label="Leave an echo"
                 >

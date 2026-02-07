@@ -236,6 +236,7 @@ export type Database = {
         Args: { p_note_id: string; p_session_id: string }
         Returns: undefined
       }
+      dissolve_all_notes: { Args: { p_session_id: string }; Returns: undefined }
       get_private_notes: {
         Args: { p_session_id: string }
         Returns: {

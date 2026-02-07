@@ -4,6 +4,7 @@ import { Thought, DecayMode, DecaySpeed, FragmentCategory, PRIVATE_DECAY_DURATIO
 import { incrementStat } from '@/components/ForbiddenScreen';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId, isUUID } from '@/hooks/useSessionId';
+import { useSyncStore } from '@/hooks/useSyncState';
 
 interface ThoughtStore {
   // Private thoughts (local + DB synced)
@@ -33,6 +34,11 @@ interface ThoughtStore {
 }
 
 const generateId = () => crypto.randomUUID();
+
+/** Tracked DB operation with automatic retry via sync store */
+function syncToDB(id: string, action: () => Promise<void>) {
+  useSyncStore.getState().trackOperation(id, action);
+}
 
 export const useThoughtStore = create<ThoughtStore>()(
   persist(
@@ -66,17 +72,18 @@ export const useThoughtStore = create<ThoughtStore>()(
           privateThoughts: [thought, ...state.privateThoughts],
         }));
 
-        // Persist to database (fire-and-forget)
+        // Persist to database with retry
         const sessionId = getSessionId();
-        supabase.from('private_notes').insert({
-          id,
-          session_id: sessionId,
-          content,
-          category,
-          mode,
-          expires_at: expiresAt.toISOString(),
-        }).then(({ error }) => {
-          if (error) console.error('[brainchild] DB save failed:', error);
+        syncToDB(`add-${id}`, async () => {
+          const { error } = await supabase.from('private_notes').insert({
+            id,
+            session_id: sessionId,
+            content,
+            category,
+            mode,
+            expires_at: expiresAt.toISOString(),
+          });
+          if (error) throw error;
         });
       },
 
@@ -89,11 +96,12 @@ export const useThoughtStore = create<ThoughtStore>()(
         // Delete from DB if it's a UUID (DB-synced thought)
         if (isUUID(id)) {
           const sessionId = getSessionId();
-          (supabase.rpc as any)('delete_private_note', {
-            p_session_id: sessionId,
-            p_note_id: id,
-          }).then(({ error }: any) => {
-            if (error) console.error('[brainchild] DB delete failed:', error);
+          syncToDB(`delete-${id}`, async () => {
+            const { error } = await supabase.rpc('delete_private_note', {
+              p_session_id: sessionId,
+              p_note_id: id,
+            });
+            if (error) throw error;
           });
         }
       },
@@ -117,11 +125,12 @@ export const useThoughtStore = create<ThoughtStore>()(
         // Sync water to DB
         if (isUUID(id)) {
           const sessionId = getSessionId();
-          (supabase.rpc as any)('water_private_note', {
-            p_session_id: sessionId,
-            p_note_id: id,
-          }).then(({ error }: any) => {
-            if (error) console.error('[brainchild] DB water failed:', error);
+          syncToDB(`water-${id}`, async () => {
+            const { error } = await supabase.rpc('water_private_note', {
+              p_session_id: sessionId,
+              p_note_id: id,
+            });
+            if (error) throw error;
           });
         }
       },
@@ -149,12 +158,13 @@ export const useThoughtStore = create<ThoughtStore>()(
         // Sync star to DB
         if (isUUID(id)) {
           const sessionId = getSessionId();
-          (supabase.rpc as any)('toggle_note_star', {
-            p_session_id: sessionId,
-            p_note_id: id,
-            p_starred: willBeStar,
-          }).then(({ error }: any) => {
-            if (error) console.error('[brainchild] DB star failed:', error);
+          syncToDB(`star-${id}`, async () => {
+            const { error } = await supabase.rpc('toggle_note_star', {
+              p_session_id: sessionId,
+              p_note_id: id,
+              p_starred: willBeStar,
+            });
+            if (error) throw error;
           });
         }
       },
@@ -196,13 +206,21 @@ export const useThoughtStore = create<ThoughtStore>()(
 
       dissolveEverything: () => {
         set({ privateThoughts: [] });
-        // DB notes will expire naturally — no bulk delete needed
+
+        // Also clear from DB
+        const sessionId = getSessionId();
+        syncToDB('dissolve-all', async () => {
+          const { error } = await supabase.rpc('dissolve_all_notes', {
+            p_session_id: sessionId,
+          });
+          if (error) throw error;
+        });
       },
 
       loadFromDB: async () => {
         try {
           const sessionId = getSessionId();
-          const { data, error } = await (supabase.rpc as any)('get_private_notes', {
+          const { data, error } = await supabase.rpc('get_private_notes', {
             p_session_id: sessionId,
           });
 
@@ -213,7 +231,7 @@ export const useThoughtStore = create<ThoughtStore>()(
           }
 
           if (data && Array.isArray(data) && data.length > 0) {
-            const dbThoughts: Thought[] = data.map((row: any) => ({
+            const dbThoughts: Thought[] = data.map((row) => ({
               id: row.id,
               content: row.content,
               createdAt: new Date(row.created_at),
