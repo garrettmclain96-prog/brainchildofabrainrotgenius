@@ -4,7 +4,7 @@ import { useThoughtStore } from '@/stores/thoughtStore';
 import { useAppMode } from '@/hooks/useAppMode';
 import { useEasterEggs } from '@/hooks/useEasterEggs';
 import { useOverloadSensor } from '@/hooks/useOverloadSensor';
-import { useOvernightSynthesis } from '@/hooks/useOvernightSynthesis';
+import { useAISynthesis } from '@/hooks/useAISynthesis';
 import { useAmbientAudio } from '@/hooks/useAmbientAudio';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useMemoryDrift } from '@/hooks/useMemoryDrift';
@@ -69,7 +69,7 @@ const Index = () => {
   const haptics = useHaptics();
   const { activeEgg, dismissEgg } = useEasterEggs(privateThoughts);
   const overload = useOverloadSensor();
-  const synthesis = useOvernightSynthesis(privateThoughts);
+  const synthesis = useAISynthesis(privateThoughts);
 
   // Cognitive systems
   useMemoryDrift();

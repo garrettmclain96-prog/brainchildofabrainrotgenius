@@ -1,5 +1,6 @@
 import { useMemo, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { AIReflection } from '@/components/AIReflection';
 import { Thought, getDecayState, applyRotEffect, applyWordDecay, CATEGORY_META } from '@/types/thought';
 import { useAppMode } from '@/hooks/useAppMode';
 import { DecayShader } from '@/components/DecayShader';
@@ -11,9 +12,17 @@ interface ThoughtCardProps {
   onEcho?: (thoughtId: string) => void;
   onWater?: () => void;
   onStar?: () => void;
+  onReflect?: (thoughtId: string, content: string) => void;
   showEchoButton?: boolean;
   showWaterButton?: boolean;
   showStarButton?: boolean;
+  showReflectButton?: boolean;
+  reflectionState?: {
+    reflection: string | null;
+    isLoading: boolean;
+    thoughtId: string | null;
+  };
+  onDismissReflection?: () => void;
 }
 
 // Organic spring transition
@@ -36,7 +45,7 @@ function formatTimeRemaining(expiresAt: Date): string {
   return '<1m';
 }
 
-export function ThoughtCard({ thought, onEcho, onWater, onStar, showEchoButton = true, showWaterButton = false, showStarButton = false }: ThoughtCardProps) {
+export function ThoughtCard({ thought, onEcho, onWater, onStar, onReflect, showEchoButton = true, showWaterButton = false, showStarButton = false, showReflectButton = false, reflectionState, onDismissReflection }: ThoughtCardProps) {
   const [isWatered, setIsWatered] = useState(false);
   const { mode: appMode } = useAppMode();
   const decayState = getDecayState(thought.decayLevel);
@@ -154,6 +163,19 @@ export function ThoughtCard({ thought, onEcho, onWater, onStar, showEchoButton =
             </div>
 
             <div className="flex items-center gap-2">
+              {/* Reflect button — AI mirror */}
+              {showReflectButton && thought.visibility === 'private' && (
+                <motion.button
+                  onClick={() => onReflect?.(thought.id, thought.content)}
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center px-3 rounded-xl text-xs font-thought bg-primary/5 text-primary/40 hover:bg-primary/12 hover:text-primary/70 transition-all duration-500"
+                  whileTap={{ scale: 0.92 }}
+                  aria-label="Ask the fog for a reflection"
+                  disabled={reflectionState?.isLoading && reflectionState?.thoughtId === thought.id}
+                >
+                  {reflectionState?.isLoading && reflectionState?.thoughtId === thought.id ? '...' : 'reflect'}
+                </motion.button>
+              )}
+
               {/* Star button — min 44x44 tap target */}
               {showStarButton && (
                 <motion.button
@@ -196,6 +218,15 @@ export function ThoughtCard({ thought, onEcho, onWater, onStar, showEchoButton =
               )}
             </div>
           </footer>
+
+          {/* AI Reflection — gentle reframe */}
+          {reflectionState && reflectionState.thoughtId === thought.id && (
+            <AIReflection
+              reflection={reflectionState.reflection}
+              isLoading={reflectionState.isLoading}
+              onDismiss={() => onDismissReflection?.()}
+            />
+          )}
 
           {/* Starred indicator — gentle glow */}
           {thought.starred && (

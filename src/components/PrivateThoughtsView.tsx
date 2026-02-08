@@ -7,6 +7,7 @@ import { useAncestralEchoes } from '@/hooks/useAncestralEchoes';
 import { useTimeGravity } from '@/hooks/useTimeGravity';
 import { usePreservationFriction } from '@/hooks/usePreservationFriction';
 import { useNightDecay } from '@/hooks/useNightDecay';
+import { useAIReflection } from '@/hooks/useAIReflection';
 import { ThoughtCard } from '@/components/ThoughtCard';
 import { ThoughtComposer } from '@/components/ThoughtComposer';
 import { CategoryFilter } from '@/components/CategoryFilter';
@@ -43,6 +44,7 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
   const ancestral = useAncestralEchoes();
   const weightedThoughts = useTimeGravity(privateThoughts);
   const nightDecay = useNightDecay();
+  const aiReflection = useAIReflection();
 
   // Preservation friction
   const starredCount = useMemo(() => privateThoughts.filter(t => t.starred).length, [privateThoughts]);
@@ -305,13 +307,16 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
                     thought={thought}
                     showEchoButton={false}
                     showStarButton
+                    showReflectButton
                     onStar={() => handleStarRequest(thought.id)}
                     onWater={() => {
                       waterThought(thought.id);
                       onAction?.();
                     }}
+                    onReflect={(id, content) => aiReflection.requestReflection(id, content)}
+                    reflectionState={aiReflection}
+                    onDismissReflection={aiReflection.dismissReflection}
                     showWaterButton
-                    
                   />
 
                   <motion.div
