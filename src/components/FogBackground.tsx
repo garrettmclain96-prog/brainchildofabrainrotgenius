@@ -11,6 +11,7 @@ interface FogParticle {
   delay: number;
   hue: number;
   saturation: number;
+  lightness: number;
 }
 
 export function FogBackground() {
@@ -22,21 +23,22 @@ export function FogBackground() {
     setMounted(true);
   }, []);
 
-  // Generate fog particles — bioluminescent deep-sea orbs
+  // Generate ethereal luminous orbs
   const particles = useMemo(() => {
-    const count = 8;
+    const count = 10;
     return Array.from({ length: count }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: Math.random() * 300 + 100,
-      opacity: Math.random() * 0.06 + 0.012,
-      duration: Math.random() * 30 + 25,
-      delay: Math.random() * -20,
+      size: Math.random() * 350 + 120,
+      opacity: Math.random() * 0.08 + 0.02,
+      duration: Math.random() * 35 + 30,
+      delay: Math.random() * -25,
       hue: isRot 
-        ? (Math.random() > 0.5 ? 320 + Math.random() * 30 : 120 + Math.random() * 20)
-        : (Math.random() > 0.6 ? 175 + Math.random() * 15 : 265 + Math.random() * 20),
-      saturation: isRot ? 40 + Math.random() * 20 : 50 + Math.random() * 30,
+        ? (Math.random() > 0.5 ? 330 + Math.random() * 20 : 140 + Math.random() * 20)
+        : (Math.random() > 0.5 ? 38 + Math.random() * 20 : 260 + Math.random() * 30),
+      saturation: isRot ? 35 + Math.random() * 20 : 30 + Math.random() * 30,
+      lightness: 45 + Math.random() * 20,
     }));
   }, [isRot]);
 
@@ -44,20 +46,20 @@ export function FogBackground() {
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
-      {/* Mesh gradient base — deep-ocean bioluminescence */}
+      {/* Mesh gradient base — ethereal twilight */}
       <div 
-        className="absolute inset-0 mesh-gradient"
+        className="absolute inset-0"
         style={{
           background: isRot
             ? `
-              radial-gradient(ellipse 60% 50% at 15% 25%, hsl(320 25% 8% / 0.2) 0%, transparent 50%),
-              radial-gradient(ellipse 50% 45% at 85% 75%, hsl(355 18% 7% / 0.15) 0%, transparent 40%),
-              radial-gradient(ellipse 80% 60% at 50% 100%, hsl(120 15% 4% / 0.2) 0%, transparent 50%)
+              radial-gradient(ellipse 65% 55% at 15% 25%, hsl(330 20% 30% / 0.15) 0%, transparent 50%),
+              radial-gradient(ellipse 55% 50% at 85% 75%, hsl(0 15% 28% / 0.12) 0%, transparent 40%),
+              radial-gradient(ellipse 85% 65% at 50% 100%, hsl(140 12% 22% / 0.15) 0%, transparent 50%)
             `
             : `
-              radial-gradient(ellipse 60% 50% at 20% 30%, hsl(175 30% 8% / 0.15) 0%, transparent 50%),
-              radial-gradient(ellipse 50% 45% at 80% 70%, hsl(265 20% 8% / 0.12) 0%, transparent 40%),
-              radial-gradient(ellipse 80% 60% at 50% 100%, hsl(225 15% 4% / 0.18) 0%, transparent 50%)
+              radial-gradient(ellipse 65% 55% at 20% 30%, hsl(38 25% 35% / 0.1) 0%, transparent 50%),
+              radial-gradient(ellipse 55% 50% at 80% 70%, hsl(330 20% 32% / 0.08) 0%, transparent 40%),
+              radial-gradient(ellipse 85% 65% at 50% 100%, hsl(260 18% 28% / 0.12) 0%, transparent 50%)
             `
         }}
       />
@@ -65,7 +67,16 @@ export function FogBackground() {
       {/* Aurora wash — slow-moving color field */}
       <div className="absolute inset-0 aurora-bg" />
       
-      {/* Animated fog particles — bioluminescent organisms */}
+      {/* Ethereal light rays */}
+      <div 
+        className="absolute inset-0 animate-light-ray"
+        style={{
+          background: 'linear-gradient(105deg, transparent 30%, hsl(38 60% 70% / 0.04) 50%, transparent 70%)',
+          width: '200%',
+        }}
+      />
+      
+      {/* Animated fog particles — luminous mist orbs */}
       {particles.map((particle) => (
         <div
           key={particle.id}
@@ -75,19 +86,27 @@ export function FogBackground() {
             top: `${particle.y}%`,
             width: particle.size,
             height: particle.size,
-            background: `radial-gradient(circle, hsl(${particle.hue} ${particle.saturation}% 25% / ${particle.opacity}) 0%, transparent 65%)`,
+            background: `radial-gradient(circle, hsl(${particle.hue} ${particle.saturation}% ${particle.lightness}% / ${particle.opacity}) 0%, transparent 65%)`,
             animationDuration: `${particle.duration}s`,
             animationDelay: `${particle.delay}s`,
-            filter: 'blur(60px)',
+            filter: 'blur(50px)',
           }}
         />
       ))}
       
-      {/* Soft vignette — ocean depth */}
+      {/* Soft vignette — dreamy edges */}
       <div 
         className="absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse 70% 70% at center, transparent 35%, hsl(225 18% 3% / 0.3) 100%)'
+          background: 'radial-gradient(ellipse 75% 75% at center, transparent 40%, hsl(250 18% 22% / 0.25) 100%)'
+        }}
+      />
+      
+      {/* Rising mist at bottom */}
+      <div 
+        className="absolute bottom-0 left-0 right-0 h-1/3 animate-mist-rise"
+        style={{
+          background: 'linear-gradient(to top, hsl(250 18% 26% / 0.15), transparent)'
         }}
       />
     </div>

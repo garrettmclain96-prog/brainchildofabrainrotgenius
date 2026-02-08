@@ -3,137 +3,137 @@
 @tailwind utilities;
 
 /* =============================================
-   BRAINCHILD — BrainRot Edition
-   The Sensory System: Bioluminescent Deep-Sea Organism
+   BRAINCHILD — Ethereal Twilight Edition
+   The Sensory System: Dawn fog, luminous mist, dreaming light
    ============================================= */
 
 @layer base {
   :root {
-    /* Core palette — abyssal depth, bioluminescent organisms */
-    --background: 225 18% 6%;
-    --foreground: 210 20% 88%;
+    /* Core palette — twilight dusky lavender, luminous mist */
+    --background: 250 18% 28%;
+    --foreground: 45 30% 92%;
     
-    /* Surface layers — like sediment strata */
-    --card: 225 15% 10%;
-    --card-foreground: 210 18% 85%;
+    /* Surface layers — frosted dawn glass */
+    --card: 250 16% 34%;
+    --card-foreground: 45 25% 90%;
     
-    --popover: 225 14% 12%;
-    --popover-foreground: 210 18% 85%;
+    --popover: 250 14% 32%;
+    --popover-foreground: 45 25% 90%;
     
-    /* Primary — electric cyan bioluminescence */
-    --primary: 175 75% 48%;
-    --primary-foreground: 225 20% 4%;
+    /* Primary — warm golden dawn light */
+    --primary: 38 75% 65%;
+    --primary-foreground: 250 20% 15%;
     
-    /* Secondary — deep pressure */
-    --secondary: 225 12% 14%;
-    --secondary-foreground: 210 12% 68%;
+    /* Secondary — deeper twilight */
+    --secondary: 250 14% 38%;
+    --secondary-foreground: 45 15% 75%;
     
-    /* Muted — silt floor */
-    --muted: 225 10% 16%;
-    --muted-foreground: 210 8% 48%;
+    /* Muted — soft twilight haze */
+    --muted: 250 12% 36%;
+    --muted-foreground: 45 10% 62%;
     
-    /* Accent — phosphorescent violet */
-    --accent: 265 45% 42%;
-    --accent-foreground: 265 20% 90%;
+    /* Accent — ethereal rose glow */
+    --accent: 330 45% 65%;
+    --accent-foreground: 330 15% 95%;
     
-    /* Destructive — magma vent red */
-    --destructive: 355 65% 48%;
-    --destructive-foreground: 355 10% 95%;
+    /* Destructive — fading ember */
+    --destructive: 0 55% 58%;
+    --destructive-foreground: 0 10% 95%;
     
-    /* Decay state spectrum — bioluminescent to ash */
-    --decay-fresh: 175 70% 55%;
-    --decay-fading: 50 50% 55%;
-    --decay-rotting: 20 40% 42%;
-    --decay-extinct: 225 8% 22%;
+    /* Decay state spectrum — dawn to dusk */
+    --decay-fresh: 160 50% 60%;
+    --decay-fading: 45 55% 65%;
+    --decay-rotting: 20 45% 55%;
+    --decay-extinct: 250 10% 38%;
     
-    /* Echo — golden phosphorescence */
-    --echo: 42 70% 58%;
-    --echo-foreground: 42 15% 92%;
+    /* Echo — soft peach luminescence */
+    --echo: 28 65% 68%;
+    --echo-foreground: 28 15% 95%;
     
-    /* Fog layers — ocean depth */
-    --fog-light: 225 12% 18%;
-    --fog-mid: 225 10% 13%;
-    --fog-dark: 225 18% 7%;
+    /* Fog layers — ethereal mist */
+    --fog-light: 260 15% 42%;
+    --fog-mid: 255 12% 35%;
+    --fog-dark: 250 18% 26%;
     
     /* UI chrome */
-    --border: 225 12% 18%;
-    --input: 225 12% 13%;
-    --ring: 175 75% 48%;
+    --border: 255 14% 42%;
+    --input: 250 14% 32%;
+    --ring: 38 75% 65%;
     
-    --radius: 0.75rem;
+    --radius: 1rem;
     
     /* Sidebar */
-    --sidebar-background: 225 18% 7%;
-    --sidebar-foreground: 210 10% 65%;
-    --sidebar-primary: 175 75% 48%;
-    --sidebar-primary-foreground: 225 20% 4%;
-    --sidebar-accent: 225 12% 14%;
-    --sidebar-accent-foreground: 210 10% 65%;
-    --sidebar-border: 225 10% 16%;
-    --sidebar-ring: 175 75% 48%;
+    --sidebar-background: 250 18% 26%;
+    --sidebar-foreground: 45 12% 72%;
+    --sidebar-primary: 38 75% 65%;
+    --sidebar-primary-foreground: 250 20% 15%;
+    --sidebar-accent: 250 14% 35%;
+    --sidebar-accent-foreground: 45 12% 72%;
+    --sidebar-border: 255 12% 38%;
+    --sidebar-ring: 38 75% 65%;
     
     /* Mode-specific accent tokens */
-    --rot-glitch: 320 70% 55%;
-    --rot-accent: 355 55% 50%;
-    --rot-mold: 120 35% 28%;
-    --prune-calm: 200 30% 52%;
-    --prune-accent: 175 45% 48%;
+    --rot-glitch: 330 60% 58%;
+    --rot-accent: 0 50% 55%;
+    --rot-mold: 140 30% 40%;
+    --prune-calm: 200 35% 60%;
+    --prune-accent: 38 50% 62%;
     
     /* Organic texture tokens */
-    --grain-opacity: 0.018;
-    --vignette-strength: 0.35;
-    --hue-drift-speed: 120s;
+    --grain-opacity: 0.012;
+    --vignette-strength: 0.25;
+    --hue-drift-speed: 180s;
     
     /* Premium glow tokens */
-    --glow-primary: 175 75% 48%;
-    --glow-accent: 265 45% 52%;
-    --glow-warm: 42 70% 58%;
-    --glow-danger: 355 65% 48%;
+    --glow-primary: 38 75% 65%;
+    --glow-accent: 330 45% 65%;
+    --glow-warm: 28 65% 68%;
+    --glow-danger: 0 55% 58%;
     
-    /* ═══ Zone ambient tints — deeper, more distinct ═══ */
-    --zone-overflow: 225 18% 6%;
-    --zone-quiet: 215 22% 5%;
-    --zone-noise: 350 18% 7%;
-    --zone-unclaimed: 200 15% 6%;
-    --zone-preserved: 42 18% 8%;
-    --zone-backlog: 265 14% 7%;
-    --zone-late-night: 240 25% 5%;
-    --zone-almost-gone: 355 16% 6%;
-    --zone-quiet-period: 180 12% 6%;
-    --zone-flood: 280 16% 7%;
-    --zone-heavy: 20 14% 6%;
-    --zone-discarded: 0 0% 5%;
-    --zone-rare: 270 30% 8%;
-    --zone-static: 0 0% 4%;
-    --zone-leaving: 210 20% 6%;
+    /* ═══ Zone ambient tints ═══ */
+    --zone-overflow: 250 16% 28%;
+    --zone-quiet: 260 18% 27%;
+    --zone-noise: 340 14% 30%;
+    --zone-unclaimed: 230 16% 28%;
+    --zone-preserved: 38 14% 32%;
+    --zone-backlog: 270 14% 29%;
+    --zone-late-night: 260 22% 24%;
+    --zone-almost-gone: 350 14% 28%;
+    --zone-quiet-period: 200 12% 28%;
+    --zone-flood: 280 14% 29%;
+    --zone-heavy: 20 12% 28%;
+    --zone-discarded: 250 8% 25%;
+    --zone-rare: 280 22% 32%;
+    --zone-static: 250 6% 24%;
+    --zone-leaving: 240 16% 27%;
   }
   
   /* ═══ Embrace the Rot ═══ */
   .mode-rot {
-    --primary: 320 60% 52%;
-    --accent: 355 50% 45%;
-    --decay-fresh: 320 55% 58%;
-    --decay-fading: 40 40% 50%;
-    --decay-rotting: 355 35% 38%;
-    --decay-extinct: 225 10% 18%;
-    --echo: 120 40% 50%;
-    --grain-opacity: 0.025;
-    --vignette-strength: 0.4;
-    --glow-primary: 320 60% 52%;
+    --primary: 330 55% 62%;
+    --accent: 0 45% 55%;
+    --decay-fresh: 330 45% 62%;
+    --decay-fading: 40 40% 58%;
+    --decay-rotting: 0 35% 48%;
+    --decay-extinct: 250 10% 32%;
+    --echo: 140 40% 55%;
+    --grain-opacity: 0.02;
+    --vignette-strength: 0.35;
+    --glow-primary: 330 55% 62%;
   }
   
   /* ═══ Prune the Decay ═══ */
   .mode-prune {
-    --primary: 175 60% 50%;
-    --accent: 42 30% 38%;
-    --decay-fresh: 175 50% 58%;
-    --decay-fading: 50 35% 52%;
-    --decay-rotting: 20 25% 38%;
-    --decay-extinct: 225 8% 22%;
-    --echo: 200 35% 55%;
-    --grain-opacity: 0.012;
-    --vignette-strength: 0.28;
-    --glow-primary: 175 60% 50%;
+    --primary: 38 65% 60%;
+    --accent: 200 35% 58%;
+    --decay-fresh: 160 45% 58%;
+    --decay-fading: 45 40% 60%;
+    --decay-rotting: 20 30% 48%;
+    --decay-extinct: 250 8% 35%;
+    --echo: 200 35% 62%;
+    --grain-opacity: 0.008;
+    --vignette-strength: 0.2;
+    --glow-primary: 38 65% 60%;
   }
 }
 
@@ -144,24 +144,13 @@
   
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
-    animation: global-hue-drift var(--hue-drift-speed) ease-in-out infinite alternate;
+    font-family: 'DM Sans', 'Inter', system-ui, sans-serif;
   }
   
-  /* Monospace for thoughts — raw, honest feeling */
+  /* Humanist serif for thoughts — warm, intimate */
   .font-thought {
-    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-family: 'Lora', 'Georgia', serif;
   }
-}
-
-/* =============================================
-   GLOBAL HUE DRIFT — Color temperature shifts
-   ============================================= */
-@keyframes global-hue-drift {
-  0% { filter: hue-rotate(0deg) saturate(1); }
-  33% { filter: hue-rotate(3deg) saturate(1.04); }
-  66% { filter: hue-rotate(-3deg) saturate(0.96); }
-  100% { filter: hue-rotate(1.5deg) saturate(1.02); }
 }
 
 /* =============================================
@@ -173,9 +162,9 @@
   pointer-events: none;
   z-index: 1000;
   opacity: var(--grain-opacity);
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  mix-blend-mode: overlay;
-  animation: grain-shift 1s steps(2) infinite;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  mix-blend-mode: soft-light;
+  animation: grain-shift 2s steps(3) infinite;
 }
 
 @keyframes grain-shift {
@@ -189,28 +178,12 @@
   inset: 0;
   pointer-events: none;
   background: radial-gradient(
-    ellipse 65% 65% at center,
+    ellipse 70% 70% at center,
     transparent 0%,
-    transparent 35%,
+    transparent 40%,
     hsl(var(--background) / var(--vignette-strength)) 100%
   );
   z-index: 5;
-}
-
-/* Scan lines — CRT monitor feel */
-.scanlines {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1001;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 3px,
-    hsl(0 0% 0% / 0.012) 3px,
-    hsl(0 0% 0% / 0.012) 6px
-  );
-  opacity: 0.35;
 }
 
 /* =============================================
@@ -220,9 +193,9 @@
   .fog-layer {
     @apply fixed inset-0 pointer-events-none;
     background: 
-      radial-gradient(ellipse at 20% 30%, hsl(var(--fog-light) / 0.08) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 70%, hsl(var(--fog-mid) / 0.06) 0%, transparent 40%),
-      radial-gradient(ellipse at 50% 50%, hsl(var(--fog-dark) / 0.04) 0%, transparent 60%);
+      radial-gradient(ellipse at 20% 30%, hsl(var(--fog-light) / 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 70%, hsl(var(--fog-mid) / 0.08) 0%, transparent 40%),
+      radial-gradient(ellipse at 50% 50%, hsl(var(--fog-dark) / 0.06) 0%, transparent 60%);
   }
   
   /* Thought card decay states */
@@ -235,21 +208,21 @@
   .thought-fading {
     @apply border-l-2;
     border-color: hsl(var(--decay-fading));
-    opacity: 0.88;
+    opacity: 0.9;
   }
   
   .thought-rotting {
     @apply border-l-2;
     border-color: hsl(var(--decay-rotting));
-    opacity: 0.6;
-    filter: blur(0.3px) saturate(0.8);
+    opacity: 0.65;
+    filter: blur(0.2px) saturate(0.85);
   }
   
   .thought-extinct {
     @apply border-l-2;
     border-color: hsl(var(--decay-extinct));
-    opacity: 0.25;
-    filter: blur(1px) saturate(0.5) brightness(0.8);
+    opacity: 0.3;
+    filter: blur(0.8px) saturate(0.5) brightness(0.85);
   }
   
   /* Glitch text — mode-rot agitation */
@@ -289,30 +262,28 @@
   }
   .decay-text-50 { 
     opacity: 0.65; 
-    filter: blur(0.35px); 
+    filter: blur(0.3px); 
     letter-spacing: 0.03em;
     word-spacing: 0.05em;
   }
   .decay-text-75 { 
-    opacity: 0.38; 
-    filter: blur(0.6px); 
+    opacity: 0.4; 
+    filter: blur(0.5px); 
     letter-spacing: 0.06em;
     word-spacing: 0.12em;
-    font-feature-settings: 'liga' 0;
   }
   .decay-text-100 { 
-    opacity: 0.12; 
-    filter: blur(1.2px) saturate(0.3); 
-    letter-spacing: 0.12em;
+    opacity: 0.15; 
+    filter: blur(1px) saturate(0.3); 
+    letter-spacing: 0.1em;
     word-spacing: 0.2em;
   }
 }
 
 /* =============================================
-   ORGANIC KEYFRAMES — Nothing mechanical
+   ORGANIC KEYFRAMES — Slow, dreamy, luminous
    ============================================= */
 
-/* Glitch — organic, not digital */
 @keyframes glitch-organic {
   0%, 88%, 100% { 
     transform: none; 
@@ -320,79 +291,69 @@
     text-shadow: none;
   }
   89% { 
-    transform: translateX(-1.5px) skewX(-0.3deg); 
+    transform: translateX(-1px) skewX(-0.2deg); 
     opacity: 0.92;
-    text-shadow: 1.5px 0 hsl(var(--rot-glitch) / 0.3), -1.5px 0 hsl(var(--decay-rotting) / 0.25);
+    text-shadow: 1px 0 hsl(var(--rot-glitch) / 0.25), -1px 0 hsl(var(--decay-rotting) / 0.2);
   }
   91% { 
-    transform: translateX(1px) skewX(0.2deg); 
+    transform: translateX(0.5px) skewX(0.1deg); 
     opacity: 0.88;
   }
   93% { 
-    transform: translateX(-0.5px) translateY(0.5px); 
+    transform: translateX(-0.3px) translateY(0.3px); 
     opacity: 0.95;
-    text-shadow: -1px 0 hsl(var(--rot-glitch) / 0.2);
   }
   95% { 
-    transform: translateX(0.5px); 
+    transform: translateX(0.3px); 
     opacity: 1;
   }
 }
 
 @keyframes glitch-subtle {
-  0%, 82%, 100% { 
+  0%, 85%, 100% { 
     transform: none; 
     opacity: 1; 
-    text-shadow: none;
-  }
-  84% { 
-    transform: translateX(-0.8px); 
-    opacity: 0.96; 
-    text-shadow: 1px 0 hsl(var(--primary) / 0.25);
   }
   87% { 
-    transform: translateX(0.5px); 
-    text-shadow: -1px 0 hsl(var(--primary) / 0.2);
+    transform: translateX(-0.5px); 
+    opacity: 0.96; 
+    text-shadow: 0.5px 0 hsl(var(--primary) / 0.2);
   }
-  89% { 
-    transform: translateX(-0.3px); 
-    opacity: 1;
+  90% { 
+    transform: translateX(0.3px); 
   }
 }
 
-/* Breathing — like a living organism */
 @keyframes breathe-organic {
   0%, 100% { 
     opacity: 0.5; 
     transform: scale(1);
-    box-shadow: 0 0 15px hsl(var(--echo) / 0.12);
+    box-shadow: 0 0 15px hsl(var(--echo) / 0.1);
   }
   40% { 
-    opacity: 0.75; 
-    transform: scale(1.015);
-    box-shadow: 0 0 30px hsl(var(--echo) / 0.25);
+    opacity: 0.72; 
+    transform: scale(1.01);
+    box-shadow: 0 0 30px hsl(var(--echo) / 0.2);
   }
   60% { 
-    opacity: 0.7; 
-    transform: scale(1.01);
+    opacity: 0.65; 
+    transform: scale(1.005);
   }
 }
 
-/* Drift — like currents in deep water */
 @keyframes drift-organic {
   0%, 100% { transform: translateX(0) translateY(0) rotate(0deg); }
-  20% { transform: translateX(8px) translateY(-6px) rotate(0.3deg); }
-  40% { transform: translateX(-4px) translateY(12px) rotate(-0.2deg); }
-  60% { transform: translateX(-12px) translateY(-8px) rotate(0.15deg); }
-  80% { transform: translateX(6px) translateY(4px) rotate(-0.1deg); }
+  20% { transform: translateX(6px) translateY(-4px) rotate(0.2deg); }
+  40% { transform: translateX(-3px) translateY(8px) rotate(-0.15deg); }
+  60% { transform: translateX(-8px) translateY(-5px) rotate(0.1deg); }
+  80% { transform: translateX(4px) translateY(3px) rotate(-0.08deg); }
 }
 
-/* Fog materialization — like bioluminescence igniting */
 @keyframes fog-materialize {
   0% { 
     opacity: 0; 
-    transform: translateY(12px) scale(0.97); 
-    filter: blur(6px); 
+    transform: translateY(10px) scale(0.98); 
+    filter: blur(5px); 
   }
   60% {
     filter: blur(1px);
@@ -404,7 +365,6 @@
   }
 }
 
-/* Fog dissolve — like light fading in water */
 @keyframes fog-dissolve {
   0% { 
     opacity: 1; 
@@ -417,44 +377,43 @@
   }
   100% { 
     opacity: 0; 
-    transform: scale(0.96) translateY(-8px); 
-    filter: blur(10px); 
+    transform: scale(0.97) translateY(-6px); 
+    filter: blur(8px); 
   }
 }
 
-/* Float — deep-sea buoyancy */
 @keyframes float-slow {
-  0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
-  20% { transform: translateY(-15px) translateX(8px) rotate(1.5deg); }
-  40% { transform: translateY(8px) translateX(-12px) rotate(-0.8deg); }
-  60% { transform: translateY(-8px) translateX(-4px) rotate(0.5deg); }
-  80% { transform: translateY(12px) translateX(6px) rotate(-1deg); }
+  0%, 100% { transform: translateY(0) translateX(0); }
+  20% { transform: translateY(-10px) translateX(5px); }
+  40% { transform: translateY(5px) translateX(-8px); }
+  60% { transform: translateY(-6px) translateX(-3px); }
+  80% { transform: translateY(8px) translateX(4px); }
 }
 
 @keyframes float-symbol {
   0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; }
-  8% { opacity: 0.6; }
-  92% { opacity: 0.6; }
-  100% { transform: translateY(-100vh) translateX(25px) rotate(120deg); opacity: 0; }
+  8% { opacity: 0.5; }
+  92% { opacity: 0.5; }
+  100% { transform: translateY(-100vh) translateX(20px) rotate(90deg); opacity: 0; }
 }
 
 @keyframes float-up {
-  0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
-  8% { opacity: 0.8; }
-  92% { opacity: 0.8; }
-  100% { transform: translateY(-100vh) translateX(20px) rotate(30deg); opacity: 0; }
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  8% { opacity: 0.7; }
+  92% { opacity: 0.7; }
+  100% { transform: translateY(-100vh) translateX(15px) rotate(20deg); opacity: 0; }
 }
 
 @keyframes float-gentle {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-6px); }
 }
 
 @keyframes float-random {
-  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.25; }
-  25% { transform: translate(15px, -25px) scale(1.15); opacity: 0.4; }
-  50% { transform: translate(-12px, 12px) scale(0.85); opacity: 0.18; }
-  75% { transform: translate(-20px, -15px) scale(1.08); opacity: 0.35; }
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+  25% { transform: translate(10px, -18px) scale(1.1); opacity: 0.35; }
+  50% { transform: translate(-8px, 8px) scale(0.9); opacity: 0.15; }
+  75% { transform: translate(-14px, -10px) scale(1.05); opacity: 0.3; }
 }
 
 @keyframes gradient-shift {
@@ -464,32 +423,32 @@
 
 @keyframes pulse-slow {
   0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
-  50% { opacity: 0.65; transform: translate(-50%, -50%) scale(1.08); }
+  50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.06); }
 }
 
 @keyframes sweep-line {
   0% { transform: translateX(-100%); opacity: 0; }
-  15% { opacity: 0.6; }
-  85% { opacity: 0.6; }
+  15% { opacity: 0.5; }
+  85% { opacity: 0.5; }
   100% { transform: translateX(100%); opacity: 0; }
 }
 
 @keyframes fog-drift {
-  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
-  25% { transform: translate(25px, -15px) scale(1.08); opacity: 0.6; }
-  50% { transform: translate(-15px, 25px) scale(0.92); opacity: 0.35; }
-  75% { transform: translate(-25px, -8px) scale(1.03); opacity: 0.5; }
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.35; }
+  25% { transform: translate(18px, -10px) scale(1.05); opacity: 0.5; }
+  50% { transform: translate(-10px, 18px) scale(0.95); opacity: 0.3; }
+  75% { transform: translate(-18px, -5px) scale(1.02); opacity: 0.45; }
 }
 
 @keyframes ping-slow {
-  0% { transform: scale(1); opacity: 0.35; }
-  100% { transform: scale(1.4); opacity: 0; }
+  0% { transform: scale(1); opacity: 0.3; }
+  100% { transform: scale(1.3); opacity: 0; }
 }
 
 @keyframes orb-pulse {
-  0%, 100% { transform: scale(1); opacity: 0.25; }
-  40% { transform: scale(1.12); opacity: 0.45; }
-  60% { transform: scale(1.08); opacity: 0.35; }
+  0%, 100% { transform: scale(1); opacity: 0.2; }
+  40% { transform: scale(1.08); opacity: 0.4; }
+  60% { transform: scale(1.05); opacity: 0.3; }
 }
 
 @keyframes shimmer {
@@ -499,19 +458,19 @@
 
 @keyframes glow-pulse {
   0%, 100% { 
-    box-shadow: 0 0 15px hsl(var(--glow-primary) / 0.15), 
-                0 0 30px hsl(var(--glow-primary) / 0.08);
+    box-shadow: 0 0 12px hsl(var(--glow-primary) / 0.12), 
+                0 0 25px hsl(var(--glow-primary) / 0.06);
   }
   50% { 
-    box-shadow: 0 0 25px hsl(var(--glow-primary) / 0.3), 
-                0 0 60px hsl(var(--glow-primary) / 0.15),
-                0 0 90px hsl(var(--glow-primary) / 0.06);
+    box-shadow: 0 0 20px hsl(var(--glow-primary) / 0.25), 
+                0 0 50px hsl(var(--glow-primary) / 0.1),
+                0 0 75px hsl(var(--glow-primary) / 0.04);
   }
 }
 
 @keyframes border-glow {
   0%, 100% { border-color: hsl(var(--border)); }
-  50% { border-color: hsl(var(--primary) / 0.5); }
+  50% { border-color: hsl(var(--primary) / 0.4); }
 }
 
 @keyframes text-shimmer {
@@ -525,104 +484,68 @@
   75% { transform: translateY(2px); }
 }
 
-/* =============================================
-   MOLD GROWTH — Card decay visual system
-   ============================================= */
 @keyframes mold-grow {
-  0% { 
-    opacity: 0; 
-    transform: scale(0.5);
-    filter: blur(8px);
-  }
-  50% {
-    opacity: 0.6;
-    filter: blur(4px);
-  }
-  100% { 
-    opacity: 1; 
-    transform: scale(1);
-    filter: blur(2px);
-  }
+  0% { opacity: 0; transform: scale(0.5); filter: blur(6px); }
+  50% { opacity: 0.5; filter: blur(3px); }
+  100% { opacity: 1; transform: scale(1); filter: blur(2px); }
 }
 
 @keyframes spore-drift {
-  0% { 
-    transform: translate(0, 0) scale(1); 
-    opacity: 0;
-  }
-  20% { opacity: 0.4; }
-  80% { opacity: 0.4; }
-  100% { 
-    transform: translate(var(--dx, 20px), var(--dy, -30px)) scale(0.3); 
-    opacity: 0;
-  }
+  0% { transform: translate(0, 0) scale(1); opacity: 0; }
+  20% { opacity: 0.3; }
+  80% { opacity: 0.3; }
+  100% { transform: translate(var(--dx, 15px), var(--dy, -25px)) scale(0.3); opacity: 0; }
 }
 
-/* Typography decay — letter drift */
 @keyframes letter-drift {
-  0%, 85%, 100% { 
-    transform: none;
-    letter-spacing: normal;
-  }
-  88% { 
-    transform: translateX(0.5px);
-    letter-spacing: 0.02em;
-  }
-  92% {
-    transform: translateX(-0.3px) translateY(0.3px);
-    letter-spacing: -0.01em;
-  }
-  96% {
-    transform: translateX(0.2px);
-  }
+  0%, 85%, 100% { transform: none; letter-spacing: normal; }
+  88% { transform: translateX(0.3px); letter-spacing: 0.015em; }
+  92% { transform: translateX(-0.2px) translateY(0.2px); letter-spacing: -0.005em; }
+  96% { transform: translateX(0.15px); }
 }
 
-/* Resurrection — reconstitution animation */
 @keyframes reconstitute {
-  0% { 
-    filter: blur(4px) saturate(0.3) brightness(0.6);
-    opacity: 0.3;
-    transform: scale(0.97);
-  }
-  30% {
-    filter: blur(2px) saturate(0.6) brightness(0.8);
-    opacity: 0.6;
-  }
-  60% {
-    filter: blur(0.5px) saturate(0.9) brightness(0.95);
-    opacity: 0.85;
-  }
-  100% {
-    filter: blur(0) saturate(1) brightness(1);
-    opacity: 1;
-    transform: scale(1);
-  }
+  0% { filter: blur(3px) saturate(0.3) brightness(0.7); opacity: 0.3; transform: scale(0.98); }
+  30% { filter: blur(1.5px) saturate(0.6) brightness(0.85); opacity: 0.6; }
+  60% { filter: blur(0.3px) saturate(0.9) brightness(0.95); opacity: 0.85; }
+  100% { filter: blur(0) saturate(1) brightness(1); opacity: 1; transform: scale(1); }
+}
+
+@keyframes mode-ritual {
+  0% { opacity: 1; filter: brightness(1) saturate(1); }
+  25% { opacity: 0.4; filter: brightness(0.6) saturate(0.4) blur(1.5px); }
+  50% { opacity: 0.2; filter: brightness(0.4) saturate(0.1) blur(3px); }
+  75% { opacity: 0.5; filter: brightness(0.8) saturate(0.7) blur(0.5px); }
+  100% { opacity: 1; filter: brightness(1) saturate(1) blur(0); }
 }
 
 /* =============================================
-   MODE TRANSITION — Ritualistic, not toggle-like
+   ETHEREAL LUMINOUS ANIMATIONS
    ============================================= */
-@keyframes mode-ritual {
-  0% { 
-    opacity: 1;
-    filter: brightness(1) saturate(1);
+
+@keyframes ethereal-breathe {
+  0%, 100% { 
+    opacity: 0.15; 
+    transform: scale(1);
+    filter: blur(40px);
   }
-  25% {
-    opacity: 0.3;
-    filter: brightness(0.5) saturate(0.3) blur(2px);
+  50% { 
+    opacity: 0.3; 
+    transform: scale(1.05);
+    filter: blur(50px);
   }
-  50% {
-    opacity: 0.15;
-    filter: brightness(0.3) saturate(0) blur(4px);
-  }
-  75% {
-    opacity: 0.4;
-    filter: brightness(0.7) saturate(0.6) blur(1px);
-  }
-  100% {
-    opacity: 1;
-    filter: brightness(1) saturate(1) blur(0);
-  }
+}
+
+@keyframes light-ray {
+  0% { transform: translateX(-100%) rotate(15deg); opacity: 0; }
+  30% { opacity: 0.08; }
+  70% { opacity: 0.08; }
+  100% { transform: translateX(200%) rotate(15deg); opacity: 0; }
+}
+
+@keyframes mist-rise {
+  0%, 100% { transform: translateY(0) scaleY(1); opacity: 0.3; }
+  50% { transform: translateY(-30px) scaleY(1.2); opacity: 0.5; }
 }
 
 /* =============================================
@@ -646,13 +569,16 @@
 .animate-letter-drift { animation: letter-drift 6s ease-in-out infinite; }
 .animate-reconstitute { animation: reconstitute 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
 .animate-mode-ritual { animation: mode-ritual 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+.animate-ethereal-breathe { animation: ethereal-breathe 8s ease-in-out infinite; }
+.animate-light-ray { animation: light-ray 12s ease-in-out infinite; }
+.animate-mist-rise { animation: mist-rise 10s ease-in-out infinite; }
 
 .animate-shimmer {
   animation: shimmer 3s linear infinite;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    hsl(var(--primary) / 0.08) 50%,
+    hsl(var(--primary) / 0.06) 50%,
     transparent 100%
   );
   background-size: 200% 100%;
@@ -666,24 +592,22 @@
    INTERACTION EFFECTS
    ============================================= */
 
-/* Hover glow — bioluminescent warmth */
 .hover-glow {
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 .hover-glow:hover {
-  box-shadow: 0 0 25px hsl(var(--glow-primary) / 0.2),
-              0 0 60px hsl(var(--glow-primary) / 0.08);
+  box-shadow: 0 0 20px hsl(var(--glow-primary) / 0.15),
+              0 0 50px hsl(var(--glow-primary) / 0.06);
 }
 
 .hover-lift {
   transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 .hover-lift:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 40px hsl(var(--background) / 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px hsl(var(--background) / 0.4);
 }
 
-/* Gradient text — bioluminescent shimmer */
 .text-gradient {
   background: linear-gradient(
     135deg,
@@ -698,19 +622,12 @@
   animation: text-shimmer 5s linear infinite;
 }
 
-/* Chromatic aberration — deep-sea distortion */
 .chromatic-shift {
   text-shadow: 
-    -0.5px 0 hsl(var(--destructive) / 0.25),
-    0.5px 0 hsl(var(--primary) / 0.25);
-}
-.chromatic-shift:hover {
-  text-shadow: 
-    -1px 0 hsl(var(--destructive) / 0.35),
-    1px 0 hsl(var(--primary) / 0.35);
+    -0.3px 0 hsl(var(--destructive) / 0.2),
+    0.3px 0 hsl(var(--primary) / 0.2);
 }
 
-/* Card interactive — bioluminescent response */
 .card-interactive {
   position: relative;
   overflow: hidden;
@@ -733,108 +650,102 @@
 }
 
 /* =============================================
-   GLASS MORPHISM — Deep-sea pressure surfaces
+   GLASS MORPHISM — Ethereal frosted surfaces
    ============================================= */
 .glass {
-  background: hsl(var(--card) / 0.45);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid hsl(var(--border) / 0.2);
+  background: hsl(var(--card) / 0.4);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid hsl(var(--foreground) / 0.06);
 }
 
 .glass-strong {
-  background: hsl(var(--card) / 0.7);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid hsl(var(--border) / 0.35);
+  background: hsl(var(--card) / 0.6);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid hsl(var(--foreground) / 0.08);
 }
 
 .glass-premium {
   background: linear-gradient(
     145deg,
-    hsl(var(--card) / 0.55) 0%,
+    hsl(var(--card) / 0.5) 0%,
     hsl(var(--card) / 0.2) 100%
   );
-  backdrop-filter: blur(24px) saturate(170%);
-  -webkit-backdrop-filter: blur(24px) saturate(170%);
-  border: 1px solid hsl(var(--primary) / 0.06);
+  backdrop-filter: blur(28px) saturate(150%);
+  -webkit-backdrop-filter: blur(28px) saturate(150%);
+  border: 1px solid hsl(var(--foreground) / 0.07);
   box-shadow:
-    0 4px 32px hsl(0 0% 0% / 0.15),
-    0 0 1px 0 hsl(var(--primary) / 0.08),
-    inset 0 1px 0 hsl(var(--foreground) / 0.04),
-    inset 0 -1px 0 hsl(0 0% 0% / 0.1);
+    0 4px 24px hsl(250 20% 10% / 0.15),
+    0 0 1px 0 hsl(var(--primary) / 0.06),
+    inset 0 1px 0 hsl(var(--foreground) / 0.05),
+    inset 0 -1px 0 hsl(250 20% 10% / 0.08);
 }
 
-/* Ultra premium glass — for special cards */
 .glass-ultra {
   background: linear-gradient(
     145deg,
-    hsl(var(--card) / 0.6) 0%,
+    hsl(var(--card) / 0.55) 0%,
     hsl(var(--card) / 0.15) 100%
   );
-  backdrop-filter: blur(32px) saturate(200%) brightness(1.05);
-  -webkit-backdrop-filter: blur(32px) saturate(200%) brightness(1.05);
-  border: 1px solid hsl(var(--primary) / 0.1);
+  backdrop-filter: blur(36px) saturate(180%) brightness(1.03);
+  -webkit-backdrop-filter: blur(36px) saturate(180%) brightness(1.03);
+  border: 1px solid hsl(var(--foreground) / 0.08);
   box-shadow:
-    0 8px 48px hsl(0 0% 0% / 0.2),
-    0 0 1px 0 hsl(var(--primary) / 0.12),
-    0 0 60px -20px hsl(var(--glow-primary) / 0.08),
+    0 8px 40px hsl(250 20% 10% / 0.2),
+    0 0 1px 0 hsl(var(--primary) / 0.1),
+    0 0 50px -15px hsl(var(--glow-primary) / 0.06),
     inset 0 1px 0 hsl(var(--foreground) / 0.06),
-    inset 0 -1px 0 hsl(0 0% 0% / 0.12);
+    inset 0 -1px 0 hsl(250 20% 10% / 0.1);
 }
 
 /* =============================================
    MOLD & DECAY VISUAL EFFECTS
    ============================================= */
-
-/* Mold clusters on cards */
 .mold-cluster {
   position: absolute;
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    hsl(var(--rot-mold) / 0.3) 0%,
-    hsl(var(--rot-mold) / 0.1) 40%,
+    hsl(var(--rot-mold) / 0.25) 0%,
+    hsl(var(--rot-mold) / 0.08) 40%,
     transparent 70%
   );
   animation: mold-grow 4s ease-out forwards;
   pointer-events: none;
 }
 
-/* Spore particles */
 .spore {
   position: absolute;
   width: 2px;
   height: 2px;
   border-radius: 50%;
-  background: hsl(var(--rot-mold) / 0.4);
+  background: hsl(var(--rot-mold) / 0.3);
   animation: spore-drift 5s ease-out infinite;
   pointer-events: none;
 }
 
-/* Card warp effect for rotting */
 .card-warp-light {
-  transform: perspective(800px) rotateX(0.3deg) rotateY(-0.2deg);
+  transform: perspective(800px) rotateX(0.2deg) rotateY(-0.15deg);
 }
 .card-warp-heavy {
-  transform: perspective(600px) rotateX(0.8deg) rotateY(-0.5deg) skewX(-0.3deg);
+  transform: perspective(600px) rotateX(0.6deg) rotateY(-0.4deg) skewX(-0.2deg);
 }
 
 /* =============================================
    OVERLOAD & RITUAL VISUALS
    ============================================= */
 
-/* Sacred breathing guide */
 @keyframes sacred-breathe {
   0%, 100% { 
     transform: scale(1); 
     opacity: 0.3;
-    box-shadow: 0 0 40px hsl(var(--glow-primary) / 0.12);
+    box-shadow: 0 0 30px hsl(var(--glow-primary) / 0.1);
   }
   50% { 
-    transform: scale(1.25); 
-    opacity: 0.7;
-    box-shadow: 0 0 80px hsl(var(--glow-primary) / 0.3);
+    transform: scale(1.2); 
+    opacity: 0.65;
+    box-shadow: 0 0 60px hsl(var(--glow-primary) / 0.25);
   }
 }
 
@@ -842,7 +753,6 @@
   animation: sacred-breathe 6s cubic-bezier(0.37, 0, 0.63, 1) infinite;
 }
 
-/* UI inversion — rare easter egg */
 @keyframes invert-flash {
   0% { filter: invert(0); }
   5% { filter: invert(1) hue-rotate(180deg); }
@@ -855,7 +765,7 @@
 }
 
 /* =============================================
-   SCROLLBAR
+   SCROLLBAR — Ethereal
    ============================================= */
 ::-webkit-scrollbar {
   width: 3px;
@@ -869,7 +779,7 @@
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary) / 0.3);
+  background: hsl(var(--primary) / 0.25);
 }
 
 /* =============================================
@@ -886,7 +796,7 @@
   background: linear-gradient(
     45deg,
     transparent 20%,
-    hsl(var(--primary) / 0.25) 50%,
+    hsl(var(--primary) / 0.2) 50%,
     transparent 80%
   );
   background-size: 200% 200%;
@@ -904,9 +814,8 @@
   transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-/* Ripple effect */
 @keyframes ripple {
-  0% { transform: scale(0); opacity: 0.4; }
+  0% { transform: scale(0); opacity: 0.3; }
   100% { transform: scale(4); opacity: 0; }
 }
 
@@ -915,13 +824,12 @@
   overflow: hidden;
 }
 
-/* Focus */
 .focus-glow:focus {
   outline: none;
   box-shadow: 
     0 0 0 2px hsl(var(--background)),
-    0 0 0 4px hsl(var(--primary) / 0.3),
-    0 0 20px hsl(var(--primary) / 0.15);
+    0 0 0 4px hsl(var(--primary) / 0.25),
+    0 0 15px hsl(var(--primary) / 0.1);
 }
 
 /* =============================================
@@ -935,7 +843,7 @@
 .cursor-blink::after {
   content: '▊';
   animation: blink-cursor 1.2s ease-in-out infinite;
-  color: hsl(var(--primary) / 0.6);
+  color: hsl(var(--primary) / 0.5);
   font-size: 0.8em;
 }
 
@@ -956,13 +864,12 @@
 .stagger-fade-in > *:nth-child(8) { animation-delay: 0.4s; }
 
 /* =============================================
-   ADVANCED EFFECTS — Cutting Edge
+   ADVANCED EFFECTS
    ============================================= */
 
-/* Holographic shimmer */
 @keyframes holographic {
   0% { background-position: 0% 50%; filter: hue-rotate(0deg); }
-  50% { background-position: 100% 50%; filter: hue-rotate(15deg); }
+  50% { background-position: 100% 50%; filter: hue-rotate(10deg); }
   100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
 }
 
@@ -981,7 +888,6 @@
   color: transparent;
 }
 
-/* Morphing border */
 @keyframes morph-border {
   0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
   25% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
@@ -993,7 +899,6 @@
   animation: morph-border 10s ease-in-out infinite;
 }
 
-/* Gradient text flow */
 @keyframes gradient-flow {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -1015,119 +920,82 @@
   animation: gradient-flow 8s ease infinite;
 }
 
-/* ── Aurora mesh — premium ambient effect ── */
+/* ── Aurora mesh — ethereal ambient effect ── */
 @keyframes aurora-mesh {
-  0% { 
-    background-position: 50% 50%, 50% 50%, 50% 50%;
-    opacity: 0.4;
-  }
-  25% { 
-    background-position: 0% 50%, 100% 50%, 50% 100%;
-    opacity: 0.55;
-  }
-  50% { 
-    background-position: 50% 100%, 50% 0%, 0% 50%;
-    opacity: 0.4;
-  }
-  75% { 
-    background-position: 100% 50%, 0% 50%, 50% 0%;
-    opacity: 0.5;
-  }
-  100% { 
-    background-position: 50% 50%, 50% 50%, 50% 50%;
-    opacity: 0.4;
-  }
+  0% { background-position: 50% 50%, 50% 50%, 50% 50%; opacity: 0.3; }
+  25% { background-position: 0% 50%, 100% 50%, 50% 100%; opacity: 0.45; }
+  50% { background-position: 50% 100%, 50% 0%, 0% 50%; opacity: 0.3; }
+  75% { background-position: 100% 50%, 0% 50%, 50% 0%; opacity: 0.4; }
+  100% { background-position: 50% 50%, 50% 50%, 50% 50%; opacity: 0.3; }
 }
 
 .aurora-bg {
   background:
-    radial-gradient(ellipse at 50% 50%, hsl(var(--glow-primary) / 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, hsl(var(--glow-accent) / 0.06) 0%, transparent 40%),
-    radial-gradient(ellipse at 20% 80%, hsl(var(--glow-warm) / 0.06) 0%, transparent 40%);
+    radial-gradient(ellipse at 50% 50%, hsl(var(--glow-primary) / 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, hsl(var(--glow-accent) / 0.05) 0%, transparent 40%),
+    radial-gradient(ellipse at 20% 80%, hsl(var(--glow-warm) / 0.05) 0%, transparent 40%);
   background-size: 200% 200%, 180% 180%, 160% 160%;
   animation: aurora-mesh 22s ease-in-out infinite;
 }
 
-/* Mesh gradient — living background */
 @keyframes mesh-drift {
-  0%, 100% { 
-    background-position: 0% 0%, 100% 100%, 50% 50%;
-  }
-  33% { 
-    background-position: 100% 0%, 0% 100%, 100% 0%;
-  }
-  66% { 
-    background-position: 50% 100%, 50% 0%, 0% 100%;
-  }
+  0%, 100% { background-position: 0% 0%, 100% 100%, 50% 50%; }
+  33% { background-position: 100% 0%, 0% 100%, 100% 0%; }
+  66% { background-position: 50% 100%, 50% 0%, 0% 100%; }
 }
 
 .mesh-gradient {
   background:
-    radial-gradient(ellipse 80% 60% at 20% 30%, hsl(var(--glow-primary) / 0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 80% at 80% 70%, hsl(var(--glow-accent) / 0.05) 0%, transparent 50%),
-    radial-gradient(ellipse 70% 50% at 50% 90%, hsl(var(--glow-warm) / 0.04) 0%, transparent 55%);
+    radial-gradient(ellipse 80% 60% at 20% 30%, hsl(var(--glow-primary) / 0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 70%, hsl(var(--glow-accent) / 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 50% at 50% 90%, hsl(var(--glow-warm) / 0.03) 0%, transparent 55%);
   background-size: 200% 200%;
   animation: mesh-drift 30s ease-in-out infinite;
 }
 
-/* Depth parallax */
-.depth-1 { transform: translateZ(-100px) scale(1.1); }
-.depth-2 { transform: translateZ(-200px) scale(1.2); }
-.depth-3 { transform: translateZ(-300px) scale(1.3); }
-
-/* Neon glow — bioluminescent */
 .neon-glow {
   text-shadow:
-    0 0 5px currentColor,
-    0 0 10px currentColor,
-    0 0 20px hsl(var(--glow-primary) / 0.5),
-    0 0 40px hsl(var(--glow-primary) / 0.3),
-    0 0 80px hsl(var(--glow-primary) / 0.12);
+    0 0 4px currentColor,
+    0 0 8px currentColor,
+    0 0 16px hsl(var(--glow-primary) / 0.4),
+    0 0 32px hsl(var(--glow-primary) / 0.2);
 }
 
-/* Fluid trails */
 @keyframes fluid-trail {
-  0% { transform: translateX(-100%) skewX(-12deg); opacity: 0; }
-  50% { opacity: 0.15; }
-  100% { transform: translateX(100%) skewX(-12deg); opacity: 0; }
+  0% { transform: translateX(-100%) skewX(-10deg); opacity: 0; }
+  50% { opacity: 0.1; }
+  100% { transform: translateX(100%) skewX(-10deg); opacity: 0; }
 }
 
 .fluid-trail::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.15), transparent);
+  background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.1), transparent);
   animation: fluid-trail 4s ease-in-out infinite;
 }
 
-/* Cyber grid — deep-sea sonar */
 .cyber-grid {
   background-image: 
-    linear-gradient(hsl(var(--primary) / 0.015) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(var(--primary) / 0.015) 1px, transparent 1px);
+    linear-gradient(hsl(var(--primary) / 0.01) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--primary) / 0.01) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 
-/* 3D card */
 .card-3d {
   transform-style: preserve-3d;
   perspective: 1000px;
 }
-.card-3d:hover {
-  transform: translateY(-3px) rotateX(1.5deg);
-}
 
-/* Ambient pulse */
 @keyframes ambient-pulse {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.65; transform: scale(1.04); }
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(1.03); }
 }
 
 .ambient-glow {
   animation: ambient-pulse 5s ease-in-out infinite;
 }
 
-/* Text reveal */
 @keyframes text-reveal {
   from { clip-path: inset(0 100% 0 0); }
   to { clip-path: inset(0 0 0 0); }
@@ -1137,20 +1005,17 @@
   animation: text-reveal 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
 }
 
-/* Electric border — charged bioluminescence */
 @keyframes electric {
   0%, 100% {
     box-shadow:
-      0 0 4px hsl(var(--glow-primary) / 0.4),
-      0 0 12px hsl(var(--glow-primary) / 0.15),
-      inset 0 0 4px hsl(var(--glow-primary) / 0.06);
+      0 0 3px hsl(var(--glow-primary) / 0.3),
+      0 0 10px hsl(var(--glow-primary) / 0.1);
   }
   50% {
     box-shadow:
-      0 0 8px hsl(var(--glow-primary) / 0.6),
-      0 0 20px hsl(var(--glow-primary) / 0.25),
-      0 0 40px hsl(var(--glow-primary) / 0.1),
-      inset 0 0 8px hsl(var(--glow-primary) / 0.08);
+      0 0 6px hsl(var(--glow-primary) / 0.5),
+      0 0 16px hsl(var(--glow-primary) / 0.2),
+      0 0 30px hsl(var(--glow-primary) / 0.08);
   }
 }
 
@@ -1182,45 +1047,37 @@
   background: conic-gradient(
     from var(--angle),
     transparent 0%,
-    hsl(var(--glow-primary) / 0.4) 10%,
+    hsl(var(--glow-primary) / 0.3) 10%,
     transparent 20%,
-    hsl(var(--glow-accent) / 0.3) 50%,
+    hsl(var(--glow-accent) / 0.25) 50%,
     transparent 60%,
-    hsl(var(--glow-warm) / 0.3) 80%,
+    hsl(var(--glow-warm) / 0.25) 80%,
     transparent 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  animation: border-rotate 6s linear infinite;
+  animation: border-rotate 8s linear infinite;
   pointer-events: none;
 }
 
-/* ── Plasma orb ── */
+/* ── Plasma orb — luminous ── */
 @keyframes plasma-morph {
   0%, 100% {
     border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-    box-shadow: 
-      0 0 40px hsl(var(--glow-primary) / 0.2),
-      0 0 80px hsl(var(--glow-primary) / 0.1);
+    box-shadow: 0 0 30px hsl(var(--glow-primary) / 0.15), 0 0 60px hsl(var(--glow-primary) / 0.06);
   }
   25% {
     border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
-    box-shadow: 
-      0 0 50px hsl(var(--glow-accent) / 0.25),
-      0 0 100px hsl(var(--glow-accent) / 0.1);
+    box-shadow: 0 0 40px hsl(var(--glow-accent) / 0.2), 0 0 80px hsl(var(--glow-accent) / 0.08);
   }
   50% {
     border-radius: 50% 60% 30% 60% / 30% 60% 70% 40%;
-    box-shadow: 
-      0 0 35px hsl(var(--glow-warm) / 0.2),
-      0 0 70px hsl(var(--glow-warm) / 0.08);
+    box-shadow: 0 0 25px hsl(var(--glow-warm) / 0.15), 0 0 55px hsl(var(--glow-warm) / 0.06);
   }
   75% {
     border-radius: 60% 40% 60% 30% / 70% 30% 50% 60%;
-    box-shadow: 
-      0 0 45px hsl(var(--glow-primary) / 0.22),
-      0 0 90px hsl(var(--glow-primary) / 0.08);
+    box-shadow: 0 0 35px hsl(var(--glow-primary) / 0.18), 0 0 70px hsl(var(--glow-primary) / 0.06);
   }
 }
 
@@ -1229,10 +1086,9 @@
 }
 
 /* =============================================
-   ZONE VISUAL SYSTEMS — Each room is a place
+   ZONE VISUAL SYSTEMS
    ============================================= */
 
-/* Zone ambient backgrounds — subtle tints */
 .zone-bg-overflow { background: hsl(var(--zone-overflow)); }
 .zone-bg-quiet { background: hsl(var(--zone-quiet)); }
 .zone-bg-noise { background: hsl(var(--zone-noise)); }
@@ -1249,179 +1105,79 @@
 .zone-bg-static { background: hsl(var(--zone-static)); }
 .zone-bg-leaving { background: hsl(var(--zone-leaving)); }
 
-/* ── Noise room: jitter effect ── */
 @keyframes zone-jitter {
   0%, 100% { transform: translate(0, 0); }
-  10% { transform: translate(-0.5px, 0.5px); }
-  20% { transform: translate(0.5px, -0.3px); }
-  30% { transform: translate(-0.3px, -0.5px); }
-  40% { transform: translate(0.3px, 0.3px); }
-  50% { transform: translate(-0.5px, 0.2px); }
-  60% { transform: translate(0.2px, -0.5px); }
-  70% { transform: translate(-0.3px, 0.5px); }
-  80% { transform: translate(0.5px, 0px); }
-  90% { transform: translate(0px, -0.3px); }
+  10% { transform: translate(-0.3px, 0.3px); }
+  30% { transform: translate(0.3px, -0.3px); }
+  50% { transform: translate(-0.3px, 0.15px); }
+  70% { transform: translate(0.15px, -0.3px); }
+  90% { transform: translate(-0.15px, 0.15px); }
 }
 
-.zone-noise-jitter {
-  animation: zone-jitter 0.3s steps(3) infinite;
-}
+.zone-noise-jitter { animation: zone-jitter 0.3s steps(3) infinite; }
+.zone-noise-jitter .glass-premium { border-color: hsl(var(--destructive) / 0.15); }
+.zone-quiet-minimal { letter-spacing: 0.04em; line-height: 2; }
+.zone-quiet-minimal .glass-premium { background: hsl(var(--card) / 0.2); border-color: hsl(var(--primary) / 0.04); box-shadow: none; }
+.zone-discarded-ghost { filter: saturate(0.2) brightness(0.85); opacity: 0.5; }
+.zone-discarded-ghost .glass-premium { background: hsl(250 10% 20% / 0.3); }
+.zone-flood-dense .glass-premium { border-color: hsl(var(--echo) / 0.08); }
+.zone-preserved-glow .glass-premium { border-color: hsl(38 70% 50% / 0.15); box-shadow: 0 0 15px hsl(38 70% 50% / 0.05); }
 
-.zone-noise-jitter .glass-premium {
-  border-color: hsl(var(--destructive) / 0.2);
-  box-shadow: 
-    0 0 15px hsl(var(--destructive) / 0.05),
-    inset 0 0 20px hsl(var(--destructive) / 0.03);
-}
-
-/* ── Quiet room: spacious, minimal ── */
-.zone-quiet-minimal {
-  letter-spacing: 0.04em;
-  line-height: 2;
-}
-
-.zone-quiet-minimal .glass-premium {
-  background: hsl(var(--card) / 0.25);
-  border-color: hsl(var(--primary) / 0.05);
-  box-shadow: none;
-}
-
-/* ── Discarded room: ghostly grayscale ── */
-.zone-discarded-ghost {
-  filter: saturate(0.15) brightness(0.8);
-  opacity: 0.5;
-}
-
-.zone-discarded-ghost .glass-premium {
-  background: hsl(0 0% 10% / 0.35);
-  border-color: hsl(0 0% 20% / 0.1);
-}
-
-/* ── Flood room: dense stacked layout ── */
-.zone-flood-dense .glass-premium {
-  border-color: hsl(var(--echo) / 0.1);
-}
-
-/* ── Preserved room: amber glow ── */
-.zone-preserved-glow .glass-premium {
-  border-color: hsl(42 70% 45% / 0.2);
-  box-shadow: 
-    0 0 20px hsl(42 70% 45% / 0.06),
-    0 0 40px hsl(42 70% 45% / 0.03);
-}
-
-/* ── Almost Gone room: urgent pulse ── */
 @keyframes zone-urgent-pulse {
-  0%, 100% { 
-    border-color: hsl(355 50% 40% / 0.15);
-    box-shadow: 0 0 15px hsl(355 50% 40% / 0.04);
-  }
-  50% { 
-    border-color: hsl(355 50% 40% / 0.4);
-    box-shadow: 0 0 30px hsl(355 50% 40% / 0.1);
-  }
+  0%, 100% { border-color: hsl(0 45% 48% / 0.12); }
+  50% { border-color: hsl(0 45% 48% / 0.35); box-shadow: 0 0 20px hsl(0 45% 48% / 0.08); }
 }
 
-.zone-almost-gone-urgent .glass-premium {
-  animation: zone-urgent-pulse 2s ease-in-out infinite;
-  border: 1px solid hsl(355 50% 40% / 0.15);
-}
+.zone-almost-gone-urgent .glass-premium { animation: zone-urgent-pulse 2s ease-in-out infinite; border: 1px solid hsl(0 45% 48% / 0.12); }
+.zone-quiet-period-frozen { filter: saturate(0.7) contrast(0.95); }
+.zone-quiet-period-frozen .glass-premium { border-color: hsl(200 18% 42% / 0.12); }
+.zone-heavy-weighted .glass-premium { border-bottom-width: 3px; border-color: hsl(20 35% 42% / 0.2); box-shadow: 0 6px 20px hsl(250 20% 10% / 0.2); }
+.zone-late-night-deep { filter: brightness(0.92); }
+.zone-late-night-deep .glass-premium { border-color: hsl(260 25% 48% / 0.15); box-shadow: 0 0 20px hsl(260 25% 48% / 0.05); }
+.zone-backlog-clutter .glass-premium { border-color: hsl(270 18% 48% / 0.12); transform: rotate(-0.2deg); }
+.zone-backlog-clutter .glass-premium:nth-child(even) { transform: rotate(0.15deg); }
 
-/* ── Quiet Period room: frozen, timeless ── */
-.zone-quiet-period-frozen {
-  filter: saturate(0.65) contrast(0.95);
-}
-
-.zone-quiet-period-frozen .glass-premium {
-  border-color: hsl(180 20% 35% / 0.15);
-  box-shadow: inset 0 0 30px hsl(180 20% 35% / 0.03);
-}
-
-/* ── Heavy room: weighted feel ── */
-.zone-heavy-weighted .glass-premium {
-  border-bottom-width: 3px;
-  border-color: hsl(20 40% 35% / 0.25);
-  box-shadow: 0 8px 24px hsl(0 0% 0% / 0.25);
-}
-
-/* ── Late Night room: deep blue ── */
-.zone-late-night-deep {
-  filter: brightness(0.9);
-}
-
-.zone-late-night-deep .glass-premium {
-  border-color: hsl(240 30% 40% / 0.2);
-  box-shadow: 
-    0 0 25px hsl(240 30% 40% / 0.06),
-    0 0 60px hsl(240 30% 40% / 0.03);
-}
-
-/* ── Backlog room: clutter visual ── */
-.zone-backlog-clutter .glass-premium {
-  border-color: hsl(265 20% 40% / 0.15);
-  transform: rotate(-0.3deg);
-}
-
-.zone-backlog-clutter .glass-premium:nth-child(even) {
-  transform: rotate(0.2deg);
-}
-
-/* ── Rare room: shimmer ── */
 @keyframes zone-rare-shimmer {
-  0%, 100% { 
-    box-shadow: 0 0 15px hsl(270 40% 55% / 0.08);
-  }
-  50% { 
-    box-shadow: 
-      0 0 30px hsl(270 40% 55% / 0.2),
-      0 0 60px hsl(270 40% 55% / 0.06);
-  }
+  0%, 100% { box-shadow: 0 0 12px hsl(280 35% 58% / 0.06); }
+  50% { box-shadow: 0 0 25px hsl(280 35% 58% / 0.15), 0 0 50px hsl(280 35% 58% / 0.05); }
 }
 
-.zone-rare-shimmer .glass-premium {
-  animation: zone-rare-shimmer 4s ease-in-out infinite;
-  border-color: hsl(270 40% 55% / 0.15);
-}
+.zone-rare-shimmer .glass-premium { animation: zone-rare-shimmer 4s ease-in-out infinite; border-color: hsl(280 35% 58% / 0.12); }
+.zone-static-still .glass-premium { border-color: hsl(0 0% 45% / 0.2); }
+.zone-unclaimed-muted { opacity: 0.7; }
+.zone-unclaimed-muted .glass-premium { border-color: hsl(230 14% 42% / 0.1); border-style: dashed; }
 
-/* ── Static room: absolute stillness ── */
-.zone-static-still .glass-premium {
-  border-color: hsl(0 0% 35% / 0.3);
-  box-shadow: 0 0 40px hsl(0 0% 100% / 0.015);
-}
-
-/* ── Unclaimed room: muted, untouched ── */
-.zone-unclaimed-muted {
-  opacity: 0.7;
-}
-
-.zone-unclaimed-muted .glass-premium {
-  border-color: hsl(200 15% 35% / 0.12);
-  border-style: dashed;
-}
-
-/* ── Leaving room: exit gradient ── */
 @keyframes zone-leaving-fade {
   0%, 100% { opacity: 0.7; }
   50% { opacity: 0.45; }
 }
 
-.zone-leaving-exit {
-  animation: zone-leaving-fade 3s ease-in-out infinite;
-}
+.zone-leaving-exit { animation: zone-leaving-fade 3s ease-in-out infinite; }
+.zone-leaving-exit .glass-premium { border-color: hsl(240 16% 48% / 0.12); border-right-width: 3px; }
 
-.zone-leaving-exit .glass-premium {
-  border-color: hsl(210 20% 40% / 0.15);
-  border-right-width: 3px;
-}
-
-/* Zone ambient overlay — subtle color wash behind thoughts */
 .zone-ambient-overlay {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  opacity: 0.4;
+  opacity: 0.35;
   transition: background 1s ease-in-out;
+}
+
+/* Scanlines — very subtle */
+.scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1001;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 4px,
+    hsl(0 0% 0% / 0.006) 4px,
+    hsl(0 0% 0% / 0.006) 8px
+  );
+  opacity: 0.25;
 }
 
 /* =============================================
@@ -1447,12 +1203,11 @@
   cursor: none !important;
 }
 
-/* Float 3D */
 @keyframes float-3d {
   0%, 100% { transform: translateY(0) rotateX(0) rotateY(0); }
-  25% { transform: translateY(-8px) rotateX(1.5deg) rotateY(1.5deg); }
-  50% { transform: translateY(-4px) rotateX(-0.8deg) rotateY(-0.8deg); }
-  75% { transform: translateY(-12px) rotateX(0.8deg) rotateY(-1.5deg); }
+  25% { transform: translateY(-6px) rotateX(1deg) rotateY(1deg); }
+  50% { transform: translateY(-3px) rotateX(-0.5deg) rotateY(-0.5deg); }
+  75% { transform: translateY(-8px) rotateX(0.5deg) rotateY(-1deg); }
 }
 
 .float-3d {

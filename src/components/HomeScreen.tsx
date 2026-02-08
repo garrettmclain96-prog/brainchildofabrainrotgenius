@@ -9,7 +9,6 @@ interface HomeScreenProps {
   isFirstVisit: boolean;
 }
 
-// ─── Step 1: Fade-in text ───
 const FIRST_VISIT_LINES = [
   "You're not early. You're not late.",
 ];
@@ -22,7 +21,6 @@ const RETURNING_LINES = [
   "The decay doesn't pause.",
 ];
 
-// ─── Starter interaction thoughts — shown mid-decay ───
 const INTERACTION_THOUGHTS = [
   "I keep thinking I'll come back to this. I never do.",
   "This was meant for a different version of me.",
@@ -57,14 +55,12 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
     []
   );
 
-  // Fetch faded count
   useEffect(() => {
     supabase.rpc('count_faded_thoughts').then(({ data }) => {
       if (typeof data === 'number') setFadedCount(data);
     });
   }, []);
 
-  // Auto-advance through lines — Step 1
   useEffect(() => {
     if (phase >= selectedLines.length) return;
     const timer = setTimeout(() => {
@@ -78,21 +74,17 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
     setTimeout(onEnter, 800);
   }, [onEnter]);
 
-  // Step 3 → Step 4 → Step 5
   const handleInteraction = useCallback((choice: 'save' | 'rot') => {
     setInteractionChoice(choice);
-    // Step 4: Show "something else faded" message
     setTimeout(() => {
       setPostChoiceMessage(true);
     }, 600);
-    // Step 5: Rooms appear silently (enter)
     setTimeout(() => {
       setInteractionDone(true);
       setTimeout(handleEnter, 1200);
     }, 2200);
   }, [handleEnter]);
 
-  // Show Step 2 interaction after Step 1 lines are done (first visit only)
   const showInteraction = isFirstVisit && phase >= selectedLines.length && !interactionDone;
   const showEnterButton = (!isFirstVisit && phase >= selectedLines.length) || interactionDone;
 
@@ -100,7 +92,7 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
     <motion.div
       className={cn(
         'fixed inset-0 z-50 bg-background flex flex-col items-center justify-center',
-        'cursor-pointer select-none'
+        'cursor-pointer select-none overflow-hidden'
       )}
       initial={{ opacity: 1 }}
       animate={{ opacity: isExiting ? 0 : 1 }}
@@ -110,25 +102,43 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
         else if (!showInteraction) setPhase(selectedLines.length);
       }}
     >
-      {/* Subtle breathing orb */}
+      {/* Ethereal luminous orbs */}
       <motion.div
-        className="absolute w-64 h-64 rounded-full"
+        className="absolute w-96 h-96 rounded-full"
         style={{
-          background: `radial-gradient(circle, hsl(var(--${isRot ? 'destructive' : 'primary'}) / 0.04) 0%, transparent 70%)`,
+          background: `radial-gradient(circle, hsl(38 60% 55% / 0.06) 0%, hsl(330 30% 45% / 0.03) 40%, transparent 70%)`,
+          filter: 'blur(40px)',
+        }}
+        animate={{
+          scale: [1, 1.12, 1],
+          opacity: [0.4, 0.7, 0.4],
+          x: [0, 20, 0],
+          y: [0, -15, 0],
+        }}
+        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      
+      <motion.div
+        className="absolute w-72 h-72 rounded-full"
+        style={{
+          background: `radial-gradient(circle, hsl(260 30% 50% / 0.05) 0%, hsl(38 40% 50% / 0.02) 40%, transparent 70%)`,
+          filter: 'blur(50px)',
+          top: '20%',
+          right: '10%',
         }}
         animate={{
           scale: [1, 1.15, 1],
-          opacity: [0.3, 0.6, 0.3],
+          opacity: [0.3, 0.55, 0.3],
         }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+        transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
       />
 
-      {/* Title */}
+      {/* Title — display font */}
       <motion.h1
-        className="font-thought text-foreground/60 tracking-[0.3em] text-sm uppercase mb-12"
+        className="font-display text-foreground/70 tracking-[0.25em] text-lg uppercase mb-14"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1.5, delay: 0.3 }}
+        transition={{ duration: 2, delay: 0.3 }}
       >
         brainchild
       </motion.h1>
@@ -140,7 +150,7 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
             i <= phase - 1 && (
               <motion.p
                 key={line}
-                className="text-center font-thought text-muted-foreground/50 text-sm tracking-wide leading-relaxed"
+                className="text-center font-thought text-foreground/50 text-base tracking-wide leading-relaxed italic"
                 initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
                 animate={{ 
                   opacity: 0.7,
@@ -156,11 +166,11 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
         </AnimatePresence>
       </div>
 
-      {/* Faded count — ambient history */}
+      {/* Faded count */}
       <AnimatePresence>
         {fadedCount !== null && fadedCount > 0 && phase >= selectedLines.length && (
           <motion.p
-            className="text-[10px] font-thought text-muted-foreground/25 tracking-[0.15em] mt-4"
+            className="text-xs font-thought text-muted-foreground/40 tracking-[0.12em] mt-5 italic"
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
@@ -171,7 +181,7 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
         )}
       </AnimatePresence>
 
-      {/* Step 2 & 3: First-time interaction — a decaying thought */}
+      {/* First-time interaction */}
       <AnimatePresence>
         {showInteraction && (
           <motion.div
@@ -182,10 +192,8 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
             transition={{ duration: 0.8, delay: 0.5 }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* The thought card at ~35% decay */}
-            <div className="glass-premium rounded-xl p-4 mb-4 relative overflow-hidden">
-              {/* Decay bar — ticking countdown */}
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-secondary/10 overflow-hidden rounded-t-xl">
+            <div className="glass-premium rounded-2xl p-5 mb-4 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-secondary/10 overflow-hidden rounded-t-2xl">
                 <motion.div
                   className="h-full rounded-full"
                   style={{ background: 'hsl(var(--decay-fading))' }}
@@ -195,18 +203,17 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
                 />
               </div>
 
-              <p className="font-thought text-sm text-card-foreground/80 leading-relaxed tracking-wide">
+              <p className="font-thought text-base text-card-foreground/80 leading-relaxed tracking-wide italic">
                 {interactionThought}
               </p>
 
-              <div className="mt-2 flex items-center gap-2 text-[9px] font-thought text-muted-foreground/25 tracking-wider">
+              <div className="mt-3 flex items-center gap-2 text-[10px] font-sans text-muted-foreground/30 tracking-wider">
                 <span>unclaimed</span>
                 <span>·</span>
                 <span>fading</span>
               </div>
             </div>
 
-            {/* Step 3: Two buttons only — no tooltips */}
             <AnimatePresence>
               {!interactionChoice && (
                 <motion.div
@@ -218,18 +225,18 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
                 >
                   <motion.button
                     onClick={() => handleInteraction('rot')}
-                    className="px-4 py-2 rounded-xl text-xs font-thought text-muted-foreground/50 
-                               border border-border/20 hover:border-border/40 hover:text-muted-foreground/70
-                               transition-all duration-500"
+                    className="px-5 py-2.5 rounded-xl text-sm font-thought text-foreground/50 
+                               border border-foreground/10 hover:border-foreground/20 hover:text-foreground/70
+                               transition-all duration-500 italic"
                     whileTap={{ scale: 0.95 }}
                   >
                     let it rot
                   </motion.button>
                   <motion.button
                     onClick={() => handleInteraction('save')}
-                    className="px-4 py-2 rounded-xl text-xs font-thought text-muted-foreground/40 
-                               border border-border/15 hover:border-border/30 hover:text-muted-foreground/60
-                               transition-all duration-500"
+                    className="px-5 py-2.5 rounded-xl text-sm font-thought text-foreground/40 
+                               border border-foreground/08 hover:border-foreground/15 hover:text-foreground/60
+                               transition-all duration-500 italic"
                     whileTap={{ scale: 0.95 }}
                   >
                     save
@@ -238,11 +245,10 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
               )}
             </AnimatePresence>
 
-            {/* Step 4: Post-choice message */}
             <AnimatePresence>
               {interactionChoice && !postChoiceMessage && (
                 <motion.p
-                  className="text-center text-[10px] font-thought text-muted-foreground/30 tracking-wider mt-2"
+                  className="text-center text-xs font-thought text-foreground/30 tracking-wider mt-3 italic"
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6 }}
@@ -252,7 +258,7 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
               )}
               {postChoiceMessage && (
                 <motion.p
-                  className="text-center text-[10px] font-thought text-muted-foreground/30 tracking-wider mt-2"
+                  className="text-center text-xs font-thought text-foreground/30 tracking-wider mt-3 italic"
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
@@ -265,9 +271,9 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
         )}
       </AnimatePresence>
 
-      {/* Enter prompt (returning users, or after interaction) */}
+      {/* Enter prompt */}
       <motion.div
-        className="absolute bottom-12 flex flex-col items-center gap-2"
+        className="absolute bottom-14 flex flex-col items-center gap-2"
         initial={{ opacity: 0 }}
         animate={{ opacity: showEnterButton ? 1 : 0 }}
         transition={{ duration: 1, delay: 0.3 }}
@@ -277,9 +283,9 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
             e.stopPropagation();
             handleEnter();
           }}
-          className="px-6 py-2.5 rounded-xl text-xs font-thought text-muted-foreground/40 
-                     border border-border/20 hover:border-border/40 hover:text-muted-foreground/60
-                     transition-all duration-700"
+          className="px-7 py-3 rounded-2xl text-sm font-thought text-foreground/50 
+                     border border-foreground/10 hover:border-primary/30 hover:text-foreground/70
+                     transition-all duration-700 hover:shadow-[0_0_20px_hsl(38_75%_65%_/_0.1)] italic"
           whileTap={{ scale: 0.95 }}
         >
           enter
@@ -288,9 +294,9 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
 
       {/* Ambient status */}
       <motion.p
-        className="absolute bottom-4 text-[10px] font-thought text-muted-foreground/12 tracking-widest"
+        className="absolute bottom-5 text-[10px] font-sans text-muted-foreground/20 tracking-widest"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 0.5 }}
+        animate={{ opacity: 0.4 }}
         transition={{ duration: 3, delay: 1 }}
       >
         things are always disappearing
