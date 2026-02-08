@@ -70,9 +70,9 @@ export default function ConnectDashboard() {
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
 
-  // PLACEHOLDER: Set this to your actual Stripe Price ID for the platform subscription
-  // Create a product + price in your Stripe Dashboard, then paste the price_xxx ID here
-  const PLATFORM_PRICE_ID = "price_PLACEHOLDER_SET_YOUR_PRICE_ID";
+  // Platform subscription price ID — created via Stripe API
+  // Product: "Brainchild Platform Subscription" (prod_TwJSGjju5v6x3a) — $9.99/month
+  const PLATFORM_PRICE_ID = "price_1SyQp8C1A9HaROZtqOcQvbjV";
 
   // -------------------------------------------------------------------
   // Load connected accounts from the database on mount
