@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Thought, Echo, DecaySpeed, DecayMode, ThoughtZone, DECAY_DURATIONS, ECHO_DECAY_DURATION } from '@/types/thought';
+import { Thought, Echo, DecaySpeed, DecayMode, ThoughtZone, DECAY_DURATIONS, ECHO_DECAY_DURATION, ZONE_META } from '@/types/thought';
 import { getSessionId } from '@/hooks/useSessionId';
 
 interface PublicFogState {
@@ -22,10 +22,11 @@ export function usePublicFog() {
     fadedCount: 0,
   });
 
-  // Fetch thoughts and echoes
+  // Track if "rare" room should be visible this session
+  const [rareVisible] = useState(() => Math.random() < 0.15);
+
   const fetchData = useCallback(async () => {
     try {
-      // Fetch thoughts with calculated decay (use the view)
       const { data: thoughtsData, error: thoughtsError } = await supabase
         .from('thoughts_with_decay')
         .select('*')
@@ -33,7 +34,6 @@ export function usePublicFog() {
 
       if (thoughtsError) throw thoughtsError;
 
-      // Fetch echoes
       const { data: echoesData, error: echoesError } = await supabase
         .from('echoes_with_info')
         .select('*')
@@ -41,10 +41,8 @@ export function usePublicFog() {
 
       if (echoesError) throw echoesError;
 
-      // Fetch faded count
       const { data: fadedData } = await supabase.rpc('count_faded_thoughts');
 
-      // Transform data
       const thoughts: Thought[] = (thoughtsData || []).map((t: any) => ({
         id: t.id!,
         content: t.content!,
@@ -60,7 +58,6 @@ export function usePublicFog() {
         zone: (t.zone || 'overflow') as ThoughtZone,
       }));
 
-      // Group echoes by thought
       const echoMap = new Map<string, Echo[]>();
       (echoesData || []).forEach((e: any) => {
         const echo: Echo = {
@@ -92,31 +89,21 @@ export function usePublicFog() {
     }
   }, []);
 
-  // Initial fetch and periodic refresh
   useEffect(() => {
     fetchData();
     const interval = setInterval(fetchData, 10000);
     return () => clearInterval(interval);
   }, [fetchData]);
 
-  // Subscribe to real-time changes
   useEffect(() => {
     const thoughtsChannel = supabase
       .channel('public-thoughts-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'public_thoughts' },
-        () => fetchData()
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'public_thoughts' }, () => fetchData())
       .subscribe();
 
     const echoesChannel = supabase
       .channel('echoes-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'echoes' },
-        () => fetchData()
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'echoes' }, () => fetchData())
       .subscribe();
 
     return () => {
@@ -125,19 +112,57 @@ export function usePublicFog() {
     };
   }, [fetchData]);
 
-  // Filter thoughts by active zone
+  // Filter thoughts by active zone — with zone-specific sorting
   const filteredThoughts = useMemo(() => {
-    const result = state.thoughts.filter((t) => t.zone === state.activeZone);
-    // Randomize order for anti-feed behavior
-    return result.sort(() => Math.random() - 0.5);
+    let result = state.thoughts.filter((t) => t.zone === state.activeZone);
+
+    // Zone-specific display behaviors
+    const zoneMeta = ZONE_META[state.activeZone];
+    
+    switch (state.activeZone) {
+      case 'almost-gone':
+        // Only show thoughts with <10% remaining
+        result = state.thoughts.filter((t) => t.decayLevel >= 90);
+        result.sort((a, b) => b.decayLevel - a.decayLevel);
+        break;
+      case 'noise':
+        // Shuffle — chaotic
+        result.sort(() => Math.random() - 0.5);
+        break;
+      case 'quiet':
+        // Shortest thoughts first, slow reveal
+        result.sort((a, b) => a.content.length - b.content.length);
+        break;
+      case 'preserved':
+      case 'static':
+      case 'quiet-period':
+      case 'discarded':
+        // Stable order — oldest first
+        result.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+        break;
+      case 'flood':
+        // Newest first — high volume feel
+        result.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        break;
+      default:
+        // Anti-feed random
+        result.sort(() => Math.random() - 0.5);
+        break;
+    }
+
+    return result;
   }, [state.thoughts, state.activeZone]);
 
   // Zone counts for subtle indicators
   const zoneCounts = useMemo(() => {
-    const counts: Record<ThoughtZone, number> = { overflow: 0, quiet: 0, noise: 0, preserved: 0 };
+    const counts: Partial<Record<ThoughtZone, number>> = {};
     state.thoughts.forEach((t) => {
-      if (t.zone) counts[t.zone]++;
+      if (t.zone) {
+        counts[t.zone] = (counts[t.zone] || 0) + 1;
+      }
     });
+    // Add "almost-gone" virtual count
+    counts['almost-gone'] = state.thoughts.filter((t) => t.decayLevel >= 90).length;
     return counts;
   }, [state.thoughts]);
 
@@ -156,17 +181,17 @@ export function usePublicFog() {
     const now = new Date();
     const expiresAt = new Date(now.getTime() + DECAY_DURATIONS[decaySpeed] * 60 * 1000);
 
-    // Determine zone based on decay speed and content length
+    // Determine zone based on decay speed, content, and time
     let zone: ThoughtZone = 'overflow';
-    if (decaySpeed === 'fast') zone = 'noise';
+    const hour = now.getHours();
+    
+    if (decaySpeed === 'fast' || decaySpeed === 'sink') zone = 'noise';
     else if (trimmedContent.length < 40) zone = 'quiet';
+    else if (hour >= 22 || hour < 6) zone = 'late-night';
 
     const { error: rateLimitError } = await supabase
       .from('rate_limits')
-      .insert({
-        session_id: sessionId,
-        action_type: 'thought',
-      });
+      .insert({ session_id: sessionId, action_type: 'thought' });
 
     if (rateLimitError) {
       console.error('Rate limit tracking error:', rateLimitError);
@@ -189,7 +214,6 @@ export function usePublicFog() {
       if (error.message?.includes('rate') || error.code === '42501') {
         throw new Error('Rate limit exceeded. Please wait before posting again.');
       }
-      console.error('Error creating thought:', error);
       throw error;
     }
 
@@ -210,10 +234,7 @@ export function usePublicFog() {
 
     const { error: rateLimitError } = await supabase
       .from('rate_limits')
-      .insert({
-        session_id: sessionId,
-        action_type: 'echo',
-      });
+      .insert({ session_id: sessionId, action_type: 'echo' });
 
     if (rateLimitError) {
       console.error('Rate limit tracking error:', rateLimitError);
@@ -232,7 +253,6 @@ export function usePublicFog() {
       if (error.message?.includes('rate') || error.code === '42501') {
         throw new Error('Rate limit exceeded. Please wait before echoing again.');
       }
-      console.error('Error creating echo:', error);
       throw error;
     }
 
@@ -257,5 +277,6 @@ export function usePublicFog() {
     addEcho,
     createPublicThought,
     totalCount: state.thoughts.length,
+    rareVisible,
   };
 }

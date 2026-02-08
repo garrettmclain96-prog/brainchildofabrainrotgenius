@@ -6,19 +6,21 @@ interface AmbientLogProps {
   starredCount: number;
 }
 
+// ─── Rotating ambient system copy ───
 const AMBIENT_MESSAGES = [
   'things are always disappearing.',
-  'something faded while you weren\'t looking.',
-  'the rot continued.',
-  'a thought survived longer than expected.',
-  'most things don\'t last.',
-  'nothing here is permanent.',
-  'decay is not loss.',
-  'the fog shifted.',
-  'something was released.',
-  'silence is also an answer.',
+  'something faded while you were here.',
+  'not everything survives.',
   'you\'re seeing what remains.',
-  'not everything is meant to last.',
+  'most thoughts don\'t last.',
+  'this used to be louder.',
+  'you missed a few.',
+  'things disappear even when you\'re watching.',
+  'this is quieter than it used to be.',
+  'you can\'t save everything.',
+  'some things aren\'t meant to stay.',
+  'this has already changed.',
+  'you\'re arriving mid-process.',
   'something faded while you were reading.',
   'the overflow doesn\'t judge.',
   'most of this will be gone by morning.',
@@ -33,6 +35,15 @@ const AMBIENT_MESSAGES = [
   'something was let go. it felt intentional.',
   'a thought from the quiet period resurfaced.',
   'the preserved room rarely changes.',
+  'something was released.',
+  'silence is also an answer.',
+  'not everything is meant to last.',
+  'decay is not loss.',
+  'the rot continued.',
+  'a thought survived longer than expected.',
+  'most things don\'t last.',
+  'nothing here is permanent.',
+  'the fog shifted.',
 ];
 
 const CONTEXTUAL_MESSAGES: Array<{
@@ -70,7 +81,6 @@ export function AmbientLog({ thoughtCount, starredCount }: AmbientLogProps) {
   const [currentMessage, setCurrentMessage] = useState('');
   const [isVisible, setIsVisible] = useState(false);
 
-  // Pick a message that fits the current state
   const pickMessage = useMemo(() => {
     for (const ctx of CONTEXTUAL_MESSAGES) {
       if (ctx.condition({ thoughtCount, starredCount })) {
@@ -93,7 +103,7 @@ export function AmbientLog({ thoughtCount, starredCount }: AmbientLogProps) {
         setCurrentMessage(msg);
         setIsVisible(true);
       }, 1500);
-    }, 20000 + Math.random() * 20000);
+    }, 18000 + Math.random() * 15000);
 
     return () => {
       clearTimeout(showTimer);

@@ -9,10 +9,9 @@ interface HomeScreenProps {
   isFirstVisit: boolean;
 }
 
+// ─── Step 1: Fade-in text ───
 const FIRST_VISIT_LINES = [
   "You're not early. You're not late.",
-  "Things have been decaying here for a while.",
-  "Some thoughts survived. Most didn't.",
 ];
 
 const RETURNING_LINES = [
@@ -23,15 +22,7 @@ const RETURNING_LINES = [
   "The decay doesn't pause.",
 ];
 
-const ERA_HINTS = [
-  'from the quiet period',
-  'recovered fragment',
-  'unclaimed rot',
-  'survived 17 days',
-  'origin unknown',
-];
-
-// Starter interaction thought — shown mid-decay on first visit
+// ─── Starter interaction thoughts — shown mid-decay ───
 const INTERACTION_THOUGHTS = [
   "I keep thinking I'll come back to this. I never do.",
   "This was meant for a different version of me.",
@@ -51,13 +42,14 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
   const [fadedCount, setFadedCount] = useState<number | null>(null);
   const [interactionDone, setInteractionDone] = useState(false);
   const [interactionChoice, setInteractionChoice] = useState<'save' | 'rot' | null>(null);
+  const [postChoiceMessage, setPostChoiceMessage] = useState(false);
   const { mode } = useAppMode();
   const isRot = mode === 'rot';
 
   const selectedLines = useMemo(() => {
     if (isFirstVisit) return FIRST_VISIT_LINES;
     const shuffled = [...RETURNING_LINES].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 2);
+    return shuffled.slice(0, 1);
   }, [isFirstVisit]);
 
   const interactionThought = useMemo(
@@ -72,12 +64,12 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
     });
   }, []);
 
-  // Auto-advance through lines
+  // Auto-advance through lines — Step 1
   useEffect(() => {
     if (phase >= selectedLines.length) return;
     const timer = setTimeout(() => {
       setPhase((p) => p + 1);
-    }, phase === 0 ? 2800 : 2200);
+    }, 2800);
     return () => clearTimeout(timer);
   }, [phase, selectedLines.length]);
 
@@ -86,18 +78,21 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
     setTimeout(onEnter, 800);
   }, [onEnter]);
 
+  // Step 3 → Step 4 → Step 5
   const handleInteraction = useCallback((choice: 'save' | 'rot') => {
     setInteractionChoice(choice);
+    // Step 4: Show "something else faded" message
+    setTimeout(() => {
+      setPostChoiceMessage(true);
+    }, 600);
+    // Step 5: Rooms appear silently (enter)
     setTimeout(() => {
       setInteractionDone(true);
-      // Auto-enter after a moment
       setTimeout(handleEnter, 1200);
-    }, 800);
+    }, 2200);
   }, [handleEnter]);
 
-  const eraHint = useMemo(() => ERA_HINTS[Math.floor(Math.random() * ERA_HINTS.length)], []);
-
-  // Show interaction after lines are done (first visit only)
+  // Show Step 2 interaction after Step 1 lines are done (first visit only)
   const showInteraction = isFirstVisit && phase >= selectedLines.length && !interactionDone;
   const showEnterButton = (!isFirstVisit && phase >= selectedLines.length) || interactionDone;
 
@@ -138,8 +133,8 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
         brainchild
       </motion.h1>
 
-      {/* Lines container */}
-      <div className="relative h-32 flex flex-col items-center justify-center gap-4 px-8">
+      {/* Step 1: Lines */}
+      <div className="relative h-20 flex flex-col items-center justify-center gap-4 px-8">
         <AnimatePresence mode="wait">
           {selectedLines.map((line, i) => (
             i <= phase - 1 && (
@@ -148,7 +143,7 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
                 className="text-center font-thought text-muted-foreground/50 text-sm tracking-wide leading-relaxed"
                 initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
                 animate={{ 
-                  opacity: i === phase - 1 ? 0.7 : 0.3,
+                  opacity: 0.7,
                   y: 0, 
                   filter: 'blur(0px)' 
                 }}
@@ -176,7 +171,7 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
         )}
       </AnimatePresence>
 
-      {/* First-time interaction — a decaying thought */}
+      {/* Step 2 & 3: First-time interaction — a decaying thought */}
       <AnimatePresence>
         {showInteraction && (
           <motion.div
@@ -187,16 +182,16 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
             transition={{ duration: 0.8, delay: 0.5 }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* The thought card */}
+            {/* The thought card at ~35% decay */}
             <div className="glass-premium rounded-xl p-4 mb-4 relative overflow-hidden">
-              {/* Decay bar — ticking */}
+              {/* Decay bar — ticking countdown */}
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-secondary/10 overflow-hidden rounded-t-xl">
                 <motion.div
-                  className="h-full rounded-full bg-decay-fading"
+                  className="h-full rounded-full"
                   style={{ background: 'hsl(var(--decay-fading))' }}
-                  initial={{ width: '60%' }}
-                  animate={{ width: '35%' }}
-                  transition={{ duration: 8, ease: 'linear' }}
+                  initial={{ width: '65%' }}
+                  animate={{ width: '30%' }}
+                  transition={{ duration: 10, ease: 'linear' }}
                 />
               </div>
 
@@ -211,7 +206,7 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
               </div>
             </div>
 
-            {/* Choice buttons */}
+            {/* Step 3: Two buttons only — no tooltips */}
             <AnimatePresence>
               {!interactionChoice && (
                 <motion.div
@@ -243,9 +238,9 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
               )}
             </AnimatePresence>
 
-            {/* Choice feedback */}
+            {/* Step 4: Post-choice message */}
             <AnimatePresence>
-              {interactionChoice && (
+              {interactionChoice && !postChoiceMessage && (
                 <motion.p
                   className="text-center text-[10px] font-thought text-muted-foreground/30 tracking-wider mt-2"
                   initial={{ opacity: 0, y: 5 }}
@@ -255,22 +250,22 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
                   {interactionChoice === 'rot' ? 'lighter.' : 'heavier.'}
                 </motion.p>
               )}
+              {postChoiceMessage && (
+                <motion.p
+                  className="text-center text-[10px] font-thought text-muted-foreground/30 tracking-wider mt-2"
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8 }}
+                >
+                  something else faded while you decided.
+                </motion.p>
+              )}
             </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Era hint — tiny lore crumb */}
-      <motion.span
-        className="absolute bottom-24 text-[9px] font-thought text-muted-foreground/15 tracking-[0.2em] italic"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: showEnterButton ? 1 : 0 }}
-        transition={{ duration: 1.5, delay: 0.5 }}
-      >
-        {eraHint}
-      </motion.span>
-
-      {/* Enter prompt */}
+      {/* Enter prompt (returning users, or after interaction) */}
       <motion.div
         className="absolute bottom-12 flex flex-col items-center gap-2"
         initial={{ opacity: 0 }}
