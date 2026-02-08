@@ -13,11 +13,13 @@
  *   - accountId: Pre-select a connected account after onboarding return
  */
 
-import { useState, useEffect, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useSearchParams, Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { stripeConnect } from "@/lib/stripe-connect";
 import { getSessionId } from "@/hooks/useSessionId";
 import { supabase } from "@/integrations/supabase/client";
+import { FogBackground } from "@/components/FogBackground";
 
 // -------------------------------------------------------------------
 // Types for the dashboard state
@@ -45,6 +47,18 @@ interface Product {
   unitAmount: number;
   currency: string;
 }
+
+const smoothEase: [number, number, number, number] = [0.23, 1, 0.32, 1];
+
+const sectionVariants = {
+  hidden: { opacity: 0, y: 20, filter: "blur(6px)" },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.6, ease: smoothEase, delay: i * 0.1 },
+  }),
+};
 
 export default function ConnectDashboard() {
   const [searchParams] = useSearchParams();
@@ -167,7 +181,7 @@ export default function ConnectDashboard() {
         contactEmail: createEmail,
       });
 
-      setSuccess(`Account created: ${result.accountId}`);
+      setSuccess(`account created: ${result.accountId}`);
       setCreateName("");
       setCreateEmail("");
       await loadAccounts();
@@ -186,7 +200,6 @@ export default function ConnectDashboard() {
 
     try {
       const result = await stripeConnect.createOnboardingLink(selectedAccount);
-      // Redirect to Stripe's hosted onboarding
       window.location.href = result.url;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create onboarding link");
@@ -215,7 +228,7 @@ export default function ConnectDashboard() {
         priceInCents,
       });
 
-      setSuccess(`Product created: ${result.name}`);
+      setSuccess(`product created: ${result.name}`);
       setProductName("");
       setProductDescription("");
       setProductPrice("");
@@ -269,411 +282,325 @@ export default function ConnectDashboard() {
   };
 
   // -------------------------------------------------------------------
+  // Section index counter for staggered animations
+  // -------------------------------------------------------------------
+  let sectionIndex = 0;
+
+  // -------------------------------------------------------------------
   // Render
   // -------------------------------------------------------------------
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        padding: "2rem",
-        fontFamily: "'DM Sans', 'Inter', system-ui, sans-serif",
-        maxWidth: "800px",
-        margin: "0 auto",
-      }}
-      className="bg-background text-foreground"
-    >
-      <h1
-        style={{ fontSize: "1.75rem", fontWeight: 600, marginBottom: "0.5rem" }}
-        className="text-foreground"
-      >
-        Stripe Connect Dashboard
-      </h1>
-      <p style={{ marginBottom: "2rem", opacity: 0.6 }} className="text-muted-foreground">
-        Manage your connected accounts, products, and subscriptions.
-      </p>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Atmospheric background layers */}
+      <FogBackground />
+      <div className="noise-overlay" />
+      <div className="vignette" />
 
-      {/* Error / Success messages */}
-      {error && (
-        <div
-          style={{
-            padding: "0.75rem 1rem",
-            borderRadius: "0.5rem",
-            marginBottom: "1rem",
-            border: "1px solid",
-          }}
-          className="bg-destructive/10 border-destructive/30 text-destructive"
+      {/* Content */}
+      <div className="relative z-10 px-6 py-8 pb-28 max-w-lg mx-auto">
+        {/* Header */}
+        <motion.header
+          className="mb-8"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: smoothEase }}
         >
-          {error}
-        </div>
-      )}
-      {success && (
-        <div
-          style={{
-            padding: "0.75rem 1rem",
-            borderRadius: "0.5rem",
-            marginBottom: "1rem",
-            border: "1px solid",
-          }}
-          className="bg-decay-fresh/10 border-decay-fresh/30 text-decay-fresh"
-        >
-          {success}
-        </div>
-      )}
+          <h1 className="font-display text-foreground/70 tracking-[0.2em] text-lg uppercase mb-1">
+            connect
+          </h1>
+          <p className="text-xs font-thought text-muted-foreground/40 tracking-wider italic">
+            manage accounts, products, and subscriptions
+          </p>
+        </motion.header>
 
-      {/* ============================================================= */}
-      {/* SECTION 1: Create Connected Account */}
-      {/* ============================================================= */}
-      <section
-        style={{
-          padding: "1.5rem",
-          borderRadius: "0.75rem",
-          marginBottom: "1.5rem",
-          border: "1px solid",
-        }}
-        className="bg-card border-border"
-      >
-        <h2 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: "1rem" }}>
-          Create Connected Account
-        </h2>
-        <form onSubmit={handleCreateAccount} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-          <input
-            type="text"
-            placeholder="Display Name"
-            value={createName}
-            onChange={(e) => setCreateName(e.target.value)}
-            required
-            style={{
-              padding: "0.6rem 0.8rem",
-              borderRadius: "0.5rem",
-              border: "1px solid",
-              fontSize: "0.9rem",
-            }}
-            className="bg-input border-border text-foreground placeholder:text-muted-foreground"
-          />
-          <input
-            type="email"
-            placeholder="Contact Email"
-            value={createEmail}
-            onChange={(e) => setCreateEmail(e.target.value)}
-            required
-            style={{
-              padding: "0.6rem 0.8rem",
-              borderRadius: "0.5rem",
-              border: "1px solid",
-              fontSize: "0.9rem",
-            }}
-            className="bg-input border-border text-foreground placeholder:text-muted-foreground"
-          />
-          <button
-            type="submit"
-            disabled={loading.create}
-            style={{
-              padding: "0.6rem 1.2rem",
-              borderRadius: "0.5rem",
-              border: "none",
-              cursor: "pointer",
-              fontSize: "0.9rem",
-              fontWeight: 500,
-              opacity: loading.create ? 0.6 : 1,
-            }}
-            className="bg-primary text-primary-foreground"
-          >
-            {loading.create ? "Creating..." : "Create Account"}
-          </button>
-        </form>
-      </section>
-
-      {/* ============================================================= */}
-      {/* SECTION 2: Select Account & Onboarding Status */}
-      {/* ============================================================= */}
-      {accounts.length > 0 && (
-        <section
-          style={{
-            padding: "1.5rem",
-            borderRadius: "0.75rem",
-            marginBottom: "1.5rem",
-            border: "1px solid",
-          }}
-          className="bg-card border-border"
-        >
-          <h2 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: "1rem" }}>
-            Account & Onboarding
-          </h2>
-
-          {/* Account selector */}
-          <select
-            value={selectedAccount}
-            onChange={(e) => setSelectedAccount(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "0.6rem 0.8rem",
-              borderRadius: "0.5rem",
-              border: "1px solid",
-              fontSize: "0.9rem",
-              marginBottom: "1rem",
-            }}
-            className="bg-input border-border text-foreground"
-          >
-            {accounts.map((acc) => (
-              <option key={acc.stripe_account_id} value={acc.stripe_account_id}>
-                {acc.display_name} ({acc.stripe_account_id})
-              </option>
-            ))}
-          </select>
-
-          {/* Onboarding status */}
-          {loading.status ? (
-            <p style={{ opacity: 0.5 }}>Loading status...</p>
-          ) : accountStatus ? (
-            <div style={{ marginBottom: "1rem" }}>
-              <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "0.75rem" }}>
-                <StatusBadge
-                  label="Onboarding"
-                  active={accountStatus.onboardingComplete}
-                  activeText="Complete"
-                  inactiveText={accountStatus.requirementsStatus || "Incomplete"}
-                />
-                <StatusBadge
-                  label="Payments"
-                  active={accountStatus.readyToProcessPayments}
-                  activeText="Active"
-                  inactiveText="Not Ready"
-                />
-              </div>
-
-              {!accountStatus.onboardingComplete && (
-                <button
-                  onClick={handleOnboard}
-                  disabled={loading.onboard}
-                  style={{
-                    padding: "0.6rem 1.2rem",
-                    borderRadius: "0.5rem",
-                    border: "none",
-                    cursor: "pointer",
-                    fontSize: "0.9rem",
-                    fontWeight: 500,
-                    opacity: loading.onboard ? 0.6 : 1,
-                  }}
-                  className="bg-primary text-primary-foreground"
-                >
-                  {loading.onboard ? "Redirecting..." : "Onboard to Collect Payments"}
-                </button>
-              )}
-            </div>
-          ) : null}
-
-          {/* View storefront link */}
-          {selectedAccount && (
-            <a
-              href={`/connect/store/${selectedAccount}`}
-              style={{
-                display: "inline-block",
-                padding: "0.5rem 1rem",
-                borderRadius: "0.5rem",
-                fontSize: "0.85rem",
-                textDecoration: "none",
-                border: "1px solid",
-              }}
-              className="border-border text-muted-foreground hover:text-foreground"
+        {/* Error / Success messages */}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              className="glass-premium rounded-xl p-3 mb-4 border border-destructive/20 text-destructive/80 text-sm font-thought italic tracking-wide"
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              transition={{ duration: 0.3 }}
             >
-              {/* TODO: In production, use a readable slug instead of the Stripe account ID */}
-              View Storefront →
-            </a>
+              {error}
+            </motion.div>
           )}
-        </section>
-      )}
-
-      {/* ============================================================= */}
-      {/* SECTION 3: Create Products */}
-      {/* ============================================================= */}
-      {selectedAccount && accountStatus?.readyToProcessPayments && (
-        <section
-          style={{
-            padding: "1.5rem",
-            borderRadius: "0.75rem",
-            marginBottom: "1.5rem",
-            border: "1px solid",
-          }}
-          className="bg-card border-border"
-        >
-          <h2 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: "1rem" }}>
-            Create Product
-          </h2>
-          <form onSubmit={handleCreateProduct} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-            <input
-              type="text"
-              placeholder="Product Name"
-              value={productName}
-              onChange={(e) => setProductName(e.target.value)}
-              required
-              style={{
-                padding: "0.6rem 0.8rem",
-                borderRadius: "0.5rem",
-                border: "1px solid",
-                fontSize: "0.9rem",
-              }}
-              className="bg-input border-border text-foreground placeholder:text-muted-foreground"
-            />
-            <input
-              type="text"
-              placeholder="Description (optional)"
-              value={productDescription}
-              onChange={(e) => setProductDescription(e.target.value)}
-              style={{
-                padding: "0.6rem 0.8rem",
-                borderRadius: "0.5rem",
-                border: "1px solid",
-                fontSize: "0.9rem",
-              }}
-              className="bg-input border-border text-foreground placeholder:text-muted-foreground"
-            />
-            <input
-              type="number"
-              placeholder="Price (USD)"
-              value={productPrice}
-              onChange={(e) => setProductPrice(e.target.value)}
-              required
-              min="0.50"
-              step="0.01"
-              style={{
-                padding: "0.6rem 0.8rem",
-                borderRadius: "0.5rem",
-                border: "1px solid",
-                fontSize: "0.9rem",
-              }}
-              className="bg-input border-border text-foreground placeholder:text-muted-foreground"
-            />
-            <button
-              type="submit"
-              disabled={loading.createProduct}
-              style={{
-                padding: "0.6rem 1.2rem",
-                borderRadius: "0.5rem",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "0.9rem",
-                fontWeight: 500,
-                opacity: loading.createProduct ? 0.6 : 1,
-              }}
-              className="bg-primary text-primary-foreground"
+        </AnimatePresence>
+        <AnimatePresence>
+          {success && (
+            <motion.div
+              className="glass-premium rounded-xl p-3 mb-4 border border-decay-fresh/20 text-decay-fresh/80 text-sm font-thought italic tracking-wide"
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              transition={{ duration: 0.3 }}
             >
-              {loading.createProduct ? "Creating..." : "Create Product"}
-            </button>
-          </form>
+              {success}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-          {/* Product list */}
-          {products.length > 0 && (
-            <div style={{ marginTop: "1.5rem" }}>
-              <h3 style={{ fontSize: "0.95rem", fontWeight: 500, marginBottom: "0.75rem", opacity: 0.7 }}>
-                Your Products
-              </h3>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                {products.map((product) => (
-                  <div
+        {/* ============================================================= */}
+        {/* SECTION 1: Create Connected Account */}
+        {/* ============================================================= */}
+        <motion.section
+          className="glass-premium rounded-2xl p-5 mb-5"
+          custom={sectionIndex++}
+          variants={sectionVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <h2 className="text-sm font-thought text-foreground/60 tracking-wider mb-4 italic">
+            create account
+          </h2>
+          <form onSubmit={handleCreateAccount} className="flex flex-col gap-3">
+            <input
+              type="text"
+              placeholder="display name"
+              value={createName}
+              onChange={(e) => setCreateName(e.target.value)}
+              required
+              className="w-full px-4 py-3 rounded-xl bg-background/30 border border-border/30 text-foreground/80 placeholder:text-muted-foreground/30 text-sm font-thought tracking-wide focus:outline-none focus:border-primary/30 transition-all duration-500"
+            />
+            <input
+              type="email"
+              placeholder="contact email"
+              value={createEmail}
+              onChange={(e) => setCreateEmail(e.target.value)}
+              required
+              className="w-full px-4 py-3 rounded-xl bg-background/30 border border-border/30 text-foreground/80 placeholder:text-muted-foreground/30 text-sm font-thought tracking-wide focus:outline-none focus:border-primary/30 transition-all duration-500"
+            />
+            <motion.button
+              type="submit"
+              disabled={loading.create}
+              className="w-full px-4 py-3 rounded-xl bg-primary/20 border border-primary/20 text-foreground/60 text-sm font-thought tracking-wider italic hover:bg-primary/30 hover:border-primary/30 hover:text-foreground/80 transition-all duration-700 disabled:opacity-40"
+              whileTap={{ scale: 0.98 }}
+            >
+              {loading.create ? "creating..." : "create account"}
+            </motion.button>
+          </form>
+        </motion.section>
+
+        {/* ============================================================= */}
+        {/* SECTION 2: Select Account & Onboarding Status */}
+        {/* ============================================================= */}
+        {accounts.length > 0 && (
+          <motion.section
+            className="glass-premium rounded-2xl p-5 mb-5"
+            custom={sectionIndex++}
+            variants={sectionVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <h2 className="text-sm font-thought text-foreground/60 tracking-wider mb-4 italic">
+              account & onboarding
+            </h2>
+
+            {/* Account selector */}
+            <select
+              value={selectedAccount}
+              onChange={(e) => setSelectedAccount(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl bg-background/30 border border-border/30 text-foreground/70 text-sm font-thought tracking-wide mb-4 focus:outline-none focus:border-primary/30 transition-all duration-500 appearance-none"
+            >
+              {accounts.map((acc) => (
+                <option key={acc.stripe_account_id} value={acc.stripe_account_id}>
+                  {acc.display_name} · {acc.stripe_account_id}
+                </option>
+              ))}
+            </select>
+
+            {/* Onboarding status */}
+            {loading.status ? (
+              <p className="text-xs font-thought text-muted-foreground/30 italic tracking-wider">
+                loading status...
+              </p>
+            ) : accountStatus ? (
+              <div className="mb-4">
+                <div className="flex gap-3 flex-wrap mb-4">
+                  <StatusBadge
+                    label="onboarding"
+                    active={accountStatus.onboardingComplete}
+                    activeText="complete"
+                    inactiveText={accountStatus.requirementsStatus || "incomplete"}
+                  />
+                  <StatusBadge
+                    label="payments"
+                    active={accountStatus.readyToProcessPayments}
+                    activeText="active"
+                    inactiveText="not ready"
+                  />
+                </div>
+
+                {!accountStatus.onboardingComplete && (
+                  <motion.button
+                    onClick={handleOnboard}
+                    disabled={loading.onboard}
+                    className="px-5 py-2.5 rounded-xl text-sm font-thought text-foreground/60 border border-primary/20 hover:border-primary/40 hover:text-foreground/80 transition-all duration-700 italic tracking-wide disabled:opacity-40"
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {loading.onboard ? "redirecting..." : "onboard to collect payments"}
+                  </motion.button>
+                )}
+              </div>
+            ) : null}
+
+            {/* View storefront link */}
+            {selectedAccount && (
+              <Link
+                to={`/connect/store/${selectedAccount}`}
+                className="inline-block text-xs font-thought text-muted-foreground/40 tracking-wider hover:text-muted-foreground/60 transition-all duration-500 italic"
+              >
+                {/* TODO: In production, use a readable slug instead of the Stripe account ID */}
+                view storefront →
+              </Link>
+            )}
+          </motion.section>
+        )}
+
+        {/* ============================================================= */}
+        {/* SECTION 3: Create Products */}
+        {/* ============================================================= */}
+        {selectedAccount && accountStatus?.readyToProcessPayments && (
+          <motion.section
+            className="glass-premium rounded-2xl p-5 mb-5"
+            custom={sectionIndex++}
+            variants={sectionVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <h2 className="text-sm font-thought text-foreground/60 tracking-wider mb-4 italic">
+              create product
+            </h2>
+            <form onSubmit={handleCreateProduct} className="flex flex-col gap-3">
+              <input
+                type="text"
+                placeholder="product name"
+                value={productName}
+                onChange={(e) => setProductName(e.target.value)}
+                required
+                className="w-full px-4 py-3 rounded-xl bg-background/30 border border-border/30 text-foreground/80 placeholder:text-muted-foreground/30 text-sm font-thought tracking-wide focus:outline-none focus:border-primary/30 transition-all duration-500"
+              />
+              <input
+                type="text"
+                placeholder="description (optional)"
+                value={productDescription}
+                onChange={(e) => setProductDescription(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl bg-background/30 border border-border/30 text-foreground/80 placeholder:text-muted-foreground/30 text-sm font-thought tracking-wide focus:outline-none focus:border-primary/30 transition-all duration-500"
+              />
+              <input
+                type="number"
+                placeholder="price (usd)"
+                value={productPrice}
+                onChange={(e) => setProductPrice(e.target.value)}
+                required
+                min="0.50"
+                step="0.01"
+                className="w-full px-4 py-3 rounded-xl bg-background/30 border border-border/30 text-foreground/80 placeholder:text-muted-foreground/30 text-sm font-thought tracking-wide focus:outline-none focus:border-primary/30 transition-all duration-500"
+              />
+              <motion.button
+                type="submit"
+                disabled={loading.createProduct}
+                className="w-full px-4 py-3 rounded-xl bg-primary/20 border border-primary/20 text-foreground/60 text-sm font-thought tracking-wider italic hover:bg-primary/30 hover:border-primary/30 hover:text-foreground/80 transition-all duration-700 disabled:opacity-40"
+                whileTap={{ scale: 0.98 }}
+              >
+                {loading.createProduct ? "creating..." : "create product"}
+              </motion.button>
+            </form>
+
+            {/* Product list */}
+            {products.length > 0 && (
+              <div className="mt-5 space-y-2">
+                <h3 className="text-xs font-thought text-muted-foreground/40 tracking-wider italic mb-3">
+                  your products
+                </h3>
+                {products.map((product, i) => (
+                  <motion.div
                     key={product.id}
-                    style={{
-                      padding: "0.75rem 1rem",
-                      borderRadius: "0.5rem",
-                      border: "1px solid",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                    className="bg-background border-border"
+                    className="flex items-center justify-between rounded-xl bg-background/20 border border-border/20 px-4 py-3"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: i * 0.05 }}
                   >
                     <div>
-                      <div style={{ fontWeight: 500 }}>{product.name}</div>
+                      <span className="text-sm font-thought text-foreground/70 tracking-wide">
+                        {product.name}
+                      </span>
                       {product.description && (
-                        <div style={{ fontSize: "0.8rem", opacity: 0.6 }}>{product.description}</div>
+                        <span className="block text-xs text-muted-foreground/30 font-thought italic">
+                          {product.description}
+                        </span>
                       )}
                     </div>
-                    <div style={{ fontWeight: 600 }}>
+                    <span className="text-sm font-thought text-foreground/50 tracking-wide">
                       {product.unitAmount ? formatPrice(product.unitAmount, product.currency) : "—"}
-                    </div>
-                  </div>
+                    </span>
+                  </motion.div>
                 ))}
               </div>
+            )}
+          </motion.section>
+        )}
+
+        {/* ============================================================= */}
+        {/* SECTION 4: Platform Subscription */}
+        {/* ============================================================= */}
+        {selectedAccount && (
+          <motion.section
+            className="glass-premium rounded-2xl p-5 mb-5"
+            custom={sectionIndex++}
+            variants={sectionVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <h2 className="text-sm font-thought text-foreground/60 tracking-wider mb-1 italic">
+              platform subscription
+            </h2>
+            <p className="text-xs font-thought text-muted-foreground/30 tracking-wider italic mb-4">
+              unlock premium platform features
+            </p>
+            <div className="flex gap-3 flex-wrap">
+              <motion.button
+                onClick={handleSubscribe}
+                disabled={loading.subscribe}
+                className="px-5 py-2.5 rounded-xl text-sm font-thought text-foreground/60 bg-primary/20 border border-primary/20 hover:bg-primary/30 hover:text-foreground/80 transition-all duration-700 italic tracking-wide disabled:opacity-40"
+                whileTap={{ scale: 0.95 }}
+              >
+                {loading.subscribe ? "redirecting..." : "subscribe"}
+              </motion.button>
+              <motion.button
+                onClick={handleBillingPortal}
+                disabled={loading.portal}
+                className="px-5 py-2.5 rounded-xl text-sm font-thought text-foreground/40 border border-border/30 hover:border-border/50 hover:text-foreground/60 transition-all duration-700 italic tracking-wide disabled:opacity-40"
+                whileTap={{ scale: 0.95 }}
+              >
+                {loading.portal ? "opening..." : "manage billing"}
+              </motion.button>
             </div>
-          )}
-        </section>
-      )}
+          </motion.section>
+        )}
 
-      {/* ============================================================= */}
-      {/* SECTION 4: Platform Subscription */}
-      {/* ============================================================= */}
-      {selectedAccount && (
-        <section
-          style={{
-            padding: "1.5rem",
-            borderRadius: "0.75rem",
-            marginBottom: "1.5rem",
-            border: "1px solid",
-          }}
-          className="bg-card border-border"
+        {/* Back to app link */}
+        <motion.div
+          className="text-center mt-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.5 }}
         >
-          <h2 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: "0.5rem" }}>
-            Platform Subscription
-          </h2>
-          <p style={{ fontSize: "0.85rem", opacity: 0.6, marginBottom: "1rem" }}>
-            Subscribe to unlock premium platform features.
-          </p>
-          <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-            <button
-              onClick={handleSubscribe}
-              disabled={loading.subscribe}
-              style={{
-                padding: "0.6rem 1.2rem",
-                borderRadius: "0.5rem",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "0.9rem",
-                fontWeight: 500,
-                opacity: loading.subscribe ? 0.6 : 1,
-              }}
-              className="bg-primary text-primary-foreground"
-            >
-              {loading.subscribe ? "Redirecting..." : "Subscribe"}
-            </button>
-            <button
-              onClick={handleBillingPortal}
-              disabled={loading.portal}
-              style={{
-                padding: "0.6rem 1.2rem",
-                borderRadius: "0.5rem",
-                border: "1px solid",
-                cursor: "pointer",
-                fontSize: "0.9rem",
-                fontWeight: 500,
-                opacity: loading.portal ? 0.6 : 1,
-              }}
-              className="bg-transparent border-border text-foreground"
-            >
-              {loading.portal ? "Opening..." : "Manage Billing"}
-            </button>
-          </div>
-        </section>
-      )}
-
-      {/* Back to app link */}
-      <div style={{ textAlign: "center", marginTop: "2rem" }}>
-        <a
-          href="/"
-          style={{
-            fontSize: "0.85rem",
-            textDecoration: "none",
-            opacity: 0.5,
-          }}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          ← Back to Brainchild
-        </a>
+          <Link
+            to="/"
+            className="text-xs font-thought text-muted-foreground/30 tracking-wider hover:text-muted-foreground/50 transition-all duration-500 italic"
+          >
+            ← back to brainchild
+          </Link>
+        </motion.div>
       </div>
     </div>
   );
 }
 
 // -------------------------------------------------------------------
-// StatusBadge — Small component to show active/inactive status
+// StatusBadge — ethereal status indicator
 // -------------------------------------------------------------------
 function StatusBadge({
   label,
@@ -688,28 +615,18 @@ function StatusBadge({
 }) {
   return (
     <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "0.4rem",
-        padding: "0.35rem 0.75rem",
-        borderRadius: "999px",
-        fontSize: "0.8rem",
-        fontWeight: 500,
-        border: "1px solid",
-      }}
-      className={active ? "bg-decay-fresh/10 border-decay-fresh/30 text-decay-fresh" : "bg-muted border-border text-muted-foreground"}
+      className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-thought tracking-wider italic border ${
+        active
+          ? "border-decay-fresh/20 text-decay-fresh/70 bg-decay-fresh/5"
+          : "border-border/20 text-muted-foreground/40 bg-background/20"
+      }`}
     >
       <span
-        style={{
-          width: "6px",
-          height: "6px",
-          borderRadius: "50%",
-          display: "inline-block",
-        }}
-        className={active ? "bg-decay-fresh" : "bg-muted-foreground"}
+        className={`w-1.5 h-1.5 rounded-full ${
+          active ? "bg-decay-fresh/60" : "bg-muted-foreground/30"
+        }`}
       />
-      {label}: {active ? activeText : inactiveText}
+      {label} : {active ? activeText : inactiveText}
     </div>
   );
 }
