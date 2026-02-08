@@ -14,9 +14,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['DM Sans', 'Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
-        thought: ['JetBrains Mono', 'monospace'],
+        thought: ['Lora', 'Georgia', 'serif'],
+        display: ['Cormorant Garamond', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -62,31 +63,26 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Decay state colors — bioluminescent spectrum
         decay: {
           fresh: "hsl(var(--decay-fresh))",
           fading: "hsl(var(--decay-fading))",
           rotting: "hsl(var(--decay-rotting))",
           extinct: "hsl(var(--decay-extinct))",
         },
-        // Echo — golden phosphorescence
         echo: {
           DEFAULT: "hsl(var(--echo))",
           foreground: "hsl(var(--echo-foreground))",
         },
-        // Fog layers
         fog: {
           light: "hsl(var(--fog-light))",
           mid: "hsl(var(--fog-mid))",
           dark: "hsl(var(--fog-dark))",
         },
-        // Rot mode accents
         rot: {
           glitch: "hsl(var(--rot-glitch))",
           accent: "hsl(var(--rot-accent))",
           mold: "hsl(var(--rot-mold))",
         },
-        // Glow system
         glow: {
           primary: "hsl(var(--glow-primary))",
           accent: "hsl(var(--glow-accent))",
@@ -109,32 +105,32 @@ export default {
           to: { height: "0" },
         },
         "fog-pulse": {
-          "0%, 100%": { opacity: "0.25" },
-          "50%": { opacity: "0.5" },
+          "0%, 100%": { opacity: "0.2" },
+          "50%": { opacity: "0.4" },
         },
         "slow-drift": {
           "0%, 100%": { transform: "translateX(0) translateY(0)" },
-          "25%": { transform: "translateX(15px) translateY(-8px)" },
-          "75%": { transform: "translateX(-10px) translateY(5px)" },
+          "25%": { transform: "translateX(12px) translateY(-6px)" },
+          "75%": { transform: "translateX(-8px) translateY(4px)" },
         },
         "thought-appear": {
-          "0%": { opacity: "0", transform: "translateY(15px) scale(0.97)" },
+          "0%": { opacity: "0", transform: "translateY(12px) scale(0.98)" },
           "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
         },
         "thought-decay": {
           "0%": { opacity: "1", filter: "blur(0)" },
-          "100%": { opacity: "0", filter: "blur(6px)", transform: "scale(0.97)" },
+          "100%": { opacity: "0", filter: "blur(5px)", transform: "scale(0.97)" },
         },
         "echo-ripple": {
-          "0%": { transform: "scale(1)", opacity: "0.5" },
-          "100%": { transform: "scale(1.5)", opacity: "0" },
+          "0%": { transform: "scale(1)", opacity: "0.4" },
+          "100%": { transform: "scale(1.4)", opacity: "0" },
         },
         "glow-breathe": {
           "0%, 100%": { 
-            boxShadow: "0 0 20px hsl(var(--glow-primary) / 0.1), 0 0 60px hsl(var(--glow-primary) / 0.05)" 
+            boxShadow: "0 0 15px hsl(var(--glow-primary) / 0.08), 0 0 50px hsl(var(--glow-primary) / 0.03)" 
           },
           "50%": { 
-            boxShadow: "0 0 40px hsl(var(--glow-primary) / 0.2), 0 0 100px hsl(var(--glow-primary) / 0.08)" 
+            boxShadow: "0 0 30px hsl(var(--glow-primary) / 0.15), 0 0 80px hsl(var(--glow-primary) / 0.06)" 
           },
         },
       },
@@ -143,7 +139,7 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         "fog-pulse": "fog-pulse 9s ease-in-out infinite",
         "slow-drift": "slow-drift 35s ease-in-out infinite",
-        "thought-appear": "thought-appear 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards",
+        "thought-appear": "thought-appear 1s cubic-bezier(0.23, 1, 0.32, 1) forwards",
         "thought-decay": "thought-decay 2.5s ease-in forwards",
         "echo-ripple": "echo-ripple 1.2s ease-out forwards",
         "glow-breathe": "glow-breathe 6s ease-in-out infinite",
