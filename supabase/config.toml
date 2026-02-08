@@ -2,3 +2,15 @@ project_id = "enevhnhyluccjylamldr"
 
 [functions.thought-reflect]
 verify_jwt = false
+
+[functions.stripe-connect-accounts]
+verify_jwt = false
+
+[functions.stripe-connect-products]
+verify_jwt = false
+
+[functions.stripe-connect-checkout]
+verify_jwt = false
+
+[functions.stripe-connect-webhooks]
+verify_jwt = false

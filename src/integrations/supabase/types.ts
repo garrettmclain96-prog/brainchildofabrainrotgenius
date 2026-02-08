@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      connected_accounts: {
+        Row: {
+          contact_email: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          session_id: string
+          stripe_account_id: string
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          session_id: string
+          stripe_account_id: string
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          session_id?: string
+          stripe_account_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       echoes: {
         Row: {
           created_at: string
@@ -149,6 +179,45 @@ export type Database = {
           created_at?: string
           id?: string
           session_id?: string
+        }
+        Relationships: []
+      }
+      subscription_status: {
+        Row: {
+          cancel_at_period_end: boolean | null
+          created_at: string
+          current_period_end: string | null
+          id: string
+          price_id: string | null
+          status: string
+          stripe_account_id: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          price_id?: string | null
+          status?: string
+          stripe_account_id: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          price_id?: string | null
+          status?: string
+          stripe_account_id?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
