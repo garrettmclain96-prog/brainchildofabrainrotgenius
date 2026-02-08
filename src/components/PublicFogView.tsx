@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePublicFog } from '@/hooks/usePublicFog';
 import { useAppMode } from '@/hooks/useAppMode';
@@ -14,11 +14,9 @@ import { IdeaDriftNotification } from '@/components/IdeaDriftNotification';
 import { GraveyardView } from '@/components/GraveyardView';
 import { ThoughtWeatherIndicator } from '@/components/ThoughtWeatherIndicator';
 import { AppMoodState } from '@/hooks/useAppMoods';
-import { ThoughtZone, ZONE_META, ZONE_PATTERNS } from '@/types/thought';
+import { ThoughtZone, ZONE_META, ZONE_PATTERNS, VISIBLE_ZONES } from '@/types/thought';
 import { cn } from '@/lib/utils';
 import { SubmitBurst } from '@/components/SubmitBurst';
-
-const ZONES: ThoughtZone[] = ['overflow', 'quiet', 'noise', 'preserved'];
 
 interface PublicFogViewProps {
   onAction?: () => void;
@@ -28,7 +26,7 @@ interface PublicFogViewProps {
 export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
   const {
     thoughts, echoes, activeZone, setZone, addEcho, createPublicThought,
-    totalCount, isLoading, fadedCount, zoneCounts,
+    totalCount, isLoading, fadedCount, zoneCounts, rareVisible,
   } = usePublicFog();
   const { mode } = useAppMode();
   const { addPrivateThought } = useThoughtStore();
@@ -40,8 +38,8 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
   const [showComposer, setShowComposer] = useState(false);
   const [showGraveyard, setShowGraveyard] = useState(false);
   const [bursts, setBursts] = useState<Array<{ id: number; x: number; y: number }>>([]);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Pick a random pattern phrase for the active zone
   const patternPhrase = useMemo(() => {
     const patterns = ZONE_PATTERNS[activeZone];
     return patterns[Math.floor(Math.random() * patterns.length)];
@@ -63,9 +61,44 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
     }
   }, [saveDrift, addPrivateThought, mode]);
 
-  const thoughtLimit = appMood?.mood === 'silent' ? 3 : appMood?.mood === 'fragmented' ? 8 : 6;
-  const displayThoughts = thoughts.slice(0, thoughtLimit);
   const zoneInfo = ZONE_META[activeZone];
+  const canCompose = zoneInfo.canCompose;
+
+  // Build visible zone list — include "rare" only sometimes
+  const displayZones = useMemo(() => {
+    const zones = [...VISIBLE_ZONES];
+    if (rareVisible) zones.push('rare');
+    return zones;
+  }, [rareVisible]);
+
+  // Zone-specific thought limit
+  const thoughtLimit = useMemo(() => {
+    if (appMood?.mood === 'silent') return 3;
+    switch (activeZone) {
+      case 'quiet':
+      case 'static': return 3;
+      case 'quiet-period':
+      case 'preserved': return 5;
+      case 'flood':
+      case 'noise': return 12;
+      case 'almost-gone': return 8;
+      default: return 6;
+    }
+  }, [activeZone, appMood?.mood]);
+
+  const displayThoughts = thoughts.slice(0, thoughtLimit);
+
+  // Zone-specific visual class
+  const zoneVisualClass = useMemo(() => {
+    switch (activeZone) {
+      case 'noise': return 'animate-[glitch-subtle_3s_ease-in-out_infinite]';
+      case 'quiet': return 'opacity-80';
+      case 'almost-gone': return 'opacity-60';
+      case 'discarded': return 'opacity-40 grayscale';
+      case 'flood': return '';
+      default: return '';
+    }
+  }, [activeZone]);
 
   return (
     <div className="min-h-screen relative pb-28">
@@ -89,7 +122,6 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Graveyard toggle */}
               <motion.button
                 onClick={() => setShowGraveyard(!showGraveyard)}
                 className={cn(
@@ -103,7 +135,7 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
                 ⟡
               </motion.button>
 
-              {!showGraveyard && appMood?.mood !== 'withholding' && (
+              {!showGraveyard && canCompose && appMood?.mood !== 'withholding' && (
                 <motion.button
                   onClick={() => setShowComposer(!showComposer)}
                   className={cn(
@@ -120,7 +152,7 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
             </div>
           </div>
 
-          {/* Faded count — ambient status */}
+          {/* Faded count */}
           {fadedCount > 0 && (
             <motion.p
               className="text-[10px] font-thought text-muted-foreground/25 tracking-wider mb-3"
@@ -132,28 +164,38 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
             </motion.p>
           )}
 
-          {/* Room navigation — pre-existing zones */}
+          {/* Room navigation — scrollable tabs */}
           {!showGraveyard && (
-            <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
-              {ZONES.map((zone) => {
+            <div
+              ref={scrollRef}
+              className="flex gap-1 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
+              {displayZones.map((zone) => {
                 const meta = ZONE_META[zone];
                 const isActive = activeZone === zone;
-                const count = zoneCounts[zone];
+                const count = zoneCounts[zone] || 0;
 
                 return (
                   <button
                     key={zone}
                     onClick={() => setZone(zone)}
                     className={cn(
-                      'px-2.5 py-1 rounded-full text-[10px] font-thought whitespace-nowrap',
-                      'transition-all duration-300 flex items-center gap-1.5',
+                      'px-2 py-1 rounded-full text-[9px] font-thought whitespace-nowrap',
+                      'transition-all duration-300 flex items-center gap-1 shrink-0',
                       isActive
                         ? 'bg-secondary/50 text-secondary-foreground'
-                        : 'text-muted-foreground/40 hover:text-muted-foreground/60'
+                        : 'text-muted-foreground/30 hover:text-muted-foreground/50',
+                      // Special visual hints for certain rooms
+                      zone === 'rare' && !isActive && 'text-echo/30',
+                      zone === 'static' && !isActive && 'text-foreground/20',
                     )}
                   >
                     <span className="opacity-60">{meta.icon}</span>
                     {meta.label}
+                    {count > 0 && isActive && (
+                      <span className="text-[8px] opacity-40 ml-0.5">{count}</span>
+                    )}
                   </button>
                 );
               })}
@@ -162,12 +204,12 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 py-4 relative">
+      <main className={cn('max-w-lg mx-auto px-4 py-4 relative', zoneVisualClass)}>
         {showGraveyard && <GraveyardView />}
 
         {!showGraveyard && (
           <>
-            {/* Zone description + pattern phrase */}
+            {/* Zone description + pattern phrase + special rule */}
             <motion.div
               key={activeZone}
               className="mb-5 px-1"
@@ -181,10 +223,16 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
               <p className="text-[9px] font-thought text-muted-foreground/18 tracking-[0.15em] mt-1">
                 {patternPhrase}
               </p>
+              {zoneInfo.specialRule && (
+                <p className="text-[8px] font-thought text-muted-foreground/12 tracking-[0.2em] mt-1 uppercase">
+                  {zoneInfo.specialRule}
+                </p>
+              )}
             </motion.div>
 
+            {/* Composer */}
             <AnimatePresence>
-              {showComposer && (
+              {showComposer && canCompose && (
                 <motion.div
                   className="mb-6 p-4 glass rounded-xl"
                   initial={{ opacity: 0, height: 0 }}
@@ -205,26 +253,28 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
               )}
             </AnimatePresence>
 
+            {/* Empty state */}
             {!isLoading && displayThoughts.length === 0 && (
               <AnimatedEmptyState icon="fog" />
             )}
 
+            {/* Thoughts */}
             <div className="space-y-4">
               {displayThoughts.map((thought, index) => (
                 <motion.div
                   key={thought.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1, duration: 0.5 }}
+                  transition={{ delay: index * 0.08, duration: 0.5 }}
                   style={{
-                    marginLeft: `${Math.sin(index * 1.5) * 5 + 5}%`,
-                    maxWidth: `${92 - Math.sin(index * 2) * 8}%`,
+                    marginLeft: activeZone === 'quiet' ? '0' : `${Math.sin(index * 1.5) * 5 + 5}%`,
+                    maxWidth: activeZone === 'quiet' ? '100%' : `${92 - Math.sin(index * 2) * 8}%`,
                   }}
                 >
                   <ThoughtCard
                     thought={thought}
                     onEcho={(id) => setEchoingThoughtId(id)}
-                    showEchoButton={echoingThoughtId !== thought.id}
+                    showEchoButton={echoingThoughtId !== thought.id && zoneInfo.canSave}
                   />
 
                   {echoes.get(thought.id)?.length ? (
