@@ -4,128 +4,136 @@
 
 /* =============================================
    BRAINCHILD — BrainRot Edition
-   The Sensory System: A Living, Decaying Organism
+   The Sensory System: Bioluminescent Deep-Sea Organism
    ============================================= */
 
 @layer base {
   :root {
-    /* Core palette — fungal darkness, decomposing library */
-    --background: 240 8% 9%;
-    --foreground: 45 10% 80%;
+    /* Core palette — abyssal depth, bioluminescent organisms */
+    --background: 225 18% 6%;
+    --foreground: 210 20% 88%;
     
-    /* Surface layers — like strata of compost */
-    --card: 240 6% 12%;
-    --card-foreground: 45 10% 82%;
+    /* Surface layers — like sediment strata */
+    --card: 225 15% 10%;
+    --card-foreground: 210 18% 85%;
     
-    --popover: 240 6% 14%;
-    --popover-foreground: 45 10% 82%;
+    --popover: 225 14% 12%;
+    --popover-foreground: 210 18% 85%;
     
-    /* Primary — mycelium green, the living network */
-    --primary: 155 25% 42%;
-    --primary-foreground: 240 8% 6%;
+    /* Primary — electric cyan bioluminescence */
+    --primary: 175 75% 48%;
+    --primary-foreground: 225 20% 4%;
     
-    /* Secondary — deep humus */
-    --secondary: 240 5% 15%;
-    --secondary-foreground: 45 8% 72%;
+    /* Secondary — deep pressure */
+    --secondary: 225 12% 14%;
+    --secondary-foreground: 210 12% 68%;
     
-    /* Muted — decomposed matter */
-    --muted: 240 5% 18%;
-    --muted-foreground: 45 6% 55%;
+    /* Muted — silt floor */
+    --muted: 225 10% 16%;
+    --muted-foreground: 210 8% 48%;
     
-    /* Accent — bone white with warmth */
-    --accent: 35 15% 28%;
-    --accent-foreground: 40 15% 85%;
+    /* Accent — phosphorescent violet */
+    --accent: 265 45% 42%;
+    --accent-foreground: 265 20% 90%;
     
-    /* Destructive — rust red, organic decay */
-    --destructive: 8 50% 38%;
-    --destructive-foreground: 8 10% 92%;
+    /* Destructive — magma vent red */
+    --destructive: 355 65% 48%;
+    --destructive-foreground: 355 10% 95%;
     
-    /* Decay state spectrum */
-    --decay-fresh: 155 30% 55%;
-    --decay-fading: 45 20% 50%;
-    --decay-rotting: 20 25% 38%;
-    --decay-extinct: 0 10% 25%;
+    /* Decay state spectrum — bioluminescent to ash */
+    --decay-fresh: 175 70% 55%;
+    --decay-fading: 50 50% 55%;
+    --decay-rotting: 20 40% 42%;
+    --decay-extinct: 225 8% 22%;
     
-    /* Echo — spore dispersal color */
-    --echo: 270 20% 55%;
-    --echo-foreground: 270 15% 90%;
+    /* Echo — golden phosphorescence */
+    --echo: 42 70% 58%;
+    --echo-foreground: 42 15% 92%;
     
-    /* Fog layers — depth of field */
-    --fog-light: 240 6% 22%;
-    --fog-mid: 240 5% 16%;
-    --fog-dark: 240 8% 10%;
+    /* Fog layers — ocean depth */
+    --fog-light: 225 12% 18%;
+    --fog-mid: 225 10% 13%;
+    --fog-dark: 225 18% 7%;
     
     /* UI chrome */
-    --border: 240 5% 20%;
-    --input: 240 5% 15%;
-    --ring: 155 25% 42%;
+    --border: 225 12% 18%;
+    --input: 225 12% 13%;
+    --ring: 175 75% 48%;
     
-    --radius: 0.5rem;
+    --radius: 0.75rem;
     
     /* Sidebar */
-    --sidebar-background: 240 8% 10%;
-    --sidebar-foreground: 45 8% 72%;
-    --sidebar-primary: 155 25% 42%;
-    --sidebar-primary-foreground: 240 8% 6%;
-    --sidebar-accent: 240 5% 15%;
-    --sidebar-accent-foreground: 45 8% 72%;
-    --sidebar-border: 240 5% 18%;
-    --sidebar-ring: 155 25% 42%;
+    --sidebar-background: 225 18% 7%;
+    --sidebar-foreground: 210 10% 65%;
+    --sidebar-primary: 175 75% 48%;
+    --sidebar-primary-foreground: 225 20% 4%;
+    --sidebar-accent: 225 12% 14%;
+    --sidebar-accent-foreground: 210 10% 65%;
+    --sidebar-border: 225 10% 16%;
+    --sidebar-ring: 175 75% 48%;
     
     /* Mode-specific accent tokens */
-    --rot-glitch: 280 60% 50%;
-    --rot-accent: 340 40% 40%;
-    --rot-mold: 90 30% 25%;
-    --prune-calm: 200 15% 55%;
-    --prune-accent: 155 20% 48%;
+    --rot-glitch: 320 70% 55%;
+    --rot-accent: 355 55% 50%;
+    --rot-mold: 120 35% 28%;
+    --prune-calm: 200 30% 52%;
+    --prune-accent: 175 45% 48%;
     
     /* Organic texture tokens */
-    --grain-opacity: 0.02;
-    --vignette-strength: 0.3;
+    --grain-opacity: 0.018;
+    --vignette-strength: 0.35;
     --hue-drift-speed: 120s;
     
-    /* ═══ Zone ambient tints ═══ */
-    --zone-overflow: 240 8% 9%;
-    --zone-quiet: 220 12% 8%;
-    --zone-noise: 350 15% 10%;
-    --zone-unclaimed: 200 10% 9%;
-    --zone-preserved: 45 12% 10%;
-    --zone-backlog: 260 10% 10%;
-    --zone-late-night: 250 18% 7%;
-    --zone-almost-gone: 0 12% 8%;
-    --zone-quiet-period: 180 8% 9%;
-    --zone-flood: 280 12% 10%;
-    --zone-heavy: 20 10% 8%;
-    --zone-discarded: 0 0% 8%;
-    --zone-rare: 270 25% 10%;
-    --zone-static: 0 0% 6%;
-    --zone-leaving: 210 15% 8%;
+    /* Premium glow tokens */
+    --glow-primary: 175 75% 48%;
+    --glow-accent: 265 45% 52%;
+    --glow-warm: 42 70% 58%;
+    --glow-danger: 355 65% 48%;
+    
+    /* ═══ Zone ambient tints — deeper, more distinct ═══ */
+    --zone-overflow: 225 18% 6%;
+    --zone-quiet: 215 22% 5%;
+    --zone-noise: 350 18% 7%;
+    --zone-unclaimed: 200 15% 6%;
+    --zone-preserved: 42 18% 8%;
+    --zone-backlog: 265 14% 7%;
+    --zone-late-night: 240 25% 5%;
+    --zone-almost-gone: 355 16% 6%;
+    --zone-quiet-period: 180 12% 6%;
+    --zone-flood: 280 16% 7%;
+    --zone-heavy: 20 14% 6%;
+    --zone-discarded: 0 0% 5%;
+    --zone-rare: 270 30% 8%;
+    --zone-static: 0 0% 4%;
+    --zone-leaving: 210 20% 6%;
   }
   
   /* ═══ Embrace the Rot ═══ */
   .mode-rot {
-    --primary: 280 35% 45%;
-    --accent: 340 30% 35%;
-    --decay-fresh: 280 30% 58%;
-    --decay-fading: 320 25% 48%;
-    --decay-rotting: 350 30% 35%;
-    --decay-extinct: 0 15% 22%;
-    --echo: 90 25% 45%;
-    --grain-opacity: 0.03;
-    --vignette-strength: 0.35;
+    --primary: 320 60% 52%;
+    --accent: 355 50% 45%;
+    --decay-fresh: 320 55% 58%;
+    --decay-fading: 40 40% 50%;
+    --decay-rotting: 355 35% 38%;
+    --decay-extinct: 225 10% 18%;
+    --echo: 120 40% 50%;
+    --grain-opacity: 0.025;
+    --vignette-strength: 0.4;
+    --glow-primary: 320 60% 52%;
   }
   
   /* ═══ Prune the Decay ═══ */
   .mode-prune {
-    --primary: 155 25% 45%;
-    --accent: 45 15% 32%;
-    --decay-fresh: 155 25% 58%;
-    --decay-fading: 45 20% 52%;
-    --decay-rotting: 20 20% 38%;
-    --decay-extinct: 0 8% 25%;
-    --echo: 200 20% 55%;
-    --grain-opacity: 0.015;
-    --vignette-strength: 0.25;
+    --primary: 175 60% 50%;
+    --accent: 42 30% 38%;
+    --decay-fresh: 175 50% 58%;
+    --decay-fading: 50 35% 52%;
+    --decay-rotting: 20 25% 38%;
+    --decay-extinct: 225 8% 22%;
+    --echo: 200 35% 55%;
+    --grain-opacity: 0.012;
+    --vignette-strength: 0.28;
+    --glow-primary: 175 60% 50%;
   }
 }
 
@@ -137,7 +145,6 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, sans-serif;
-    /* Subtle global hue drift over time */
     animation: global-hue-drift var(--hue-drift-speed) ease-in-out infinite alternate;
   }
   
@@ -152,9 +159,9 @@
    ============================================= */
 @keyframes global-hue-drift {
   0% { filter: hue-rotate(0deg) saturate(1); }
-  33% { filter: hue-rotate(2deg) saturate(1.03); }
-  66% { filter: hue-rotate(-2deg) saturate(0.97); }
-  100% { filter: hue-rotate(1deg) saturate(1); }
+  33% { filter: hue-rotate(3deg) saturate(1.04); }
+  66% { filter: hue-rotate(-3deg) saturate(0.96); }
+  100% { filter: hue-rotate(1.5deg) saturate(1.02); }
 }
 
 /* =============================================
@@ -168,7 +175,6 @@
   opacity: var(--grain-opacity);
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   mix-blend-mode: overlay;
-  /* Reduced frequency for battery life — steps(2) not steps(3), slower */
   animation: grain-shift 1s steps(2) infinite;
 }
 
@@ -183,9 +189,9 @@
   inset: 0;
   pointer-events: none;
   background: radial-gradient(
-    ellipse 70% 70% at center,
+    ellipse 65% 65% at center,
     transparent 0%,
-    transparent 40%,
+    transparent 35%,
     hsl(var(--background) / var(--vignette-strength)) 100%
   );
   z-index: 5;
@@ -201,10 +207,10 @@
     0deg,
     transparent,
     transparent 3px,
-    hsl(0 0% 0% / 0.015) 3px,
-    hsl(0 0% 0% / 0.015) 6px
+    hsl(0 0% 0% / 0.012) 3px,
+    hsl(0 0% 0% / 0.012) 6px
   );
-  opacity: 0.4;
+  opacity: 0.35;
 }
 
 /* =============================================
@@ -316,7 +322,7 @@
   89% { 
     transform: translateX(-1.5px) skewX(-0.3deg); 
     opacity: 0.92;
-    text-shadow: 1.5px 0 hsl(var(--rot-glitch) / 0.25), -1.5px 0 hsl(var(--decay-rotting) / 0.2);
+    text-shadow: 1.5px 0 hsl(var(--rot-glitch) / 0.3), -1.5px 0 hsl(var(--decay-rotting) / 0.25);
   }
   91% { 
     transform: translateX(1px) skewX(0.2deg); 
@@ -325,7 +331,7 @@
   93% { 
     transform: translateX(-0.5px) translateY(0.5px); 
     opacity: 0.95;
-    text-shadow: -1px 0 hsl(var(--rot-glitch) / 0.15);
+    text-shadow: -1px 0 hsl(var(--rot-glitch) / 0.2);
   }
   95% { 
     transform: translateX(0.5px); 
@@ -342,11 +348,11 @@
   84% { 
     transform: translateX(-0.8px); 
     opacity: 0.96; 
-    text-shadow: 1px 0 hsl(var(--primary) / 0.2);
+    text-shadow: 1px 0 hsl(var(--primary) / 0.25);
   }
   87% { 
     transform: translateX(0.5px); 
-    text-shadow: -1px 0 hsl(var(--primary) / 0.15);
+    text-shadow: -1px 0 hsl(var(--primary) / 0.2);
   }
   89% { 
     transform: translateX(-0.3px); 
@@ -359,12 +365,12 @@
   0%, 100% { 
     opacity: 0.5; 
     transform: scale(1);
-    box-shadow: 0 0 15px hsl(var(--echo) / 0.1);
+    box-shadow: 0 0 15px hsl(var(--echo) / 0.12);
   }
   40% { 
     opacity: 0.75; 
     transform: scale(1.015);
-    box-shadow: 0 0 25px hsl(var(--echo) / 0.2);
+    box-shadow: 0 0 30px hsl(var(--echo) / 0.25);
   }
   60% { 
     opacity: 0.7; 
@@ -372,7 +378,7 @@
   }
 }
 
-/* Drift — like fog moving through trees */
+/* Drift — like currents in deep water */
 @keyframes drift-organic {
   0%, 100% { transform: translateX(0) translateY(0) rotate(0deg); }
   20% { transform: translateX(8px) translateY(-6px) rotate(0.3deg); }
@@ -381,7 +387,7 @@
   80% { transform: translateX(6px) translateY(4px) rotate(-0.1deg); }
 }
 
-/* Fog materialization — like condensation forming */
+/* Fog materialization — like bioluminescence igniting */
 @keyframes fog-materialize {
   0% { 
     opacity: 0; 
@@ -398,7 +404,7 @@
   }
 }
 
-/* Fog dissolve — like smoke dissipating */
+/* Fog dissolve — like light fading in water */
 @keyframes fog-dissolve {
   0% { 
     opacity: 1; 
@@ -416,7 +422,7 @@
   }
 }
 
-/* Float — organic buoyancy */
+/* Float — deep-sea buoyancy */
 @keyframes float-slow {
   0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
   20% { transform: translateY(-15px) translateX(8px) rotate(1.5deg); }
@@ -493,18 +499,19 @@
 
 @keyframes glow-pulse {
   0%, 100% { 
-    box-shadow: 0 0 15px hsl(var(--primary) / 0.15), 
-                0 0 30px hsl(var(--primary) / 0.08);
+    box-shadow: 0 0 15px hsl(var(--glow-primary) / 0.15), 
+                0 0 30px hsl(var(--glow-primary) / 0.08);
   }
   50% { 
-    box-shadow: 0 0 25px hsl(var(--primary) / 0.25), 
-                0 0 50px hsl(var(--primary) / 0.12);
+    box-shadow: 0 0 25px hsl(var(--glow-primary) / 0.3), 
+                0 0 60px hsl(var(--glow-primary) / 0.15),
+                0 0 90px hsl(var(--glow-primary) / 0.06);
   }
 }
 
 @keyframes border-glow {
   0%, 100% { border-color: hsl(var(--border)); }
-  50% { border-color: hsl(var(--primary) / 0.4); }
+  50% { border-color: hsl(var(--primary) / 0.5); }
 }
 
 @keyframes text-shimmer {
@@ -659,13 +666,13 @@
    INTERACTION EFFECTS
    ============================================= */
 
-/* Hover glow — organic warmth */
+/* Hover glow — bioluminescent warmth */
 .hover-glow {
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 .hover-glow:hover {
-  box-shadow: 0 0 25px hsl(var(--primary) / 0.15),
-              0 0 50px hsl(var(--primary) / 0.08);
+  box-shadow: 0 0 25px hsl(var(--glow-primary) / 0.2),
+              0 0 60px hsl(var(--glow-primary) / 0.08);
 }
 
 .hover-lift {
@@ -673,10 +680,10 @@
 }
 .hover-lift:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 30px hsl(var(--background) / 0.4);
+  box-shadow: 0 12px 40px hsl(var(--background) / 0.5);
 }
 
-/* Gradient text — mycelium shimmer */
+/* Gradient text — bioluminescent shimmer */
 .text-gradient {
   background: linear-gradient(
     135deg,
@@ -691,19 +698,19 @@
   animation: text-shimmer 5s linear infinite;
 }
 
-/* Chromatic aberration — organic distortion */
+/* Chromatic aberration — deep-sea distortion */
 .chromatic-shift {
   text-shadow: 
-    -0.5px 0 hsl(8 70% 45% / 0.2),
-    0.5px 0 hsl(200 70% 45% / 0.2);
+    -0.5px 0 hsl(var(--destructive) / 0.25),
+    0.5px 0 hsl(var(--primary) / 0.25);
 }
 .chromatic-shift:hover {
   text-shadow: 
-    -1px 0 hsl(8 70% 45% / 0.3),
-    1px 0 hsl(200 70% 45% / 0.3);
+    -1px 0 hsl(var(--destructive) / 0.35),
+    1px 0 hsl(var(--primary) / 0.35);
 }
 
-/* Card interactive — fungal bioluminescence */
+/* Card interactive — bioluminescent response */
 .card-interactive {
   position: relative;
   overflow: hidden;
@@ -715,7 +722,7 @@
   background: linear-gradient(
     135deg,
     transparent 0%,
-    hsl(var(--primary) / 0.02) 50%,
+    hsl(var(--primary) / 0.03) 50%,
     transparent 100%
   );
   opacity: 0;
@@ -726,35 +733,54 @@
 }
 
 /* =============================================
-   GLASS MORPHISM — Frosted surfaces
+   GLASS MORPHISM — Deep-sea pressure surfaces
    ============================================= */
 .glass {
-  background: hsl(var(--card) / 0.5);
-  backdrop-filter: blur(12px) saturate(150%);
-  -webkit-backdrop-filter: blur(12px) saturate(150%);
-  border: 1px solid hsl(var(--border) / 0.25);
+  background: hsl(var(--card) / 0.45);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid hsl(var(--border) / 0.2);
 }
 
 .glass-strong {
-  background: hsl(var(--card) / 0.75);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid hsl(var(--border) / 0.4);
+  background: hsl(var(--card) / 0.7);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid hsl(var(--border) / 0.35);
 }
 
 .glass-premium {
   background: linear-gradient(
-    135deg,
+    145deg,
     hsl(var(--card) / 0.55) 0%,
-    hsl(var(--card) / 0.25) 100%
+    hsl(var(--card) / 0.2) 100%
   );
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid hsl(var(--border) / 0.2);
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  border: 1px solid hsl(var(--primary) / 0.06);
   box-shadow:
-    0 4px 24px hsl(0 0% 0% / 0.12),
-    inset 0 1px 0 hsl(var(--foreground) / 0.03),
-    inset 0 -1px 0 hsl(0 0% 0% / 0.08);
+    0 4px 32px hsl(0 0% 0% / 0.15),
+    0 0 1px 0 hsl(var(--primary) / 0.08),
+    inset 0 1px 0 hsl(var(--foreground) / 0.04),
+    inset 0 -1px 0 hsl(0 0% 0% / 0.1);
+}
+
+/* Ultra premium glass — for special cards */
+.glass-ultra {
+  background: linear-gradient(
+    145deg,
+    hsl(var(--card) / 0.6) 0%,
+    hsl(var(--card) / 0.15) 100%
+  );
+  backdrop-filter: blur(32px) saturate(200%) brightness(1.05);
+  -webkit-backdrop-filter: blur(32px) saturate(200%) brightness(1.05);
+  border: 1px solid hsl(var(--primary) / 0.1);
+  box-shadow:
+    0 8px 48px hsl(0 0% 0% / 0.2),
+    0 0 1px 0 hsl(var(--primary) / 0.12),
+    0 0 60px -20px hsl(var(--glow-primary) / 0.08),
+    inset 0 1px 0 hsl(var(--foreground) / 0.06),
+    inset 0 -1px 0 hsl(0 0% 0% / 0.12);
 }
 
 /* =============================================
@@ -803,12 +829,12 @@
   0%, 100% { 
     transform: scale(1); 
     opacity: 0.3;
-    box-shadow: 0 0 40px hsl(var(--primary) / 0.1);
+    box-shadow: 0 0 40px hsl(var(--glow-primary) / 0.12);
   }
   50% { 
     transform: scale(1.25); 
     opacity: 0.7;
-    box-shadow: 0 0 80px hsl(var(--primary) / 0.25);
+    box-shadow: 0 0 80px hsl(var(--glow-primary) / 0.3);
   }
 }
 
@@ -832,14 +858,14 @@
    SCROLLBAR
    ============================================= */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--border) / 0.5);
+  background: hsl(var(--primary) / 0.15);
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -860,7 +886,7 @@
   background: linear-gradient(
     45deg,
     transparent 20%,
-    hsl(var(--primary) / 0.2) 50%,
+    hsl(var(--primary) / 0.25) 50%,
     transparent 80%
   );
   background-size: 200% 200%;
@@ -894,8 +920,8 @@
   outline: none;
   box-shadow: 
     0 0 0 2px hsl(var(--background)),
-    0 0 0 4px hsl(var(--primary) / 0.25),
-    0 0 15px hsl(var(--primary) / 0.15);
+    0 0 0 4px hsl(var(--primary) / 0.3),
+    0 0 20px hsl(var(--primary) / 0.15);
 }
 
 /* =============================================
@@ -930,13 +956,13 @@
 .stagger-fade-in > *:nth-child(8) { animation-delay: 0.4s; }
 
 /* =============================================
-   ADVANCED EFFECTS
+   ADVANCED EFFECTS — Cutting Edge
    ============================================= */
 
 /* Holographic shimmer */
 @keyframes holographic {
   0% { background-position: 0% 50%; filter: hue-rotate(0deg); }
-  50% { background-position: 100% 50%; filter: hue-rotate(10deg); }
+  50% { background-position: 100% 50%; filter: hue-rotate(15deg); }
   100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
 }
 
@@ -989,22 +1015,59 @@
   animation: gradient-flow 8s ease infinite;
 }
 
-/* Aurora */
-@keyframes aurora {
-  0% { background-position: 50% 50%, 50% 50%; }
-  25% { background-position: 0% 50%, 100% 50%; }
-  50% { background-position: 50% 100%, 50% 0%; }
-  75% { background-position: 100% 50%, 0% 50%; }
-  100% { background-position: 50% 50%, 50% 50%; }
+/* ── Aurora mesh — premium ambient effect ── */
+@keyframes aurora-mesh {
+  0% { 
+    background-position: 50% 50%, 50% 50%, 50% 50%;
+    opacity: 0.4;
+  }
+  25% { 
+    background-position: 0% 50%, 100% 50%, 50% 100%;
+    opacity: 0.55;
+  }
+  50% { 
+    background-position: 50% 100%, 50% 0%, 0% 50%;
+    opacity: 0.4;
+  }
+  75% { 
+    background-position: 100% 50%, 0% 50%, 50% 0%;
+    opacity: 0.5;
+  }
+  100% { 
+    background-position: 50% 50%, 50% 50%, 50% 50%;
+    opacity: 0.4;
+  }
 }
 
 .aurora-bg {
   background:
-    radial-gradient(ellipse at 50% 50%, hsl(var(--primary) / 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, hsl(var(--accent) / 0.08) 0%, transparent 40%),
-    radial-gradient(ellipse at 20% 80%, hsl(var(--echo) / 0.08) 0%, transparent 40%);
-  background-size: 200% 200%, 150% 150%;
-  animation: aurora 18s ease-in-out infinite;
+    radial-gradient(ellipse at 50% 50%, hsl(var(--glow-primary) / 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, hsl(var(--glow-accent) / 0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 20% 80%, hsl(var(--glow-warm) / 0.06) 0%, transparent 40%);
+  background-size: 200% 200%, 180% 180%, 160% 160%;
+  animation: aurora-mesh 22s ease-in-out infinite;
+}
+
+/* Mesh gradient — living background */
+@keyframes mesh-drift {
+  0%, 100% { 
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+  }
+  33% { 
+    background-position: 100% 0%, 0% 100%, 100% 0%;
+  }
+  66% { 
+    background-position: 50% 100%, 50% 0%, 0% 100%;
+  }
+}
+
+.mesh-gradient {
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 30%, hsl(var(--glow-primary) / 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 70%, hsl(var(--glow-accent) / 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 50% at 50% 90%, hsl(var(--glow-warm) / 0.04) 0%, transparent 55%);
+  background-size: 200% 200%;
+  animation: mesh-drift 30s ease-in-out infinite;
 }
 
 /* Depth parallax */
@@ -1012,19 +1075,20 @@
 .depth-2 { transform: translateZ(-200px) scale(1.2); }
 .depth-3 { transform: translateZ(-300px) scale(1.3); }
 
-/* Neon glow */
+/* Neon glow — bioluminescent */
 .neon-glow {
   text-shadow:
     0 0 5px currentColor,
     0 0 10px currentColor,
-    0 0 20px hsl(var(--primary) / 0.5),
-    0 0 40px hsl(var(--primary) / 0.3);
+    0 0 20px hsl(var(--glow-primary) / 0.5),
+    0 0 40px hsl(var(--glow-primary) / 0.3),
+    0 0 80px hsl(var(--glow-primary) / 0.12);
 }
 
 /* Fluid trails */
 @keyframes fluid-trail {
   0% { transform: translateX(-100%) skewX(-12deg); opacity: 0; }
-  50% { opacity: 0.2; }
+  50% { opacity: 0.15; }
   100% { transform: translateX(100%) skewX(-12deg); opacity: 0; }
 }
 
@@ -1036,11 +1100,11 @@
   animation: fluid-trail 4s ease-in-out infinite;
 }
 
-/* Cyber grid */
+/* Cyber grid — deep-sea sonar */
 .cyber-grid {
   background-image: 
-    linear-gradient(hsl(var(--primary) / 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(var(--primary) / 0.02) 1px, transparent 1px);
+    linear-gradient(hsl(var(--primary) / 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--primary) / 0.015) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 
@@ -1073,20 +1137,20 @@
   animation: text-reveal 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
 }
 
-/* Electric border */
+/* Electric border — charged bioluminescence */
 @keyframes electric {
   0%, 100% {
     box-shadow:
-      0 0 4px hsl(var(--primary) / 0.4),
-      0 0 8px hsl(var(--primary) / 0.2),
-      inset 0 0 4px hsl(var(--primary) / 0.08);
+      0 0 4px hsl(var(--glow-primary) / 0.4),
+      0 0 12px hsl(var(--glow-primary) / 0.15),
+      inset 0 0 4px hsl(var(--glow-primary) / 0.06);
   }
   50% {
     box-shadow:
-      0 0 8px hsl(var(--primary) / 0.6),
-      0 0 16px hsl(var(--primary) / 0.3),
-      0 0 24px hsl(var(--primary) / 0.15),
-      inset 0 0 8px hsl(var(--primary) / 0.12);
+      0 0 8px hsl(var(--glow-primary) / 0.6),
+      0 0 20px hsl(var(--glow-primary) / 0.25),
+      0 0 40px hsl(var(--glow-primary) / 0.1),
+      inset 0 0 8px hsl(var(--glow-primary) / 0.08);
   }
 }
 
@@ -1094,56 +1158,96 @@
   animation: electric 2.5s ease-in-out infinite;
 }
 
+/* ── Animated border gradient ── */
+@keyframes border-rotate {
+  0% { --angle: 0deg; }
+  100% { --angle: 360deg; }
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.animated-border {
+  position: relative;
+}
+.animated-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--angle),
+    transparent 0%,
+    hsl(var(--glow-primary) / 0.4) 10%,
+    transparent 20%,
+    hsl(var(--glow-accent) / 0.3) 50%,
+    transparent 60%,
+    hsl(var(--glow-warm) / 0.3) 80%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: border-rotate 6s linear infinite;
+  pointer-events: none;
+}
+
+/* ── Plasma orb ── */
+@keyframes plasma-morph {
+  0%, 100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    box-shadow: 
+      0 0 40px hsl(var(--glow-primary) / 0.2),
+      0 0 80px hsl(var(--glow-primary) / 0.1);
+  }
+  25% {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+    box-shadow: 
+      0 0 50px hsl(var(--glow-accent) / 0.25),
+      0 0 100px hsl(var(--glow-accent) / 0.1);
+  }
+  50% {
+    border-radius: 50% 60% 30% 60% / 30% 60% 70% 40%;
+    box-shadow: 
+      0 0 35px hsl(var(--glow-warm) / 0.2),
+      0 0 70px hsl(var(--glow-warm) / 0.08);
+  }
+  75% {
+    border-radius: 60% 40% 60% 30% / 70% 30% 50% 60%;
+    box-shadow: 
+      0 0 45px hsl(var(--glow-primary) / 0.22),
+      0 0 90px hsl(var(--glow-primary) / 0.08);
+  }
+}
+
+.plasma-orb {
+  animation: plasma-morph 12s ease-in-out infinite;
+}
+
 /* =============================================
    ZONE VISUAL SYSTEMS — Each room is a place
    ============================================= */
 
 /* Zone ambient backgrounds — subtle tints */
-.zone-bg-overflow {
-  background: hsl(var(--zone-overflow));
-}
-.zone-bg-quiet {
-  background: hsl(var(--zone-quiet));
-}
-.zone-bg-noise {
-  background: hsl(var(--zone-noise));
-}
-.zone-bg-unclaimed {
-  background: hsl(var(--zone-unclaimed));
-}
-.zone-bg-preserved {
-  background: hsl(var(--zone-preserved));
-}
-.zone-bg-backlog {
-  background: hsl(var(--zone-backlog));
-}
-.zone-bg-late-night {
-  background: hsl(var(--zone-late-night));
-}
-.zone-bg-almost-gone {
-  background: hsl(var(--zone-almost-gone));
-}
-.zone-bg-quiet-period {
-  background: hsl(var(--zone-quiet-period));
-}
-.zone-bg-flood {
-  background: hsl(var(--zone-flood));
-}
-.zone-bg-heavy {
-  background: hsl(var(--zone-heavy));
-}
-.zone-bg-discarded {
-  background: hsl(var(--zone-discarded));
-}
-.zone-bg-rare {
-  background: hsl(var(--zone-rare));
-}
-.zone-bg-static {
-  background: hsl(var(--zone-static));
-}
-.zone-bg-leaving {
-  background: hsl(var(--zone-leaving));
-}
+.zone-bg-overflow { background: hsl(var(--zone-overflow)); }
+.zone-bg-quiet { background: hsl(var(--zone-quiet)); }
+.zone-bg-noise { background: hsl(var(--zone-noise)); }
+.zone-bg-unclaimed { background: hsl(var(--zone-unclaimed)); }
+.zone-bg-preserved { background: hsl(var(--zone-preserved)); }
+.zone-bg-backlog { background: hsl(var(--zone-backlog)); }
+.zone-bg-late-night { background: hsl(var(--zone-late-night)); }
+.zone-bg-almost-gone { background: hsl(var(--zone-almost-gone)); }
+.zone-bg-quiet-period { background: hsl(var(--zone-quiet-period)); }
+.zone-bg-flood { background: hsl(var(--zone-flood)); }
+.zone-bg-heavy { background: hsl(var(--zone-heavy)); }
+.zone-bg-discarded { background: hsl(var(--zone-discarded)); }
+.zone-bg-rare { background: hsl(var(--zone-rare)); }
+.zone-bg-static { background: hsl(var(--zone-static)); }
+.zone-bg-leaving { background: hsl(var(--zone-leaving)); }
 
 /* ── Noise room: jitter effect ── */
 @keyframes zone-jitter {
@@ -1164,7 +1268,10 @@
 }
 
 .zone-noise-jitter .glass-premium {
-  border-color: hsl(var(--destructive) / 0.15);
+  border-color: hsl(var(--destructive) / 0.2);
+  box-shadow: 
+    0 0 15px hsl(var(--destructive) / 0.05),
+    inset 0 0 20px hsl(var(--destructive) / 0.03);
 }
 
 /* ── Quiet room: spacious, minimal ── */
@@ -1174,78 +1281,84 @@
 }
 
 .zone-quiet-minimal .glass-premium {
-  background: hsl(var(--card) / 0.3);
-  border-color: hsl(var(--border) / 0.1);
+  background: hsl(var(--card) / 0.25);
+  border-color: hsl(var(--primary) / 0.05);
   box-shadow: none;
 }
 
 /* ── Discarded room: ghostly grayscale ── */
 .zone-discarded-ghost {
-  filter: saturate(0.2) brightness(0.85);
-  opacity: 0.55;
+  filter: saturate(0.15) brightness(0.8);
+  opacity: 0.5;
 }
 
 .zone-discarded-ghost .glass-premium {
-  background: hsl(0 0% 12% / 0.4);
-  border-color: hsl(0 0% 20% / 0.15);
+  background: hsl(0 0% 10% / 0.35);
+  border-color: hsl(0 0% 20% / 0.1);
 }
 
 /* ── Flood room: dense stacked layout ── */
-.zone-flood-dense {
-  /* tighter spacing handled in component */
-}
-
 .zone-flood-dense .glass-premium {
-  border-color: hsl(var(--echo) / 0.12);
+  border-color: hsl(var(--echo) / 0.1);
 }
 
 /* ── Preserved room: amber glow ── */
 .zone-preserved-glow .glass-premium {
-  border-color: hsl(45 60% 40% / 0.2);
-  box-shadow: 0 0 20px hsl(45 60% 40% / 0.06);
+  border-color: hsl(42 70% 45% / 0.2);
+  box-shadow: 
+    0 0 20px hsl(42 70% 45% / 0.06),
+    0 0 40px hsl(42 70% 45% / 0.03);
 }
 
 /* ── Almost Gone room: urgent pulse ── */
 @keyframes zone-urgent-pulse {
-  0%, 100% { border-color: hsl(0 40% 35% / 0.15); }
-  50% { border-color: hsl(0 40% 35% / 0.35); }
+  0%, 100% { 
+    border-color: hsl(355 50% 40% / 0.15);
+    box-shadow: 0 0 15px hsl(355 50% 40% / 0.04);
+  }
+  50% { 
+    border-color: hsl(355 50% 40% / 0.4);
+    box-shadow: 0 0 30px hsl(355 50% 40% / 0.1);
+  }
 }
 
 .zone-almost-gone-urgent .glass-premium {
   animation: zone-urgent-pulse 2s ease-in-out infinite;
-  border: 1px solid hsl(0 40% 35% / 0.15);
+  border: 1px solid hsl(355 50% 40% / 0.15);
 }
 
 /* ── Quiet Period room: frozen, timeless ── */
 .zone-quiet-period-frozen {
-  filter: saturate(0.7) contrast(0.95);
+  filter: saturate(0.65) contrast(0.95);
 }
 
 .zone-quiet-period-frozen .glass-premium {
-  border-color: hsl(180 15% 30% / 0.15);
-  box-shadow: inset 0 0 30px hsl(180 15% 30% / 0.03);
+  border-color: hsl(180 20% 35% / 0.15);
+  box-shadow: inset 0 0 30px hsl(180 20% 35% / 0.03);
 }
 
 /* ── Heavy room: weighted feel ── */
 .zone-heavy-weighted .glass-premium {
   border-bottom-width: 3px;
-  border-color: hsl(20 30% 30% / 0.25);
-  box-shadow: 0 6px 20px hsl(0 0% 0% / 0.2);
+  border-color: hsl(20 40% 35% / 0.25);
+  box-shadow: 0 8px 24px hsl(0 0% 0% / 0.25);
 }
 
 /* ── Late Night room: deep blue ── */
 .zone-late-night-deep {
-  filter: brightness(0.92);
+  filter: brightness(0.9);
 }
 
 .zone-late-night-deep .glass-premium {
-  border-color: hsl(250 25% 35% / 0.2);
-  box-shadow: 0 0 25px hsl(250 25% 35% / 0.05);
+  border-color: hsl(240 30% 40% / 0.2);
+  box-shadow: 
+    0 0 25px hsl(240 30% 40% / 0.06),
+    0 0 60px hsl(240 30% 40% / 0.03);
 }
 
 /* ── Backlog room: clutter visual ── */
 .zone-backlog-clutter .glass-premium {
-  border-color: hsl(260 15% 35% / 0.15);
+  border-color: hsl(265 20% 40% / 0.15);
   transform: rotate(-0.3deg);
 }
 
@@ -1255,35 +1368,41 @@
 
 /* ── Rare room: shimmer ── */
 @keyframes zone-rare-shimmer {
-  0%, 100% { box-shadow: 0 0 15px hsl(270 30% 50% / 0.08); }
-  50% { box-shadow: 0 0 30px hsl(270 30% 50% / 0.18); }
+  0%, 100% { 
+    box-shadow: 0 0 15px hsl(270 40% 55% / 0.08);
+  }
+  50% { 
+    box-shadow: 
+      0 0 30px hsl(270 40% 55% / 0.2),
+      0 0 60px hsl(270 40% 55% / 0.06);
+  }
 }
 
 .zone-rare-shimmer .glass-premium {
   animation: zone-rare-shimmer 4s ease-in-out infinite;
-  border-color: hsl(270 30% 50% / 0.15);
+  border-color: hsl(270 40% 55% / 0.15);
 }
 
 /* ── Static room: absolute stillness ── */
 .zone-static-still .glass-premium {
-  border-color: hsl(0 0% 30% / 0.3);
-  box-shadow: 0 0 40px hsl(0 0% 100% / 0.02);
+  border-color: hsl(0 0% 35% / 0.3);
+  box-shadow: 0 0 40px hsl(0 0% 100% / 0.015);
 }
 
 /* ── Unclaimed room: muted, untouched ── */
 .zone-unclaimed-muted {
-  opacity: 0.75;
+  opacity: 0.7;
 }
 
 .zone-unclaimed-muted .glass-premium {
-  border-color: hsl(200 10% 30% / 0.12);
+  border-color: hsl(200 15% 35% / 0.12);
   border-style: dashed;
 }
 
 /* ── Leaving room: exit gradient ── */
 @keyframes zone-leaving-fade {
   0%, 100% { opacity: 0.7; }
-  50% { opacity: 0.5; }
+  50% { opacity: 0.45; }
 }
 
 .zone-leaving-exit {
@@ -1291,7 +1410,7 @@
 }
 
 .zone-leaving-exit .glass-premium {
-  border-color: hsl(210 15% 35% / 0.15);
+  border-color: hsl(210 20% 40% / 0.15);
   border-right-width: 3px;
 }
 

@@ -62,14 +62,14 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Decay state colors — organic spectrum
+        // Decay state colors — bioluminescent spectrum
         decay: {
           fresh: "hsl(var(--decay-fresh))",
           fading: "hsl(var(--decay-fading))",
           rotting: "hsl(var(--decay-rotting))",
           extinct: "hsl(var(--decay-extinct))",
         },
-        // Echo — spore dispersal
+        // Echo — golden phosphorescence
         echo: {
           DEFAULT: "hsl(var(--echo))",
           foreground: "hsl(var(--echo-foreground))",
@@ -85,6 +85,13 @@ export default {
           glitch: "hsl(var(--rot-glitch))",
           accent: "hsl(var(--rot-accent))",
           mold: "hsl(var(--rot-mold))",
+        },
+        // Glow system
+        glow: {
+          primary: "hsl(var(--glow-primary))",
+          accent: "hsl(var(--glow-accent))",
+          warm: "hsl(var(--glow-warm))",
+          danger: "hsl(var(--glow-danger))",
         },
       },
       borderRadius: {
@@ -122,6 +129,14 @@ export default {
           "0%": { transform: "scale(1)", opacity: "0.5" },
           "100%": { transform: "scale(1.5)", opacity: "0" },
         },
+        "glow-breathe": {
+          "0%, 100%": { 
+            boxShadow: "0 0 20px hsl(var(--glow-primary) / 0.1), 0 0 60px hsl(var(--glow-primary) / 0.05)" 
+          },
+          "50%": { 
+            boxShadow: "0 0 40px hsl(var(--glow-primary) / 0.2), 0 0 100px hsl(var(--glow-primary) / 0.08)" 
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -131,6 +146,7 @@ export default {
         "thought-appear": "thought-appear 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards",
         "thought-decay": "thought-decay 2.5s ease-in forwards",
         "echo-ripple": "echo-ripple 1.2s ease-out forwards",
+        "glow-breathe": "glow-breathe 6s ease-in-out infinite",
       },
       transitionDuration: {
         "2000": "2000ms",
