@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { useThoughtStore } from '@/stores/thoughtStore';
 import { useAppMode } from '@/hooks/useAppMode';
 import { usePatternWhisper } from '@/hooks/usePatternWhisper';
@@ -189,6 +190,15 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
           </motion.button>
         </section>
 
+        {/* Connect Dashboard */}
+        <section className="glass-premium rounded-xl p-4">
+          <Link
+            to="/connect/dashboard"
+            className="block w-full text-xs text-muted-foreground/40 font-thought tracking-wide hover:text-muted-foreground/60 transition-all py-2 text-center"
+          >
+            connect dashboard →
+          </Link>
+        </section>
         {/* Dissolve */}
         <section className="glass-premium rounded-xl p-4">
           <DissolveButton />
