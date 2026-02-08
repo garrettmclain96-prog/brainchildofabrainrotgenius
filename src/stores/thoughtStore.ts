@@ -309,6 +309,7 @@ export const useThoughtStore = create<ThoughtStore>()(
             category: t.category || 'uncategorized',
             waterCount: t.waterCount || 0,
             starred: t.starred || false,
+            visibility: t.visibility || 'private',
           }));
         }
       },
