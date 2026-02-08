@@ -28,6 +28,7 @@ import { CoThinkingIndicator } from '@/components/CoThinkingIndicator';
 import { EndOfDayCompost } from '@/components/EndOfDayCompost';
 import { SyncIndicator } from '@/components/SyncIndicator';
 import { AmbientLog } from '@/components/AmbientLog';
+import { LeavingOverlay, useLeavingRoom } from '@/components/LeavingOverlay';
 
 // Lazy load heavy 3D scene — deferred for performance
 const FogScene = lazy(() => import('@/components/three/FogScene').then((m) => ({ default: m.FogScene })));
@@ -78,6 +79,7 @@ const Index = () => {
   // Reflective systems (non-manipulative)
   const appMood = useAppMoods();
   const identity = useIdentityDrift(privateThoughts);
+  const leaving = useLeavingRoom();
 
   // Derived counts for ambient log
   const starredCount = useMemo(
@@ -192,6 +194,13 @@ const Index = () => {
 
         {/* End of day compost */}
         <EndOfDayCompost thoughts={privateThoughts} />
+
+        {/* Leaving room — exit-triggered farewell */}
+        <LeavingOverlay
+          isLeaving={leaving.isLeaving}
+          prompt={leaving.prompt}
+          onDismiss={leaving.dismiss}
+        />
 
         {/* Ambient log — subtle status line */}
         <AmbientLog thoughtCount={privateThoughts.length} starredCount={starredCount} />

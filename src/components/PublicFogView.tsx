@@ -13,6 +13,7 @@ import { AnimatedEmptyState } from '@/components/AnimatedEmptyState';
 import { IdeaDriftNotification } from '@/components/IdeaDriftNotification';
 import { GraveyardView } from '@/components/GraveyardView';
 import { ThoughtWeatherIndicator } from '@/components/ThoughtWeatherIndicator';
+import { ZoneAmbient, getZoneVisualClass } from '@/components/ZoneAmbient';
 import { AppMoodState } from '@/hooks/useAppMoods';
 import { ThoughtZone, ZONE_META, ZONE_PATTERNS, VISIBLE_ZONES } from '@/types/thought';
 import { cn } from '@/lib/utils';
@@ -63,6 +64,7 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
 
   const zoneInfo = ZONE_META[activeZone];
   const canCompose = zoneInfo.canCompose;
+  const zoneVisualClass = getZoneVisualClass(activeZone);
 
   // Build visible zone list — include "rare" only sometimes
   const displayZones = useMemo(() => {
@@ -79,7 +81,7 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
       case 'static': return 3;
       case 'quiet-period':
       case 'preserved': return 5;
-      case 'flood':
+      case 'flood': return 15;
       case 'noise': return 12;
       case 'almost-gone': return 8;
       default: return 6;
@@ -88,20 +90,24 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
 
   const displayThoughts = thoughts.slice(0, thoughtLimit);
 
-  // Zone-specific visual class
-  const zoneVisualClass = useMemo(() => {
+  // Zone-specific layout spacing
+  const thoughtSpacing = useMemo(() => {
     switch (activeZone) {
-      case 'noise': return 'animate-[glitch-subtle_3s_ease-in-out_infinite]';
-      case 'quiet': return 'opacity-80';
-      case 'almost-gone': return 'opacity-60';
-      case 'discarded': return 'opacity-40 grayscale';
-      case 'flood': return '';
-      default: return '';
+      case 'flood': return 'space-y-1.5';
+      case 'quiet': return 'space-y-8';
+      case 'noise': return 'space-y-2';
+      case 'static': return 'space-y-0';
+      default: return 'space-y-4';
     }
   }, [activeZone]);
 
   return (
     <div className="min-h-screen relative pb-28">
+      {/* Zone ambient overlay — unique color atmosphere per room */}
+      <AnimatePresence mode="wait">
+        {!showGraveyard && <ZoneAmbient zone={activeZone} />}
+      </AnimatePresence>
+
       <AnimatePresence>
         {bursts.map((burst) => (
           <SubmitBurst key={burst.id} x={burst.x} y={burst.y} onComplete={() => removeBurst(burst.id)} />
@@ -186,9 +192,9 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
                       isActive
                         ? 'bg-secondary/50 text-secondary-foreground'
                         : 'text-muted-foreground/30 hover:text-muted-foreground/50',
-                      // Special visual hints for certain rooms
                       zone === 'rare' && !isActive && 'text-echo/30',
                       zone === 'static' && !isActive && 'text-foreground/20',
+                      zone === 'almost-gone' && !isActive && count > 0 && 'text-destructive/30',
                     )}
                   >
                     <span className="opacity-60">{meta.icon}</span>
@@ -204,7 +210,7 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
         </div>
       </header>
 
-      <main className={cn('max-w-lg mx-auto px-4 py-4 relative', zoneVisualClass)}>
+      <main className={cn('max-w-lg mx-auto px-4 py-4 relative z-10', zoneVisualClass)}>
         {showGraveyard && <GraveyardView />}
 
         {!showGraveyard && (
@@ -258,48 +264,55 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
               <AnimatedEmptyState icon="fog" />
             )}
 
-            {/* Thoughts */}
-            <div className="space-y-4">
-              {displayThoughts.map((thought, index) => (
-                <motion.div
-                  key={thought.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.08, duration: 0.5 }}
-                  style={{
-                    marginLeft: activeZone === 'quiet' ? '0' : `${Math.sin(index * 1.5) * 5 + 5}%`,
-                    maxWidth: activeZone === 'quiet' ? '100%' : `${92 - Math.sin(index * 2) * 8}%`,
-                  }}
-                >
-                  <ThoughtCard
-                    thought={thought}
-                    onEcho={(id) => setEchoingThoughtId(id)}
-                    showEchoButton={echoingThoughtId !== thought.id && zoneInfo.canSave}
-                  />
+            {/* Thoughts — with zone-specific spacing */}
+            <div className={thoughtSpacing}>
+              {displayThoughts.map((thought, index) => {
+                // Zone-specific card layout
+                const isQuiet = activeZone === 'quiet';
+                const isFlood = activeZone === 'flood';
+                const isStatic = activeZone === 'static';
 
-                  {echoes.get(thought.id)?.length ? (
-                    <div className="mt-2 ml-3 space-y-1.5">
-                      {echoes.get(thought.id)?.slice(0, 3).map((echo) => (
-                        <EchoCard key={echo.id} echo={echo} />
-                      ))}
-                    </div>
-                  ) : null}
+                return (
+                  <motion.div
+                    key={thought.id}
+                    initial={{ opacity: 0, y: isFlood ? 10 : 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: isFlood ? index * 0.03 : index * 0.08, duration: isFlood ? 0.3 : 0.5 }}
+                    style={{
+                      marginLeft: isQuiet || isStatic ? '0' : isFlood ? '0' : `${Math.sin(index * 1.5) * 5 + 5}%`,
+                      maxWidth: isQuiet || isStatic ? '100%' : isFlood ? '100%' : `${92 - Math.sin(index * 2) * 8}%`,
+                    }}
+                  >
+                    <ThoughtCard
+                      thought={thought}
+                      onEcho={(id) => setEchoingThoughtId(id)}
+                      showEchoButton={echoingThoughtId !== thought.id && zoneInfo.canSave}
+                    />
 
-                  {echoingThoughtId === thought.id && (
-                    <div className="mt-2 ml-3">
-                      <EchoComposer
-                        thoughtId={thought.id}
-                        onSubmit={(tid, text) => {
-                          addEcho(tid, text);
-                          setEchoingThoughtId(null);
-                          onAction?.();
-                        }}
-                        onCancel={() => setEchoingThoughtId(null)}
-                      />
-                    </div>
-                  )}
-                </motion.div>
-              ))}
+                    {echoes.get(thought.id)?.length ? (
+                      <div className="mt-2 ml-3 space-y-1.5">
+                        {echoes.get(thought.id)?.slice(0, 3).map((echo) => (
+                          <EchoCard key={echo.id} echo={echo} />
+                        ))}
+                      </div>
+                    ) : null}
+
+                    {echoingThoughtId === thought.id && (
+                      <div className="mt-2 ml-3">
+                        <EchoComposer
+                          thoughtId={thought.id}
+                          onSubmit={(tid, text) => {
+                            addEcho(tid, text);
+                            setEchoingThoughtId(null);
+                            onAction?.();
+                          }}
+                          onCancel={() => setEchoingThoughtId(null)}
+                        />
+                      </div>
+                    )}
+                  </motion.div>
+                );
+              })}
             </div>
           </>
         )}

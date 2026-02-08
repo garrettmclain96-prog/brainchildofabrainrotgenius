@@ -83,6 +83,23 @@
     --grain-opacity: 0.02;
     --vignette-strength: 0.3;
     --hue-drift-speed: 120s;
+    
+    /* ═══ Zone ambient tints ═══ */
+    --zone-overflow: 240 8% 9%;
+    --zone-quiet: 220 12% 8%;
+    --zone-noise: 350 15% 10%;
+    --zone-unclaimed: 200 10% 9%;
+    --zone-preserved: 45 12% 10%;
+    --zone-backlog: 260 10% 10%;
+    --zone-late-night: 250 18% 7%;
+    --zone-almost-gone: 0 12% 8%;
+    --zone-quiet-period: 180 8% 9%;
+    --zone-flood: 280 12% 10%;
+    --zone-heavy: 20 10% 8%;
+    --zone-discarded: 0 0% 8%;
+    --zone-rare: 270 25% 10%;
+    --zone-static: 0 0% 6%;
+    --zone-leaving: 210 15% 8%;
   }
   
   /* ═══ Embrace the Rot ═══ */
@@ -1075,6 +1092,217 @@
 
 .electric-border {
   animation: electric 2.5s ease-in-out infinite;
+}
+
+/* =============================================
+   ZONE VISUAL SYSTEMS — Each room is a place
+   ============================================= */
+
+/* Zone ambient backgrounds — subtle tints */
+.zone-bg-overflow {
+  background: hsl(var(--zone-overflow));
+}
+.zone-bg-quiet {
+  background: hsl(var(--zone-quiet));
+}
+.zone-bg-noise {
+  background: hsl(var(--zone-noise));
+}
+.zone-bg-unclaimed {
+  background: hsl(var(--zone-unclaimed));
+}
+.zone-bg-preserved {
+  background: hsl(var(--zone-preserved));
+}
+.zone-bg-backlog {
+  background: hsl(var(--zone-backlog));
+}
+.zone-bg-late-night {
+  background: hsl(var(--zone-late-night));
+}
+.zone-bg-almost-gone {
+  background: hsl(var(--zone-almost-gone));
+}
+.zone-bg-quiet-period {
+  background: hsl(var(--zone-quiet-period));
+}
+.zone-bg-flood {
+  background: hsl(var(--zone-flood));
+}
+.zone-bg-heavy {
+  background: hsl(var(--zone-heavy));
+}
+.zone-bg-discarded {
+  background: hsl(var(--zone-discarded));
+}
+.zone-bg-rare {
+  background: hsl(var(--zone-rare));
+}
+.zone-bg-static {
+  background: hsl(var(--zone-static));
+}
+.zone-bg-leaving {
+  background: hsl(var(--zone-leaving));
+}
+
+/* ── Noise room: jitter effect ── */
+@keyframes zone-jitter {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-0.5px, 0.5px); }
+  20% { transform: translate(0.5px, -0.3px); }
+  30% { transform: translate(-0.3px, -0.5px); }
+  40% { transform: translate(0.3px, 0.3px); }
+  50% { transform: translate(-0.5px, 0.2px); }
+  60% { transform: translate(0.2px, -0.5px); }
+  70% { transform: translate(-0.3px, 0.5px); }
+  80% { transform: translate(0.5px, 0px); }
+  90% { transform: translate(0px, -0.3px); }
+}
+
+.zone-noise-jitter {
+  animation: zone-jitter 0.3s steps(3) infinite;
+}
+
+.zone-noise-jitter .glass-premium {
+  border-color: hsl(var(--destructive) / 0.15);
+}
+
+/* ── Quiet room: spacious, minimal ── */
+.zone-quiet-minimal {
+  letter-spacing: 0.04em;
+  line-height: 2;
+}
+
+.zone-quiet-minimal .glass-premium {
+  background: hsl(var(--card) / 0.3);
+  border-color: hsl(var(--border) / 0.1);
+  box-shadow: none;
+}
+
+/* ── Discarded room: ghostly grayscale ── */
+.zone-discarded-ghost {
+  filter: saturate(0.2) brightness(0.85);
+  opacity: 0.55;
+}
+
+.zone-discarded-ghost .glass-premium {
+  background: hsl(0 0% 12% / 0.4);
+  border-color: hsl(0 0% 20% / 0.15);
+}
+
+/* ── Flood room: dense stacked layout ── */
+.zone-flood-dense {
+  /* tighter spacing handled in component */
+}
+
+.zone-flood-dense .glass-premium {
+  border-color: hsl(var(--echo) / 0.12);
+}
+
+/* ── Preserved room: amber glow ── */
+.zone-preserved-glow .glass-premium {
+  border-color: hsl(45 60% 40% / 0.2);
+  box-shadow: 0 0 20px hsl(45 60% 40% / 0.06);
+}
+
+/* ── Almost Gone room: urgent pulse ── */
+@keyframes zone-urgent-pulse {
+  0%, 100% { border-color: hsl(0 40% 35% / 0.15); }
+  50% { border-color: hsl(0 40% 35% / 0.35); }
+}
+
+.zone-almost-gone-urgent .glass-premium {
+  animation: zone-urgent-pulse 2s ease-in-out infinite;
+  border: 1px solid hsl(0 40% 35% / 0.15);
+}
+
+/* ── Quiet Period room: frozen, timeless ── */
+.zone-quiet-period-frozen {
+  filter: saturate(0.7) contrast(0.95);
+}
+
+.zone-quiet-period-frozen .glass-premium {
+  border-color: hsl(180 15% 30% / 0.15);
+  box-shadow: inset 0 0 30px hsl(180 15% 30% / 0.03);
+}
+
+/* ── Heavy room: weighted feel ── */
+.zone-heavy-weighted .glass-premium {
+  border-bottom-width: 3px;
+  border-color: hsl(20 30% 30% / 0.25);
+  box-shadow: 0 6px 20px hsl(0 0% 0% / 0.2);
+}
+
+/* ── Late Night room: deep blue ── */
+.zone-late-night-deep {
+  filter: brightness(0.92);
+}
+
+.zone-late-night-deep .glass-premium {
+  border-color: hsl(250 25% 35% / 0.2);
+  box-shadow: 0 0 25px hsl(250 25% 35% / 0.05);
+}
+
+/* ── Backlog room: clutter visual ── */
+.zone-backlog-clutter .glass-premium {
+  border-color: hsl(260 15% 35% / 0.15);
+  transform: rotate(-0.3deg);
+}
+
+.zone-backlog-clutter .glass-premium:nth-child(even) {
+  transform: rotate(0.2deg);
+}
+
+/* ── Rare room: shimmer ── */
+@keyframes zone-rare-shimmer {
+  0%, 100% { box-shadow: 0 0 15px hsl(270 30% 50% / 0.08); }
+  50% { box-shadow: 0 0 30px hsl(270 30% 50% / 0.18); }
+}
+
+.zone-rare-shimmer .glass-premium {
+  animation: zone-rare-shimmer 4s ease-in-out infinite;
+  border-color: hsl(270 30% 50% / 0.15);
+}
+
+/* ── Static room: absolute stillness ── */
+.zone-static-still .glass-premium {
+  border-color: hsl(0 0% 30% / 0.3);
+  box-shadow: 0 0 40px hsl(0 0% 100% / 0.02);
+}
+
+/* ── Unclaimed room: muted, untouched ── */
+.zone-unclaimed-muted {
+  opacity: 0.75;
+}
+
+.zone-unclaimed-muted .glass-premium {
+  border-color: hsl(200 10% 30% / 0.12);
+  border-style: dashed;
+}
+
+/* ── Leaving room: exit gradient ── */
+@keyframes zone-leaving-fade {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 0.5; }
+}
+
+.zone-leaving-exit {
+  animation: zone-leaving-fade 3s ease-in-out infinite;
+}
+
+.zone-leaving-exit .glass-premium {
+  border-color: hsl(210 15% 35% / 0.15);
+  border-right-width: 3px;
+}
+
+/* Zone ambient overlay — subtle color wash behind thoughts */
+.zone-ambient-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.4;
+  transition: background 1s ease-in-out;
 }
 
 /* =============================================
