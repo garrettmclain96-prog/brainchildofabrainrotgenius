@@ -164,7 +164,7 @@ export function ThoughtCard({ thought, onEcho, onWater, onStar, onReflect, showE
 
             <div className="flex items-center gap-2">
               {/* Reflect button — AI mirror */}
-              {showReflectButton && thought.visibility === 'private' && (
+              {showReflectButton && (
                 <motion.button
                   onClick={() => onReflect?.(thought.id, thought.content)}
                   className="min-w-[44px] min-h-[44px] flex items-center justify-center px-3 rounded-xl text-xs font-thought bg-primary/5 text-primary/40 hover:bg-primary/12 hover:text-primary/70 transition-all duration-500"
