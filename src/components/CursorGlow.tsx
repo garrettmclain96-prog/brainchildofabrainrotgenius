@@ -14,12 +14,10 @@
        setPosition({ x: e.clientX, y: e.clientY });
        setIsVisible(true);
        
-       const target = e.target as HTMLElement;
-       setIsPointer(
-         window.getComputedStyle(target).cursor === 'pointer' ||
-         target.tagName === 'BUTTON' ||
-         target.tagName === 'A'
-       );
+        const target = e.target as HTMLElement;
+        setIsPointer(
+          !!target.closest('button, a, [role="button"], input, select, textarea, label, [tabindex]')
+        );
  
        // Add trail particles (throttled)
        const now = Date.now();
