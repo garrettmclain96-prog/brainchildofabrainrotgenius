@@ -225,8 +225,8 @@ export function usePublicFog() {
     const sessionId = getSessionId();
     
     const trimmedText = text.trim();
-    if (trimmedText.length < 1 || trimmedText.length > 500) {
-      throw new Error('Echo must be between 1 and 500 characters');
+    if (trimmedText.length < 1 || trimmedText.length > 50) {
+      throw new Error('Echo must be between 1 and 50 characters');
     }
     
     const now = new Date();
