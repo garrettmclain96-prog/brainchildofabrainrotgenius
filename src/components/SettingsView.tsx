@@ -1,10 +1,12 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThoughtStore } from '@/stores/thoughtStore';
 import { useAppMode } from '@/hooks/useAppMode';
+import { usePatternWhisper } from '@/hooks/usePatternWhisper';
 import { ModeToggle } from '@/components/ModeToggle';
 import { DissolveButton } from '@/components/DissolveButton';
 import { FinitudeDial } from '@/components/FinitudeDial';
 import { SelfReflection } from '@/components/SelfReflection';
+import { PatternWhisper } from '@/components/PatternWhisper';
 import { AppMoodState } from '@/hooks/useAppMoods';
 import { IdentityState } from '@/hooks/useIdentityDrift';
 import { cn } from '@/lib/utils';
@@ -41,7 +43,7 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
     privateThoughts,
   } = useThoughtStore();
   const { mode } = useAppMode();
-
+  const patternWhisper = usePatternWhisper();
   return (
     <div className="min-h-screen px-6 py-8 pb-28">
       <div className="max-w-lg mx-auto space-y-8">
@@ -51,6 +53,17 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
 
         {/* Self Reflection — quiet status signals */}
         <SelfReflection thoughts={privateThoughts} />
+
+        {/* Pattern Whisper — AI observations */}
+        <PatternWhisper
+          whisper={patternWhisper.whisper}
+          isLoading={patternWhisper.isLoading}
+          thoughts={privateThoughts}
+          tone={identity?.tone}
+          profile={identity?.profile}
+          onRequest={patternWhisper.requestWhisper}
+          onDismiss={patternWhisper.dismissWhisper}
+        />
 
         {/* Finitude Dial */}
         <section>
