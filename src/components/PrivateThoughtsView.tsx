@@ -209,7 +209,7 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
           <DialogFooter className="flex-col gap-2 sm:flex-col">
             <Button
               onClick={handleStarConfirm}
-              className="bg-amber-500/20 text-amber-400/90 hover:bg-amber-500/30 w-full font-thought text-xs"
+              className="bg-primary/20 text-primary hover:bg-primary/30 w-full font-thought text-xs"
               variant="ghost"
             >
               yes, preserve it
@@ -225,34 +225,39 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
         </DialogContent>
       </Dialog>
 
-      <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b border-border/20 px-4 py-3">
+      <header className="sticky top-0 z-20 glass-premium border-b border-border/10 px-4 py-4">
         <div className="max-w-lg mx-auto">
-          {/* App title and subtitle */}
-          <div className="mb-3">
-            <h1 className={cn('text-xl font-thought text-foreground/90 tracking-wide', mode === 'rot' && 'animate-glitch-subtle')}>
-              Brainchild
-            </h1>
-            <p className="text-[11px] font-thought text-muted-foreground/40 tracking-wider mt-0.5 italic">
-              {nightDecay.isNight
-                ? 'the rot moves faster at night.'
-                : 'if it matters, it survives'}
-            </p>
-          </div>
-
+          {/* App title — display serif */}
           <div className="flex items-center justify-between mb-3">
-            <span className={cn('text-xs font-thought text-muted-foreground/50')}>
-              {mode === 'rot' ? 'dump' : 'local'}
-            </span>
+            <div>
+              <h1 className={cn(
+                'text-lg font-display text-foreground/70 tracking-[0.2em] uppercase',
+                mode === 'rot' && 'animate-glitch-subtle'
+              )}>
+                brainchild
+              </h1>
+              <p className="text-[10px] font-sans text-muted-foreground/30 tracking-[0.15em] mt-1">
+                {nightDecay.isNight
+                  ? 'the rot moves faster at night'
+                  : 'if it matters, it survives'}
+              </p>
+            </div>
 
-            {privateThoughts.length > 0 && (
-              <motion.button
-                onClick={() => setCeremonyOpen(true)}
-                className="px-2.5 py-1.5 rounded-lg text-sm text-muted-foreground/30 hover:text-muted-foreground/60 transition-all"
-                whileTap={{ scale: 0.95 }}
-              >
-                🔥
-              </motion.button>
-            )}
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-sans text-muted-foreground/25 tracking-widest uppercase">
+                {mode === 'rot' ? 'rot' : 'prune'}
+              </span>
+              {privateThoughts.length > 0 && (
+                <motion.button
+                  onClick={() => setCeremonyOpen(true)}
+                  className="w-8 h-8 rounded-xl flex items-center justify-center text-xs text-muted-foreground/25 hover:text-primary/50 hover:bg-primary/5 transition-all duration-500"
+                  whileTap={{ scale: 0.9 }}
+                  aria-label="Forgetting ceremony"
+                >
+                  ~
+                </motion.button>
+              )}
+            </div>
           </div>
 
           <CategoryFilter selected={selectedCategory} onSelect={setSelectedCategory} counts={categoryCounts} />
