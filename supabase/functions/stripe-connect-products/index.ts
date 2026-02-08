@@ -43,7 +43,41 @@ Deno.serve(async (req) => {
 
     const stripeClient = new Stripe(stripeSecretKey);
     const body = await req.json();
-    const { action, stripeAccountId, name, description, priceInCents, currency } = body;
+    const { action, stripeAccountId, name, description, priceInCents, currency, interval } = body;
+
+    // =================================================================
+    // ACTION: CREATE-PLATFORM — Create a product+price at the platform level
+    // Used for platform subscriptions (no stripeAccount header)
+    // =================================================================
+    if (action === "create-platform") {
+      if (!name || !priceInCents) {
+        return new Response(
+          JSON.stringify({ error: "name and priceInCents are required" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const product = await stripeClient.products.create({
+        name: name,
+        description: description || "",
+        default_price_data: {
+          unit_amount: priceInCents,
+          currency: currency || "usd",
+          recurring: { interval: interval || "month" },
+        },
+      });
+
+      return new Response(
+        JSON.stringify({
+          productId: product.id,
+          name: product.name,
+          defaultPriceId: typeof product.default_price === "string"
+            ? product.default_price
+            : product.default_price?.id,
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     if (!stripeAccountId) {
       return new Response(
