@@ -108,32 +108,32 @@
     --zone-leaving: 240 20% 93%;
   }
   
-  /* ═══ Embrace the Rot ═══ */
+  /* ═══ Embrace the Rot (VIVID) ═══ */
   .mode-rot {
-    --primary: 330 70% 55%;
-    --accent: 0 55% 52%;
-    --decay-fresh: 330 50% 55%;
-    --decay-fading: 40 45% 52%;
-    --decay-rotting: 0 40% 48%;
-    --decay-extinct: 270 12% 68%;
-    --echo: 140 45% 50%;
+    --primary: 330 90% 50%;
+    --accent: 0 75% 48%;
+    --decay-fresh: 330 70% 52%;
+    --decay-fading: 40 65% 50%;
+    --decay-rotting: 0 60% 45%;
+    --decay-extinct: 270 20% 65%;
+    --echo: 140 65% 45%;
     --grain-opacity: 0.015;
     --vignette-strength: 0.15;
-    --glow-primary: 330 70% 55%;
+    --glow-primary: 330 90% 50%;
   }
   
-  /* ═══ Prune the Decay ═══ */
+  /* ═══ Prune the Decay (VIVID) ═══ */
   .mode-prune {
-    --primary: 38 70% 52%;
-    --accent: 200 45% 55%;
-    --decay-fresh: 160 50% 48%;
-    --decay-fading: 45 45% 52%;
-    --decay-rotting: 20 35% 48%;
-    --decay-extinct: 270 10% 72%;
-    --echo: 200 40% 55%;
+    --primary: 38 85% 48%;
+    --accent: 200 65% 50%;
+    --decay-fresh: 155 70% 44%;
+    --decay-fading: 42 65% 50%;
+    --decay-rotting: 20 55% 45%;
+    --decay-extinct: 270 15% 70%;
+    --echo: 200 60% 50%;
     --grain-opacity: 0.006;
     --vignette-strength: 0.1;
-    --glow-primary: 38 70% 52%;
+    --glow-primary: 38 85% 48%;
   }
 }
 
