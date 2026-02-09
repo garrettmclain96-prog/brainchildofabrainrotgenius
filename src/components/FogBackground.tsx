@@ -23,7 +23,7 @@ export function FogBackground() {
     setMounted(true);
   }, []);
 
-  // Generate ethereal luminous orbs
+  // Generate psychedelic luminous orbs — bright pastel washes
   const particles = useMemo(() => {
     const count = 10;
     return Array.from({ length: count }, (_, i) => ({
@@ -31,14 +31,14 @@ export function FogBackground() {
       x: Math.random() * 100,
       y: Math.random() * 100,
       size: Math.random() * 350 + 120,
-      opacity: Math.random() * 0.08 + 0.02,
+      opacity: Math.random() * 0.12 + 0.04,
       duration: Math.random() * 35 + 30,
       delay: Math.random() * -25,
       hue: isRot 
         ? (Math.random() > 0.5 ? 330 + Math.random() * 20 : 140 + Math.random() * 20)
-        : (Math.random() > 0.5 ? 38 + Math.random() * 20 : 260 + Math.random() * 30),
-      saturation: isRot ? 35 + Math.random() * 20 : 30 + Math.random() * 30,
-      lightness: 45 + Math.random() * 20,
+        : [280, 330, 180, 220, 45][Math.floor(Math.random() * 5)] + Math.random() * 30,
+      saturation: isRot ? 40 + Math.random() * 20 : 30 + Math.random() * 35,
+      lightness: 75 + Math.random() * 15,
     }));
   }, [isRot]);
 
@@ -46,20 +46,20 @@ export function FogBackground() {
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
-      {/* Mesh gradient base — ethereal twilight */}
+      {/* Mesh gradient base — psychedelic pastel wash */}
       <div 
         className="absolute inset-0"
         style={{
           background: isRot
             ? `
-              radial-gradient(ellipse 65% 55% at 15% 25%, hsl(330 20% 30% / 0.15) 0%, transparent 50%),
-              radial-gradient(ellipse 55% 50% at 85% 75%, hsl(0 15% 28% / 0.12) 0%, transparent 40%),
-              radial-gradient(ellipse 85% 65% at 50% 100%, hsl(140 12% 22% / 0.15) 0%, transparent 50%)
+              radial-gradient(ellipse 65% 55% at 15% 25%, hsl(330 30% 85% / 0.25) 0%, transparent 50%),
+              radial-gradient(ellipse 55% 50% at 85% 75%, hsl(0 25% 82% / 0.2) 0%, transparent 40%),
+              radial-gradient(ellipse 85% 65% at 50% 100%, hsl(140 20% 80% / 0.2) 0%, transparent 50%)
             `
             : `
-              radial-gradient(ellipse 65% 55% at 20% 30%, hsl(38 25% 35% / 0.1) 0%, transparent 50%),
-              radial-gradient(ellipse 55% 50% at 80% 70%, hsl(330 20% 32% / 0.08) 0%, transparent 40%),
-              radial-gradient(ellipse 85% 65% at 50% 100%, hsl(260 18% 28% / 0.12) 0%, transparent 50%)
+              radial-gradient(ellipse 65% 55% at 20% 30%, hsl(280 35% 88% / 0.2) 0%, transparent 50%),
+              radial-gradient(ellipse 55% 50% at 80% 70%, hsl(330 25% 85% / 0.15) 0%, transparent 40%),
+              radial-gradient(ellipse 85% 65% at 50% 100%, hsl(180 30% 82% / 0.18) 0%, transparent 50%)
             `
         }}
       />
@@ -67,16 +67,16 @@ export function FogBackground() {
       {/* Aurora wash — slow-moving color field */}
       <div className="absolute inset-0 aurora-bg" />
       
-      {/* Ethereal light rays */}
+      {/* Ethereal light rays — soft psychedelic sweep */}
       <div 
         className="absolute inset-0 animate-light-ray"
         style={{
-          background: 'linear-gradient(105deg, transparent 30%, hsl(38 60% 70% / 0.04) 50%, transparent 70%)',
+          background: 'linear-gradient(105deg, transparent 30%, hsl(280 60% 75% / 0.06) 50%, transparent 70%)',
           width: '200%',
         }}
       />
       
-      {/* Animated fog particles — luminous mist orbs */}
+      {/* Animated fog particles — bright pastel mist orbs */}
       {particles.map((particle) => (
         <div
           key={particle.id}
@@ -94,19 +94,19 @@ export function FogBackground() {
         />
       ))}
       
-      {/* Soft vignette — dreamy edges */}
+      {/* Soft vignette — gentle edges */}
       <div 
         className="absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse 75% 75% at center, transparent 40%, hsl(250 18% 22% / 0.25) 100%)'
+          background: 'radial-gradient(ellipse 75% 75% at center, transparent 40%, hsl(270 20% 88% / 0.15) 100%)'
         }}
       />
       
-      {/* Rising mist at bottom */}
+      {/* Rising mist at bottom — soft pastel lift */}
       <div 
         className="absolute bottom-0 left-0 right-0 h-1/3 animate-mist-rise"
         style={{
-          background: 'linear-gradient(to top, hsl(250 18% 26% / 0.15), transparent)'
+          background: 'linear-gradient(to top, hsl(260 25% 90% / 0.12), transparent)'
         }}
       />
     </div>

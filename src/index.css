@@ -3,137 +3,137 @@
 @tailwind utilities;
 
 /* =============================================
-   BRAINCHILD — Ethereal Twilight Edition
-   The Sensory System: Dawn fog, luminous mist, dreaming light
+   BRAINCHILD — Psychedelic Dawn Edition
+   The Sensory System: Bright washes, vivid glows, pastel mist
    ============================================= */
 
 @layer base {
   :root {
-    /* Core palette — twilight dusky lavender, luminous mist */
-    --background: 250 18% 28%;
-    --foreground: 45 30% 92%;
+    /* Core palette — Psychedelic Dawn: bright, vivid, readable */
+    --background: 270 30% 96%;
+    --foreground: 270 40% 12%;
     
-    /* Surface layers — frosted dawn glass */
-    --card: 250 16% 34%;
-    --card-foreground: 45 25% 90%;
+    /* Surface layers — frosted pastel glass */
+    --card: 270 25% 92%;
+    --card-foreground: 270 35% 15%;
     
-    --popover: 250 14% 32%;
-    --popover-foreground: 45 25% 90%;
+    --popover: 270 20% 94%;
+    --popover-foreground: 270 35% 15%;
     
-    /* Primary — warm golden dawn light */
-    --primary: 38 75% 65%;
-    --primary-foreground: 250 20% 15%;
+    /* Primary — electric violet (psychedelic hero) */
+    --primary: 280 75% 58%;
+    --primary-foreground: 280 10% 98%;
     
-    /* Secondary — deeper twilight */
-    --secondary: 250 14% 38%;
-    --secondary-foreground: 45 15% 75%;
+    /* Secondary — soft pastel blue */
+    --secondary: 220 40% 88%;
+    --secondary-foreground: 220 40% 22%;
     
-    /* Muted — soft twilight haze */
-    --muted: 250 12% 36%;
-    --muted-foreground: 45 10% 62%;
+    /* Muted — gentle lavender haze */
+    --muted: 270 20% 88%;
+    --muted-foreground: 270 20% 42%;
     
-    /* Accent — ethereal rose glow */
-    --accent: 330 45% 65%;
-    --accent-foreground: 330 15% 95%;
+    /* Accent — desaturated dusty rose */
+    --accent: 330 35% 72%;
+    --accent-foreground: 330 30% 15%;
     
-    /* Destructive — fading ember */
-    --destructive: 0 55% 58%;
-    --destructive-foreground: 0 10% 95%;
+    /* Destructive — warm coral */
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 0 10% 98%;
     
-    /* Decay state spectrum — dawn to dusk */
-    --decay-fresh: 160 50% 60%;
-    --decay-fading: 45 55% 65%;
-    --decay-rotting: 20 45% 55%;
-    --decay-extinct: 250 10% 38%;
+    /* Decay state spectrum — psychedelic rainbow */
+    --decay-fresh: 160 55% 48%;
+    --decay-fading: 45 60% 55%;
+    --decay-rotting: 330 45% 55%;
+    --decay-extinct: 270 15% 72%;
     
-    /* Echo — soft peach luminescence */
-    --echo: 28 65% 68%;
-    --echo-foreground: 28 15% 95%;
+    /* Echo — soft teal luminescence */
+    --echo: 180 50% 55%;
+    --echo-foreground: 180 15% 10%;
     
-    /* Fog layers — ethereal mist */
-    --fog-light: 260 15% 42%;
-    --fog-mid: 255 12% 35%;
-    --fog-dark: 250 18% 26%;
+    /* Fog layers — bright pastel washes */
+    --fog-light: 300 25% 88%;
+    --fog-mid: 260 22% 84%;
+    --fog-dark: 220 20% 80%;
     
     /* UI chrome */
-    --border: 255 14% 42%;
-    --input: 250 14% 32%;
-    --ring: 38 75% 65%;
+    --border: 270 18% 82%;
+    --input: 270 15% 90%;
+    --ring: 280 75% 58%;
     
     --radius: 1rem;
     
     /* Sidebar */
-    --sidebar-background: 250 18% 26%;
-    --sidebar-foreground: 45 12% 72%;
-    --sidebar-primary: 38 75% 65%;
-    --sidebar-primary-foreground: 250 20% 15%;
-    --sidebar-accent: 250 14% 35%;
-    --sidebar-accent-foreground: 45 12% 72%;
-    --sidebar-border: 255 12% 38%;
-    --sidebar-ring: 38 75% 65%;
+    --sidebar-background: 270 25% 94%;
+    --sidebar-foreground: 270 20% 35%;
+    --sidebar-primary: 280 75% 58%;
+    --sidebar-primary-foreground: 280 10% 98%;
+    --sidebar-accent: 260 20% 88%;
+    --sidebar-accent-foreground: 260 20% 35%;
+    --sidebar-border: 270 15% 82%;
+    --sidebar-ring: 280 75% 58%;
     
     /* Mode-specific accent tokens */
-    --rot-glitch: 330 60% 58%;
-    --rot-accent: 0 50% 55%;
-    --rot-mold: 140 30% 40%;
-    --prune-calm: 200 35% 60%;
-    --prune-accent: 38 50% 62%;
+    --rot-glitch: 330 70% 55%;
+    --rot-accent: 0 60% 52%;
+    --rot-mold: 140 40% 45%;
+    --prune-calm: 200 45% 55%;
+    --prune-accent: 38 55% 55%;
     
     /* Organic texture tokens */
-    --grain-opacity: 0.012;
-    --vignette-strength: 0.25;
+    --grain-opacity: 0.008;
+    --vignette-strength: 0.12;
     --hue-drift-speed: 180s;
     
     /* Premium glow tokens */
-    --glow-primary: 38 75% 65%;
-    --glow-accent: 330 45% 65%;
-    --glow-warm: 28 65% 68%;
-    --glow-danger: 0 55% 58%;
+    --glow-primary: 280 75% 58%;
+    --glow-accent: 330 35% 72%;
+    --glow-warm: 180 50% 55%;
+    --glow-danger: 0 65% 55%;
     
     /* ═══ Zone ambient tints ═══ */
-    --zone-overflow: 250 16% 28%;
-    --zone-quiet: 260 18% 27%;
-    --zone-noise: 340 14% 30%;
-    --zone-unclaimed: 230 16% 28%;
-    --zone-preserved: 38 14% 32%;
-    --zone-backlog: 270 14% 29%;
-    --zone-late-night: 260 22% 24%;
-    --zone-almost-gone: 350 14% 28%;
-    --zone-quiet-period: 200 12% 28%;
-    --zone-flood: 280 14% 29%;
-    --zone-heavy: 20 12% 28%;
-    --zone-discarded: 250 8% 25%;
-    --zone-rare: 280 22% 32%;
-    --zone-static: 250 6% 24%;
-    --zone-leaving: 240 16% 27%;
+    --zone-overflow: 270 25% 94%;
+    --zone-quiet: 260 22% 95%;
+    --zone-noise: 340 20% 93%;
+    --zone-unclaimed: 230 22% 94%;
+    --zone-preserved: 38 25% 93%;
+    --zone-backlog: 280 20% 94%;
+    --zone-late-night: 260 28% 92%;
+    --zone-almost-gone: 350 22% 93%;
+    --zone-quiet-period: 200 20% 94%;
+    --zone-flood: 290 20% 93%;
+    --zone-heavy: 20 18% 93%;
+    --zone-discarded: 270 12% 90%;
+    --zone-rare: 290 30% 92%;
+    --zone-static: 270 10% 91%;
+    --zone-leaving: 240 20% 93%;
   }
   
   /* ═══ Embrace the Rot ═══ */
   .mode-rot {
-    --primary: 330 55% 62%;
-    --accent: 0 45% 55%;
-    --decay-fresh: 330 45% 62%;
-    --decay-fading: 40 40% 58%;
-    --decay-rotting: 0 35% 48%;
-    --decay-extinct: 250 10% 32%;
-    --echo: 140 40% 55%;
-    --grain-opacity: 0.02;
-    --vignette-strength: 0.35;
-    --glow-primary: 330 55% 62%;
+    --primary: 330 70% 55%;
+    --accent: 0 55% 52%;
+    --decay-fresh: 330 50% 55%;
+    --decay-fading: 40 45% 52%;
+    --decay-rotting: 0 40% 48%;
+    --decay-extinct: 270 12% 68%;
+    --echo: 140 45% 50%;
+    --grain-opacity: 0.015;
+    --vignette-strength: 0.15;
+    --glow-primary: 330 70% 55%;
   }
   
   /* ═══ Prune the Decay ═══ */
   .mode-prune {
-    --primary: 38 65% 60%;
-    --accent: 200 35% 58%;
-    --decay-fresh: 160 45% 58%;
-    --decay-fading: 45 40% 60%;
-    --decay-rotting: 20 30% 48%;
-    --decay-extinct: 250 8% 35%;
-    --echo: 200 35% 62%;
-    --grain-opacity: 0.008;
-    --vignette-strength: 0.2;
-    --glow-primary: 38 65% 60%;
+    --primary: 38 70% 52%;
+    --accent: 200 45% 55%;
+    --decay-fresh: 160 50% 48%;
+    --decay-fading: 45 45% 52%;
+    --decay-rotting: 20 35% 48%;
+    --decay-extinct: 270 10% 72%;
+    --echo: 200 40% 55%;
+    --grain-opacity: 0.006;
+    --vignette-strength: 0.1;
+    --glow-primary: 38 70% 52%;
   }
 }
 
@@ -669,34 +669,34 @@
 .glass-premium {
   background: linear-gradient(
     145deg,
-    hsl(var(--card) / 0.5) 0%,
-    hsl(var(--card) / 0.2) 100%
+    hsl(var(--card) / 0.6) 0%,
+    hsl(var(--card) / 0.3) 100%
   );
   backdrop-filter: blur(28px) saturate(150%);
   -webkit-backdrop-filter: blur(28px) saturate(150%);
   border: 1px solid hsl(var(--foreground) / 0.07);
   box-shadow:
-    0 4px 24px hsl(250 20% 10% / 0.15),
-    0 0 1px 0 hsl(var(--primary) / 0.06),
-    inset 0 1px 0 hsl(var(--foreground) / 0.05),
-    inset 0 -1px 0 hsl(250 20% 10% / 0.08);
+    0 4px 24px hsl(270 20% 40% / 0.08),
+    0 0 1px 0 hsl(var(--primary) / 0.08),
+    inset 0 1px 0 hsl(0 0% 100% / 0.4),
+    inset 0 -1px 0 hsl(270 20% 40% / 0.04);
 }
 
 .glass-ultra {
   background: linear-gradient(
     145deg,
-    hsl(var(--card) / 0.55) 0%,
-    hsl(var(--card) / 0.15) 100%
+    hsl(var(--card) / 0.65) 0%,
+    hsl(var(--card) / 0.25) 100%
   );
-  backdrop-filter: blur(36px) saturate(180%) brightness(1.03);
-  -webkit-backdrop-filter: blur(36px) saturate(180%) brightness(1.03);
+  backdrop-filter: blur(36px) saturate(180%) brightness(1.02);
+  -webkit-backdrop-filter: blur(36px) saturate(180%) brightness(1.02);
   border: 1px solid hsl(var(--foreground) / 0.08);
   box-shadow:
-    0 8px 40px hsl(250 20% 10% / 0.2),
+    0 8px 40px hsl(270 20% 40% / 0.1),
     0 0 1px 0 hsl(var(--primary) / 0.1),
-    0 0 50px -15px hsl(var(--glow-primary) / 0.06),
-    inset 0 1px 0 hsl(var(--foreground) / 0.06),
-    inset 0 -1px 0 hsl(250 20% 10% / 0.1);
+    0 0 50px -15px hsl(var(--glow-primary) / 0.08),
+    inset 0 1px 0 hsl(0 0% 100% / 0.5),
+    inset 0 -1px 0 hsl(270 20% 40% / 0.05);
 }
 
 /* =============================================
@@ -1117,9 +1117,9 @@
 .zone-noise-jitter { animation: zone-jitter 0.3s steps(3) infinite; }
 .zone-noise-jitter .glass-premium { border-color: hsl(var(--destructive) / 0.15); }
 .zone-quiet-minimal { letter-spacing: 0.04em; line-height: 2; }
-.zone-quiet-minimal .glass-premium { background: hsl(var(--card) / 0.2); border-color: hsl(var(--primary) / 0.04); box-shadow: none; }
-.zone-discarded-ghost { filter: saturate(0.2) brightness(0.85); opacity: 0.5; }
-.zone-discarded-ghost .glass-premium { background: hsl(250 10% 20% / 0.3); }
+.zone-quiet-minimal .glass-premium { background: hsl(var(--card) / 0.3); border-color: hsl(var(--primary) / 0.06); box-shadow: none; }
+.zone-discarded-ghost { filter: saturate(0.3) brightness(0.95); opacity: 0.5; }
+.zone-discarded-ghost .glass-premium { background: hsl(270 15% 88% / 0.4); }
 .zone-flood-dense .glass-premium { border-color: hsl(var(--echo) / 0.08); }
 .zone-preserved-glow .glass-premium { border-color: hsl(38 70% 50% / 0.15); box-shadow: 0 0 15px hsl(38 70% 50% / 0.05); }
 
@@ -1131,9 +1131,9 @@
 .zone-almost-gone-urgent .glass-premium { animation: zone-urgent-pulse 2s ease-in-out infinite; border: 1px solid hsl(0 45% 48% / 0.12); }
 .zone-quiet-period-frozen { filter: saturate(0.7) contrast(0.95); }
 .zone-quiet-period-frozen .glass-premium { border-color: hsl(200 18% 42% / 0.12); }
-.zone-heavy-weighted .glass-premium { border-bottom-width: 3px; border-color: hsl(20 35% 42% / 0.2); box-shadow: 0 6px 20px hsl(250 20% 10% / 0.2); }
-.zone-late-night-deep { filter: brightness(0.92); }
-.zone-late-night-deep .glass-premium { border-color: hsl(260 25% 48% / 0.15); box-shadow: 0 0 20px hsl(260 25% 48% / 0.05); }
+.zone-heavy-weighted .glass-premium { border-bottom-width: 3px; border-color: hsl(20 35% 55% / 0.2); box-shadow: 0 6px 20px hsl(270 20% 40% / 0.1); }
+.zone-late-night-deep { filter: brightness(0.96); }
+.zone-late-night-deep .glass-premium { border-color: hsl(260 30% 70% / 0.2); box-shadow: 0 0 20px hsl(260 30% 70% / 0.06); }
 .zone-backlog-clutter .glass-premium { border-color: hsl(270 18% 48% / 0.12); transform: rotate(-0.2deg); }
 .zone-backlog-clutter .glass-premium:nth-child(even) { transform: rotate(0.15deg); }
 
