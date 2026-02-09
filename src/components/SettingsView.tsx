@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useThoughtStore } from '@/stores/thoughtStore';
 import { useAppMode } from '@/hooks/useAppMode';
+import { useDarkMode } from '@/hooks/useDarkMode';
 import { usePatternWhisper } from '@/hooks/usePatternWhisper';
 import { ModeToggle } from '@/components/ModeToggle';
 import { DissolveButton } from '@/components/DissolveButton';
