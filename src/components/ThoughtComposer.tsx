@@ -87,7 +87,7 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
           className={cn(
             'min-h-[100px] font-thought text-sm italic resize-none relative z-10',
             'bg-transparent border-border/15 rounded-2xl',
-            'placeholder:text-muted-foreground/20 placeholder:italic',
+            'placeholder:text-muted-foreground/35 placeholder:italic',
             'focus:ring-1 focus:ring-primary/20 focus:border-primary/25',
             'transition-all duration-700',
             content.length > 0 && 'border-primary/15',
@@ -203,7 +203,7 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
 
       {/* Submit bar */}
       <div className="flex justify-between items-center">
-        <span className="text-[10px] text-muted-foreground/20 tabular-nums font-sans">
+        <span className="text-[10px] text-muted-foreground/35 tabular-nums font-sans">
           {content.length > 0 && `${content.length} · 1000`}
         </span>
 
@@ -213,8 +213,8 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
           disabled={!content.trim() || disabled}
           className={cn(
             'px-5 py-2 rounded-xl text-xs font-thought italic tracking-wide',
-            'text-primary/60 border border-primary/15',
-            'hover:border-primary/30 hover:text-primary/80 hover:shadow-[0_0_15px_hsl(38_75%_65%_/_0.08)]',
+            'text-primary/80 bg-primary/8 border border-primary/20',
+            'hover:border-primary/35 hover:text-primary/90 hover:shadow-[0_0_15px_hsl(280_75%_58%_/_0.1)]',
             'disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:shadow-none',
             'transition-all duration-500 relative overflow-hidden',
             isSubmitting && 'scale-95'

@@ -49,7 +49,7 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
     <div className="min-h-screen px-6 py-8 pb-28">
       <div className="max-w-lg mx-auto space-y-8">
         <header>
-          <h1 className="text-xl font-thought text-foreground/80 tracking-wider">controls</h1>
+          <h1 className="text-xl font-thought text-foreground/85 tracking-wider">controls</h1>
         </header>
 
         {/* Self Reflection — quiet status signals */}
@@ -70,6 +70,9 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
         <section>
           <FinitudeDial thoughts={privateThoughts} />
         </section>
+
+        {/* Section label — experience */}
+        <h2 className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/40 mb-2 mt-2">experience</h2>
 
         {/* Mode Toggle */}
         <section className="glass-premium rounded-xl p-4">
@@ -121,6 +124,9 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
           </section>
         )}
 
+        {/* Section label — social */}
+        <h2 className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/40 mb-2 mt-2">social</h2>
+
         {/* Social Layer */}
         <section className="glass-premium rounded-xl p-4 space-y-4">
           {!socialPermanentlyDisabled ? (
@@ -146,7 +152,7 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <motion.button
-                    className="w-full px-3 py-2.5 rounded-lg text-xs text-destructive-foreground/50 bg-destructive/8 hover:bg-destructive/15 transition-all duration-700 text-left font-thought tracking-wide"
+                    className="w-full px-3 py-2.5 rounded-lg text-xs text-destructive-foreground/65 bg-destructive/8 hover:bg-destructive/15 transition-all duration-700 text-left font-thought tracking-wide"
                     whileTap={{ scale: 0.98 }}
                   >
                     disable permanently
@@ -179,11 +185,14 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
           )}
         </section>
 
+        {/* Section label — actions */}
+        <h2 className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/40 mb-2 mt-2">actions</h2>
+
         {/* Replay intro */}
         <section className="glass-premium rounded-xl p-4">
           <motion.button
             onClick={onReplayIntro}
-            className="w-full text-xs text-muted-foreground/40 font-thought tracking-wide hover:text-muted-foreground/60 transition-all py-2"
+            className="w-full text-xs text-muted-foreground/55 font-thought tracking-wide hover:text-muted-foreground/75 transition-all py-2"
             whileTap={{ scale: 0.98 }}
           >
             replay entrance
@@ -194,7 +203,7 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
         <section className="glass-premium rounded-xl p-4">
           <Link
             to="/connect/dashboard"
-            className="block w-full text-xs text-muted-foreground/40 font-thought tracking-wide hover:text-muted-foreground/60 transition-all py-2 text-center"
+            className="block w-full text-xs text-muted-foreground/55 font-thought tracking-wide hover:text-muted-foreground/75 transition-all py-2 text-center"
           >
             connect dashboard →
           </Link>

@@ -134,14 +134,24 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
       />
 
       {/* Title — display font */}
-      <motion.h1
-        className="font-display text-foreground/70 tracking-[0.25em] text-lg uppercase mb-14"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 2, delay: 0.3 }}
-      >
-        brainchild
-      </motion.h1>
+      <div className="flex flex-col items-center mb-14">
+        <motion.h1
+          className="font-display text-foreground/80 tracking-[0.25em] text-lg uppercase"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 2, delay: 0.3 }}
+        >
+          brainchild
+        </motion.h1>
+        <motion.p
+          className="text-[10px] font-sans text-muted-foreground/40 tracking-[0.2em] mt-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 2, delay: 0.8 }}
+        >
+          thoughts that decay
+        </motion.p>
+      </div>
 
       {/* Step 1: Lines */}
       <div className="relative h-20 flex flex-col items-center justify-center gap-4 px-8">
@@ -150,10 +160,10 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
             i <= phase - 1 && (
               <motion.p
                 key={line}
-                className="text-center font-thought text-foreground/50 text-base tracking-wide leading-relaxed italic"
+                className="text-center font-thought text-foreground/70 text-base tracking-wide leading-relaxed italic"
                 initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
                 animate={{ 
-                  opacity: 0.7,
+                  opacity: 0.85,
                   y: 0, 
                   filter: 'blur(0px)' 
                 }}
@@ -170,7 +180,7 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
       <AnimatePresence>
         {fadedCount !== null && fadedCount > 0 && phase >= selectedLines.length && (
           <motion.p
-            className="text-xs font-thought text-muted-foreground/40 tracking-[0.12em] mt-5 italic"
+            className="text-xs font-thought text-muted-foreground/50 tracking-[0.12em] mt-5 italic"
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
@@ -225,8 +235,8 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
                 >
                   <motion.button
                     onClick={() => handleInteraction('rot')}
-                    className="px-5 py-2.5 rounded-xl text-sm font-thought text-foreground/50 
-                               border border-foreground/10 hover:border-foreground/20 hover:text-foreground/70
+                    className="px-5 py-2.5 rounded-xl text-sm font-thought text-foreground/70 
+                               border border-foreground/15 hover:border-foreground/25 hover:text-foreground/85
                                transition-all duration-500 italic"
                     whileTap={{ scale: 0.95 }}
                   >
@@ -234,8 +244,8 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
                   </motion.button>
                   <motion.button
                     onClick={() => handleInteraction('save')}
-                    className="px-5 py-2.5 rounded-xl text-sm font-thought text-foreground/40 
-                               border border-foreground/08 hover:border-foreground/15 hover:text-foreground/60
+                    className="px-5 py-2.5 rounded-xl text-sm font-thought text-foreground/60 
+                               border border-foreground/12 hover:border-foreground/20 hover:text-foreground/75
                                transition-all duration-500 italic"
                     whileTap={{ scale: 0.95 }}
                   >
@@ -283,9 +293,9 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
             e.stopPropagation();
             handleEnter();
           }}
-          className="px-7 py-3 rounded-2xl text-sm font-thought text-foreground/50 
-                     border border-foreground/10 hover:border-primary/30 hover:text-foreground/70
-                     transition-all duration-700 hover:shadow-[0_0_20px_hsl(38_75%_65%_/_0.1)] italic"
+          className="px-7 py-3 rounded-2xl text-sm font-thought text-foreground/70 
+                     bg-primary/10 border border-primary/25 hover:border-primary/40 hover:text-foreground/85
+                     transition-all duration-700 hover:shadow-[0_0_20px_hsl(280_75%_58%_/_0.12)] italic"
           whileTap={{ scale: 0.95 }}
         >
           enter
@@ -294,7 +304,7 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
 
       {/* Ambient status */}
       <motion.p
-        className="absolute bottom-5 text-[10px] font-sans text-muted-foreground/20 tracking-widest"
+        className="absolute bottom-5 text-[10px] font-sans text-muted-foreground/35 tracking-widest"
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.4 }}
         transition={{ duration: 3, delay: 1 }}

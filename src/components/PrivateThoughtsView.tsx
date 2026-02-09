@@ -231,12 +231,12 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
           <div className="flex items-center justify-between mb-3">
             <div>
               <h1 className={cn(
-                'text-lg font-display text-foreground/70 tracking-[0.2em] uppercase',
+                'text-lg font-display text-foreground/85 tracking-[0.2em] uppercase',
                 mode === 'rot' && 'animate-glitch-subtle'
               )}>
                 brainchild
               </h1>
-              <p className="text-[10px] font-sans text-muted-foreground/30 tracking-[0.15em] mt-1">
+              <p className="text-[10px] font-sans text-muted-foreground/50 tracking-[0.15em] mt-1">
                 {nightDecay.isNight
                   ? 'the rot moves faster at night'
                   : 'if it matters, it survives'}
@@ -244,7 +244,7 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-sans text-muted-foreground/25 tracking-widest uppercase">
+              <span className="text-[10px] font-sans text-muted-foreground/40 tracking-widest uppercase">
                 {mode === 'rot' ? 'rot' : 'prune'}
               </span>
               {privateThoughts.length > 0 && (
@@ -332,13 +332,13 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
                   >
                     <button
                       onClick={() => setReleaseDialog({ open: true, thoughtId: thought.id })}
-                      className="px-4 py-2 rounded-xl text-xs font-thought bg-primary/10 text-primary/70 hover:bg-primary/20 transition-all"
+                      className="px-4 py-2 rounded-xl text-xs font-thought bg-primary/15 text-primary/85 hover:bg-primary/25 transition-all"
                     >
                       share to fog
                     </button>
                     <button
                       onClick={() => handleDelete(thought.id)}
-                      className="px-4 py-2 rounded-xl text-xs font-thought bg-destructive/10 text-destructive-foreground/50 hover:bg-destructive/20 transition-all"
+                      className="px-4 py-2 rounded-xl text-xs font-thought bg-destructive/10 text-destructive-foreground/65 hover:bg-destructive/20 transition-all"
                     >
                       let it go
                     </button>
