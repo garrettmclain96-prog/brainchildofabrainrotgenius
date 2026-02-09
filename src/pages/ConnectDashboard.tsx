@@ -20,6 +20,7 @@ import { stripeConnect } from "@/lib/stripe-connect";
 import { getSessionId } from "@/hooks/useSessionId";
 import { supabase } from "@/integrations/supabase/client";
 import { FogBackground } from "@/components/FogBackground";
+import { ArrowLeft } from "lucide-react";
 
 // -------------------------------------------------------------------
 // Types for the dashboard state
@@ -299,6 +300,20 @@ export default function ConnectDashboard() {
       {/* Content */}
       <div className="relative z-10 px-6 py-8 pb-28 max-w-lg mx-auto">
         {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, x: -8 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: smoothEase }}
+        >
+          <Link
+            to="/"
+            className="flex items-center gap-2 text-xs font-thought text-muted-foreground/40 tracking-wider hover:text-muted-foreground/60 transition-all duration-500 italic mb-4"
+          >
+            <ArrowLeft className="w-3 h-3" />
+            back to controls
+          </Link>
+        </motion.div>
+
         <motion.header
           className="mb-8"
           initial={{ opacity: 0, y: -10 }}
