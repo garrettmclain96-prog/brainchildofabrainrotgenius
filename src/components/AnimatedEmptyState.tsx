@@ -29,7 +29,7 @@ export function AnimatedEmptyState({ icon = 'fog' }: AnimatedEmptyStateProps) {
           </span>
         </div>
       </div>
-      <p className="text-xs font-thought text-muted-foreground/25 tracking-wider">
+      <p className="text-xs font-thought text-muted-foreground/40 tracking-wider">
         {EMPTY_COPY[icon]}
       </p>
     </div>

@@ -8,8 +8,8 @@ interface IntroSceneProps {
 
 const INTRO_STEPS = [
   { text: 'brainchild', style: 'title' as const },
-  { text: 'a quiet place for thoughts that decay', style: 'body' as const },
-  { text: 'star what matters. let the rest go.', style: 'body' as const },
+  { text: 'a place to think out loud and let go', style: 'body' as const },
+  { text: 'thoughts decay over time. star what matters.', style: 'body' as const },
 ];
 
 const STEP_DURATION = 2500;
@@ -63,7 +63,7 @@ export const IntroScene = ({ onComplete }: IntroSceneProps) => {
             'font-thought text-center px-10',
             step.style === 'title'
               ? 'text-lg text-foreground/70 tracking-[0.2em]'
-              : 'text-sm text-muted-foreground/45 tracking-wide leading-relaxed'
+              : 'text-sm text-muted-foreground/65 tracking-wide leading-relaxed'
           )}
           initial={{ opacity: 0, y: 8, filter: 'blur(4px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}

@@ -161,7 +161,7 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
           {/* Faded count */}
           {fadedCount > 0 && (
             <motion.p
-              className="text-[10px] font-thought text-muted-foreground/25 tracking-wider mb-3"
+              className="text-[10px] font-thought text-muted-foreground/40 tracking-wider mb-3"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1.5, delay: 0.5 }}
@@ -223,14 +223,14 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <p className="text-[10px] font-thought text-muted-foreground/30 tracking-wider italic">
+              <p className="text-[10px] font-thought text-muted-foreground/45 tracking-wider italic">
                 {zoneInfo.description}
               </p>
-              <p className="text-[9px] font-thought text-muted-foreground/18 tracking-[0.15em] mt-1">
+              <p className="text-[9px] font-thought text-muted-foreground/30 tracking-[0.15em] mt-1">
                 {patternPhrase}
               </p>
               {zoneInfo.specialRule && (
-                <p className="text-[8px] font-thought text-muted-foreground/12 tracking-[0.2em] mt-1 uppercase">
+                <p className="text-[8px] font-thought text-muted-foreground/22 tracking-[0.2em] mt-1 uppercase">
                   {zoneInfo.specialRule}
                 </p>
               )}

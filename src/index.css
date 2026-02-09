@@ -30,7 +30,7 @@
     
     /* Muted — gentle lavender haze */
     --muted: 270 20% 88%;
-    --muted-foreground: 270 20% 42%;
+    --muted-foreground: 270 20% 35%;
     
     /* Accent — desaturated dusty rose */
     --accent: 330 35% 72%;
@@ -586,6 +586,19 @@
 
 .animate-float-action {
   animation: float-slow 3s ease-in-out infinite;
+}
+
+/* Section divider — gradient fade */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(var(--border) / 0.4) 30%,
+    hsl(var(--border) / 0.4) 70%,
+    transparent 100%
+  );
+  margin: 1rem 0;
 }
 
 /* =============================================

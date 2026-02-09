@@ -78,7 +78,7 @@ export function BottomNav({ view, onViewChange, socialEnabled, socialPermanently
                     ? isRot ? 'text-destructive' : 'text-primary'
                     : isDisabled
                     ? 'text-muted-foreground/20'
-                    : 'text-muted-foreground/50'
+                    : 'text-muted-foreground/60'
                 )}
                 whileTap={{ scale: 0.9 }}
                 aria-label={item.label}
@@ -93,7 +93,7 @@ export function BottomNav({ view, onViewChange, socialEnabled, socialPermanently
                 >
                   {isRot ? item.rotIcon : item.icon}
                 </motion.span>
-                <span className="text-[10px] font-sans tracking-wider">
+                <span className="text-[11px] font-sans tracking-wider">
                   {item.label}
                 </span>
 

@@ -110,7 +110,7 @@ export function ThoughtCard({ thought, onEcho, onWater, onStar, onReflect, showE
           {thought.category !== 'uncategorized' && (
             <div className="flex items-center gap-1.5 mb-2">
               <span className="text-xs">{CATEGORY_META[thought.category].icon}</span>
-              <span className="text-[10px] text-muted-foreground/35 font-thought tracking-wider">
+              <span className="text-[10px] text-muted-foreground/50 font-thought tracking-wider">
                 {CATEGORY_META[thought.category].label}
               </span>
             </div>
@@ -147,7 +147,7 @@ export function ThoughtCard({ thought, onEcho, onWater, onStar, onReflect, showE
           </div>
 
           {/* Footer */}
-          <footer className="mt-3 flex items-center justify-between text-[10px] text-muted-foreground/40 relative z-10">
+          <footer className="mt-3 flex items-center justify-between text-[10px] text-muted-foreground/55 relative z-10">
             <div className="flex items-center gap-3">
               {/* Time remaining countdown */}
               <span className="tabular-nums font-thought flex items-center gap-1">
