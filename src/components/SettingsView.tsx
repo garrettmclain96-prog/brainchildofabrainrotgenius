@@ -45,6 +45,7 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
     privateThoughts,
   } = useThoughtStore();
   const { mode } = useAppMode();
+  const { isDark, toggle: toggleDark } = useDarkMode();
   const patternWhisper = usePatternWhisper();
   return (
     <div className="min-h-screen px-6 py-8 pb-28">
