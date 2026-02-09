@@ -88,7 +88,7 @@ export function ThoughtCard({ thought, onEcho, onWater, onStar, onReflect, showE
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.96, filter: 'blur(8px)' }}
       transition={{ ...spring, duration: 0.6 }}
-      layout
+      layout="position"
       aria-label={`Thought, ${decayState} state`}
     >
       <DecayShader decayLevel={thought.decayLevel} isWatered={isWatered}>

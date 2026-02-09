@@ -53,11 +53,9 @@ export function BottomNav({ view, onViewChange, socialEnabled, socialPermanently
               boxShadow: isRot
                 ? '0 0 15px hsl(var(--destructive) / 0.04)'
                 : '0 0 15px hsl(var(--primary) / 0.04)',
-            }}
-            layout
-            layoutId="nav-active-bg"
-            animate={{
               width: `${100 / visibleItems.length}%`,
+            }}
+            animate={{
               left: `${(visibleItems.findIndex((i) => i.id === view) / visibleItems.length) * 100}%`,
             }}
             transition={{ type: 'spring', stiffness: 300, damping: 28, mass: 0.8 }}
