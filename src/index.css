@@ -108,6 +108,99 @@
     --zone-leaving: 240 20% 93%;
   }
   
+  /* ═══ PSYCHEDELIC DARK MODE ═══ */
+  .dark {
+    --background: 270 35% 8%;
+    --foreground: 270 30% 90%;
+    
+    --card: 270 30% 12%;
+    --card-foreground: 270 25% 88%;
+    
+    --popover: 270 28% 10%;
+    --popover-foreground: 270 25% 88%;
+    
+    --primary: 275 90% 65%;
+    --primary-foreground: 275 10% 6%;
+    
+    --secondary: 225 45% 25%;
+    --secondary-foreground: 225 40% 85%;
+    
+    --muted: 270 20% 18%;
+    --muted-foreground: 270 20% 62%;
+    
+    --accent: 330 60% 58%;
+    --accent-foreground: 330 10% 95%;
+    
+    --destructive: 0 80% 58%;
+    --destructive-foreground: 0 10% 98%;
+    
+    --decay-fresh: 155 80% 50%;
+    --decay-fading: 42 85% 55%;
+    --decay-rotting: 335 70% 55%;
+    --decay-extinct: 270 25% 40%;
+    
+    --echo: 175 75% 52%;
+    --echo-foreground: 175 10% 95%;
+    
+    --fog-light: 300 30% 18%;
+    --fog-mid: 260 25% 15%;
+    --fog-dark: 220 25% 12%;
+    
+    --border: 270 20% 20%;
+    --input: 270 18% 15%;
+    --ring: 275 90% 65%;
+    
+    --sidebar-background: 270 30% 10%;
+    --sidebar-foreground: 270 20% 62%;
+    --sidebar-primary: 275 90% 65%;
+    --sidebar-primary-foreground: 275 10% 6%;
+    --sidebar-accent: 260 25% 18%;
+    --sidebar-accent-foreground: 260 20% 62%;
+    --sidebar-border: 270 18% 20%;
+    --sidebar-ring: 275 90% 65%;
+    
+    --rot-glitch: 330 90% 58%;
+    --rot-accent: 0 80% 55%;
+    --rot-mold: 140 65% 48%;
+    --prune-calm: 200 70% 55%;
+    --prune-accent: 38 80% 55%;
+    
+    --glow-primary: 275 90% 65%;
+    --glow-accent: 330 60% 58%;
+    --glow-warm: 175 75% 52%;
+    --glow-danger: 0 80% 58%;
+    
+    --zone-overflow: 270 25% 12%;
+    --zone-quiet: 260 22% 13%;
+    --zone-noise: 340 20% 12%;
+    --zone-unclaimed: 230 22% 13%;
+    --zone-preserved: 38 20% 12%;
+    --zone-backlog: 280 20% 12%;
+    --zone-late-night: 260 28% 11%;
+    --zone-almost-gone: 350 22% 12%;
+    --zone-quiet-period: 200 20% 13%;
+    --zone-flood: 290 20% 12%;
+    --zone-heavy: 20 18% 12%;
+    --zone-discarded: 270 12% 14%;
+    --zone-rare: 290 30% 12%;
+    --zone-static: 270 10% 14%;
+    --zone-leaving: 240 20% 13%;
+  }
+  
+  /* Dark mode + Rot */
+  .dark.mode-rot {
+    --primary: 330 90% 58%;
+    --accent: 0 80% 52%;
+    --glow-primary: 330 90% 58%;
+  }
+  
+  /* Dark mode + Prune */
+  .dark.mode-prune {
+    --primary: 38 90% 55%;
+    --accent: 200 70% 55%;
+    --glow-primary: 38 90% 55%;
+  }
+  
   /* ═══ Embrace the Rot (VIVID) ═══ */
   .mode-rot {
     --primary: 330 90% 50%;
