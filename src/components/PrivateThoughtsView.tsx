@@ -301,7 +301,7 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
                 <motion.div
                   key={thought.id}
                   className="group relative"
-                  layout
+                  layout="position"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: visualOffset }}
                   exit={{ opacity: 0, x: -100, filter: 'blur(10px)' }}
