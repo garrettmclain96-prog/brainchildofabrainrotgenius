@@ -9,51 +9,51 @@
 
 @layer base {
   :root {
-    /* Core palette — Psychedelic Dawn: bright, vivid, readable */
-    --background: 270 30% 96%;
-    --foreground: 270 40% 12%;
+    /* Core palette — Psychedelic Dawn: VIVID, saturated, readable */
+    --background: 270 35% 96%;
+    --foreground: 270 50% 10%;
     
     /* Surface layers — frosted pastel glass */
-    --card: 270 25% 92%;
-    --card-foreground: 270 35% 15%;
+    --card: 270 35% 91%;
+    --card-foreground: 270 45% 13%;
     
-    --popover: 270 20% 94%;
-    --popover-foreground: 270 35% 15%;
+    --popover: 270 30% 93%;
+    --popover-foreground: 270 45% 13%;
     
-    /* Primary — electric violet (psychedelic hero) */
-    --primary: 280 75% 58%;
-    --primary-foreground: 280 10% 98%;
+    /* Primary — ELECTRIC violet (psychedelic hero, cranked) */
+    --primary: 275 90% 55%;
+    --primary-foreground: 275 10% 98%;
     
-    /* Secondary — soft pastel blue */
-    --secondary: 220 40% 88%;
-    --secondary-foreground: 220 40% 22%;
+    /* Secondary — vivid periwinkle */
+    --secondary: 225 60% 82%;
+    --secondary-foreground: 225 50% 18%;
     
-    /* Muted — gentle lavender haze */
-    --muted: 270 20% 88%;
-    --muted-foreground: 270 20% 35%;
+    /* Muted — saturated lavender haze */
+    --muted: 270 30% 86%;
+    --muted-foreground: 270 30% 32%;
     
-    /* Accent — desaturated dusty rose */
-    --accent: 330 35% 72%;
-    --accent-foreground: 330 30% 15%;
+    /* Accent — hot dusty rose (punched up) */
+    --accent: 330 55% 65%;
+    --accent-foreground: 330 40% 12%;
     
-    /* Destructive — warm coral */
-    --destructive: 0 65% 55%;
+    /* Destructive — vivid coral-red */
+    --destructive: 0 80% 52%;
     --destructive-foreground: 0 10% 98%;
     
-    /* Decay state spectrum — psychedelic rainbow */
-    --decay-fresh: 160 55% 48%;
-    --decay-fading: 45 60% 55%;
-    --decay-rotting: 330 45% 55%;
-    --decay-extinct: 270 15% 72%;
+    /* Decay state spectrum — PSYCHEDELIC rainbow (high sat) */
+    --decay-fresh: 155 75% 45%;
+    --decay-fading: 42 80% 52%;
+    --decay-rotting: 335 65% 52%;
+    --decay-extinct: 270 25% 68%;
     
-    /* Echo — soft teal luminescence */
-    --echo: 180 50% 55%;
-    --echo-foreground: 180 15% 10%;
+    /* Echo — vivid teal luminescence */
+    --echo: 175 70% 48%;
+    --echo-foreground: 175 20% 8%;
     
-    /* Fog layers — bright pastel washes */
-    --fog-light: 300 25% 88%;
-    --fog-mid: 260 22% 84%;
-    --fog-dark: 220 20% 80%;
+    /* Fog layers — saturated pastel washes */
+    --fog-light: 300 40% 86%;
+    --fog-mid: 260 35% 82%;
+    --fog-dark: 220 35% 78%;
     
     /* UI chrome */
     --border: 270 18% 82%;
