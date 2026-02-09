@@ -81,6 +81,27 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
           <ModeToggle />
         </section>
 
+        {/* Dark Mode Toggle */}
+        <section className="glass-premium rounded-xl p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-foreground/70 font-thought">dark mode</span>
+            <motion.button
+              onClick={toggleDark}
+              className={cn(
+                'w-12 h-6 rounded-full transition-all duration-700 relative',
+                isDark ? 'bg-primary/80' : 'bg-secondary/50'
+              )}
+              whileTap={{ scale: 0.95 }}
+            >
+              <motion.span
+                className="absolute top-1 w-4 h-4 rounded-full bg-foreground/90 shadow-lg"
+                animate={{ left: isDark ? 26 : 4 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+              />
+            </motion.button>
+          </div>
+        </section>
+
         {/* Ambient Audio */}
         {audio && (
           <section className="glass-premium rounded-xl p-4 space-y-4">
