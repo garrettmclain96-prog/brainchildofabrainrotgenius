@@ -36,6 +36,10 @@
 </head>
 
   <body>
+    <!-- Critical inline CSS — enables instant first paint before JS loads -->
+    <style>
+      #root{min-height:100vh;min-height:100dvh;background:#0E0E11}
+    </style>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
