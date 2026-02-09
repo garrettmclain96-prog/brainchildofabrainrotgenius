@@ -84,11 +84,11 @@
     --vignette-strength: 0.12;
     --hue-drift-speed: 180s;
     
-    /* Premium glow tokens */
-    --glow-primary: 280 75% 58%;
-    --glow-accent: 330 35% 72%;
-    --glow-warm: 180 50% 55%;
-    --glow-danger: 0 65% 55%;
+    /* Premium glow tokens (VIVID) */
+    --glow-primary: 275 90% 55%;
+    --glow-accent: 330 55% 65%;
+    --glow-warm: 175 70% 48%;
+    --glow-danger: 0 80% 52%;
     
     /* ═══ Zone ambient tints ═══ */
     --zone-overflow: 270 25% 94%;
