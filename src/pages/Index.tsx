@@ -14,21 +14,26 @@ import { useAppMoods } from '@/hooks/useAppMoods';
 import { useIdentityDrift } from '@/hooks/useIdentityDrift';
 import { PoeticErrorBoundary } from '@/components/PoeticErrorBoundary';
 import { FogBackground } from '@/components/FogBackground';
-import { PublicFogView } from '@/components/PublicFogView';
-import { PrivateThoughtsView } from '@/components/PrivateThoughtsView';
-import { SettingsView } from '@/components/SettingsView';
-import { HomeScreen } from '@/components/HomeScreen';
 import { BottomNav } from '@/components/BottomNav';
 import { ModeToggle } from '@/components/ModeToggle';
-import { SystemKoan } from '@/components/SystemKoan';
-import { OverloadOverlay } from '@/components/OverloadOverlay';
-import { OvernightSynthesisOverlay } from '@/components/OvernightSynthesis';
-import { RareEventOverlay } from '@/components/RareEventOverlay';
-import { CoThinkingIndicator } from '@/components/CoThinkingIndicator';
-import { EndOfDayCompost } from '@/components/EndOfDayCompost';
 import { SyncIndicator } from '@/components/SyncIndicator';
 import { AmbientLog } from '@/components/AmbientLog';
-import { LeavingOverlay, useLeavingRoom } from '@/components/LeavingOverlay';
+
+// Lazy-load views — only one is visible at a time
+const PublicFogView = lazy(() => import('@/components/PublicFogView').then((m) => ({ default: m.PublicFogView })));
+const PrivateThoughtsView = lazy(() => import('@/components/PrivateThoughtsView').then((m) => ({ default: m.PrivateThoughtsView })));
+const SettingsView = lazy(() => import('@/components/SettingsView').then((m) => ({ default: m.SettingsView })));
+const HomeScreen = lazy(() => import('@/components/HomeScreen').then((m) => ({ default: m.HomeScreen })));
+
+// Lazy-load overlays — rarely visible, not needed for initial paint
+const SystemKoan = lazy(() => import('@/components/SystemKoan').then((m) => ({ default: m.SystemKoan })));
+const OverloadOverlay = lazy(() => import('@/components/OverloadOverlay').then((m) => ({ default: m.OverloadOverlay })));
+const OvernightSynthesisOverlay = lazy(() => import('@/components/OvernightSynthesis').then((m) => ({ default: m.OvernightSynthesisOverlay })));
+const RareEventOverlay = lazy(() => import('@/components/RareEventOverlay').then((m) => ({ default: m.RareEventOverlay })));
+const CoThinkingIndicator = lazy(() => import('@/components/CoThinkingIndicator').then((m) => ({ default: m.CoThinkingIndicator })));
+const EndOfDayCompost = lazy(() => import('@/components/EndOfDayCompost').then((m) => ({ default: m.EndOfDayCompost })));
+const LeavingOverlay = lazy(() => import('@/components/LeavingOverlay').then((m) => ({ default: m.LeavingOverlay })));
+import { useLeavingRoom } from '@/components/LeavingOverlay';
 
 // Lazy load heavy 3D scene — deferred for performance
 const FogScene = lazy(() => import('@/components/three/FogScene').then((m) => ({ default: m.FogScene })));
