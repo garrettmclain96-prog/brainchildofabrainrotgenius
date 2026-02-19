@@ -15,7 +15,7 @@ import { AnimatedEmptyState } from '@/components/AnimatedEmptyState';
 import { AncestralEchoOverlay } from '@/components/AncestralEchoOverlay';
 import { CompassMode } from '@/components/CompassMode';
 import { ForgettingCeremony } from '@/components/ForgettingCeremony';
-import { DecaySpeed, FragmentCategory } from '@/types/thought';
+import { DecaySpeed, FragmentCategory, PremiumDecayMode } from '@/types/thought';
 import { AppMoodState } from '@/hooks/useAppMoods';
 import { IdentityState } from '@/hooks/useIdentityDrift';
 import { cn } from '@/lib/utils';
@@ -109,8 +109,8 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
   };
 
   const handleSubmit = useCallback(
-    (content: string, decayMode: any, _speed: any, category?: FragmentCategory) => {
-      addPrivateThought(content, decayMode, category);
+    (content: string, decayMode: any, _speed: any, category?: FragmentCategory, premiumDecayMode?: PremiumDecayMode) => {
+      addPrivateThought(content, decayMode, category, premiumDecayMode);
       ancestral.dismissEcho();
       onAction?.();
     },

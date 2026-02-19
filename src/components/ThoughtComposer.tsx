@@ -1,13 +1,15 @@
 import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { DecayMode, DecaySpeed, FragmentCategory, CATEGORY_META } from '@/types/thought';
+import { DecayMode, DecaySpeed, FragmentCategory, PremiumDecayMode, CATEGORY_META } from '@/types/thought';
+import { PREMIUM_DECAY_MODES } from '@/types/premium';
 import { useAppMode } from '@/hooks/useAppMode';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
+import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 
 interface ThoughtComposerProps {
-  onSubmit: (content: string, mode: DecayMode, decaySpeed: DecaySpeed, category?: FragmentCategory) => void;
+  onSubmit: (content: string, mode: DecayMode, decaySpeed: DecaySpeed, category?: FragmentCategory, premiumDecayMode?: PremiumDecayMode) => void;
   isPublic?: boolean;
   disabled?: boolean;
   onBurst?: (x: number, y: number) => void;
@@ -19,10 +21,12 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
   const [mode, setMode] = useState<DecayMode>('clean');
   const [decaySpeed, setDecaySpeed] = useState<DecaySpeed>('normal');
   const [category, setCategory] = useState<FragmentCategory>('uncategorized');
+  const [premiumMode, setPremiumMode] = useState<PremiumDecayMode | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { mode: appMode } = useAppMode();
+  const { isPremium } = usePremiumStatus();
 
   const handleVoiceResult = useCallback((text: string) => {
     const trimmed = text.slice(0, 1000);
@@ -43,8 +47,9 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
         onBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
       }
 
-      onSubmit(content.trim(), isPublic ? mode : (appMode === 'rot' ? 'rot' : 'clean'), decaySpeed, category);
+      onSubmit(content.trim(), isPublic ? mode : (appMode === 'rot' ? 'rot' : 'clean'), decaySpeed, category, premiumMode);
       setContent('');
+      setPremiumMode(undefined);
 
       setTimeout(() => setIsSubmitting(false), 500);
     }
@@ -199,6 +204,45 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
             </div>
           </div>
         </div>
+      )}
+
+      {/* Premium decay mode selector — Inner Sanctum only */}
+      {isPremium && isFocused && (
+        <motion.div
+          className="flex items-center gap-2 text-[10px] font-sans tracking-wide"
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+        >
+          <span className="text-muted-foreground/30">effect</span>
+          <div className="flex rounded-xl bg-secondary/10 p-0.5">
+            <button
+              type="button"
+              onClick={() => setPremiumMode(undefined)}
+              className={cn(
+                'px-2.5 py-1 rounded-lg transition-all duration-500',
+                !premiumMode ? 'bg-card/50 text-foreground/60' : 'text-muted-foreground/30 hover:text-muted-foreground/50'
+              )}
+            >
+              none
+            </button>
+            {PREMIUM_DECAY_MODES.map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setPremiumMode(m)}
+                className={cn(
+                  'px-2.5 py-1 rounded-lg transition-all duration-500',
+                  premiumMode === m
+                    ? 'bg-primary/15 text-primary/80'
+                    : 'text-muted-foreground/30 hover:text-muted-foreground/50'
+                )}
+              >
+                {m}
+              </button>
+            ))}
+          </div>
+        </motion.div>
       )}
 
       {/* Submit bar */}

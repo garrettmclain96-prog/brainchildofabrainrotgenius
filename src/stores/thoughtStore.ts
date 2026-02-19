@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Thought, DecayMode, DecaySpeed, FragmentCategory, PRIVATE_DECAY_DURATION, WATER_EXTENSION_MINUTES, DECAY_DURATIONS, calculateDecayLevel } from '@/types/thought';
+import { Thought, DecayMode, DecaySpeed, FragmentCategory, PremiumDecayMode, PRIVATE_DECAY_DURATION, WATER_EXTENSION_MINUTES, DECAY_DURATIONS, calculateDecayLevel } from '@/types/thought';
 import { PREMIUM_DECAY_DURATION } from '@/types/premium';
 import { incrementStat } from '@/components/ForbiddenScreen';
 import { supabase } from '@/integrations/supabase/client';
@@ -19,7 +19,7 @@ interface ThoughtStore {
   isDBLoaded: boolean;
   
   // Actions
-  addPrivateThought: (content: string, mode: DecayMode, category?: FragmentCategory) => void;
+  addPrivateThought: (content: string, mode: DecayMode, category?: FragmentCategory, premiumDecayMode?: PremiumDecayMode) => void;
   deletePrivateThought: (id: string) => void;
   waterThought: (id: string) => void;
   starThought: (id: string) => void;
@@ -49,7 +49,7 @@ export const useThoughtStore = create<ThoughtStore>()(
       socialPermanentlyDisabled: false,
       isDBLoaded: false,
 
-      addPrivateThought: (content, mode, category = 'uncategorized') => {
+      addPrivateThought: (content, mode, category = 'uncategorized', premiumDecayMode) => {
         const now = new Date();
         const id = generateId();
         // Premium users get 48h decay, free users get 24h
@@ -69,6 +69,7 @@ export const useThoughtStore = create<ThoughtStore>()(
           category,
           waterCount: 0,
           starred: false,
+          premiumDecayMode,
         };
         
         incrementStat('totalCreated');

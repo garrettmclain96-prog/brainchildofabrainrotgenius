@@ -5,6 +5,7 @@ import { Thought, getDecayState, applyRotEffect, applyWordDecay, CATEGORY_META }
 import { useAppMode } from '@/hooks/useAppMode';
 import { DecayShader } from '@/components/DecayShader';
 import { TypographyDecay } from '@/components/TypographyDecay';
+import { PremiumDecayEffects } from '@/components/PremiumDecayEffects';
 import { cn } from '@/lib/utils';
 import { ShareFogLink } from '@/components/ShareFogLink';
 import { getSessionId } from '@/hooks/useSessionId';
@@ -94,7 +95,15 @@ export function ThoughtCard({ thought, onEcho, onWater, onStar, onReflect, showE
       aria-label={`Thought, ${decayState} state`}
     >
       <DecayShader decayLevel={thought.decayLevel} isWatered={isWatered}>
-        <div className="p-4 glass-premium rounded-xl">
+        <div className="p-4 glass-premium rounded-xl relative">
+          {/* Premium decay effects overlay */}
+          {thought.premiumDecayMode && (
+            <PremiumDecayEffects
+              mode={thought.premiumDecayMode}
+              decayLevel={thought.decayLevel}
+              seed={thought.id}
+            />
+          )}
           {/* Decay progress — organic bar */}
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-secondary/10 overflow-hidden rounded-t-xl">
             <motion.div
