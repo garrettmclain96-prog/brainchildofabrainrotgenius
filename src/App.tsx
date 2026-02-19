@@ -13,6 +13,7 @@ const Index = lazy(() => import("./pages/Index"));
 const ConnectDashboard = lazy(() => import("./pages/ConnectDashboard"));
 const ConnectStorefront = lazy(() => import("./pages/ConnectStorefront"));
 const ConnectSuccess = lazy(() => import("./pages/ConnectSuccess"));
+const SharedThought = lazy(() => import("./pages/SharedThought"));
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,9 @@ const App = () => (
             {/* TODO: In production, use a readable slug instead of the Stripe account ID */}
             <Route path="/connect/store/:accountId" element={<ConnectStorefront />} />
             <Route path="/connect/success" element={<ConnectSuccess />} />
+
+            {/* Shareable fog thought */}
+            <Route path="/fog/:slug" element={<SharedThought />} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

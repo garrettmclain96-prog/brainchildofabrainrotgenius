@@ -305,7 +305,14 @@ Deno.serve(async (req) => {
 
         if (error) console.error("Failed to update canceled subscription:", error);
 
-        // TODO: Revoke access to premium features for this account
+        // Revoke premium access immediately
+        if (typeof accountId === "string") {
+          await supabase
+            .from("subscription_status")
+            .update({ premium_until: new Date().toISOString() })
+            .eq("stripe_account_id", accountId);
+          console.log(`Premium revoked for ${accountId}`);
+        }
         break;
       }
 
@@ -318,8 +325,21 @@ Deno.serve(async (req) => {
 
         console.log(`Invoice paid for account: ${accountId}, amount: ${invoice.amount_paid}`);
 
-        // TODO: Grant or confirm access to the subscribed product
-        // You might also want to store invoice records for billing history
+        // Grant premium access: set premium_until to current_period_end
+        if (typeof accountId === "string") {
+          const periodEnd = (invoice as any).lines?.data?.[0]?.period?.end;
+          const premiumUntil = periodEnd
+            ? new Date(periodEnd * 1000).toISOString()
+            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+
+          const { error: premError } = await supabase
+            .from("subscription_status")
+            .update({ premium_until: premiumUntil, status: "active" })
+            .eq("stripe_account_id", accountId);
+
+          if (premError) console.error("Failed to grant premium:", premError);
+          else console.log(`Premium granted until ${premiumUntil} for ${accountId}`);
+        }
         break;
       }
 
@@ -332,8 +352,21 @@ Deno.serve(async (req) => {
 
         console.log(`Invoice payment failed for account: ${accountId}`);
 
-        // TODO: Notify the user about the failed payment
-        // Stripe will retry automatically based on your retry settings
+        // Find the session_id for this account and insert a payment whisper
+        if (typeof accountId === "string") {
+          const { data: connectedAccount } = await supabase
+            .from("connected_accounts")
+            .select("session_id")
+            .eq("stripe_account_id", accountId)
+            .maybeSingle();
+
+          if (connectedAccount?.session_id) {
+            await supabase.from("payment_whispers").insert({
+              session_id: connectedAccount.session_id,
+              message: "A payment didn't go through. Your access may be affected.",
+            });
+          }
+        }
         break;
       }
 

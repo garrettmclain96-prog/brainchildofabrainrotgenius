@@ -247,6 +247,20 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
         <section className="glass-premium rounded-xl p-4">
           <DissolveButton />
         </section>
+
+        {/* Section label — embed */}
+        <h2 className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/40 mb-2 mt-2">embed</h2>
+
+        <section className="glass-premium rounded-xl p-4 space-y-3">
+          <p className="text-xs text-muted-foreground/50 font-thought">
+            embed a live decaying thought on your site
+          </p>
+          <div className="relative">
+            <code className="block text-[10px] text-muted-foreground/40 bg-background/50 rounded-lg p-3 break-all font-mono leading-relaxed select-all">
+              {`<iframe src="https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/embed-widget" width="400" height="200" frameborder="0" style="border:none;border-radius:12px"></iframe>`}
+            </code>
+          </div>
+        </section>
       </div>
     </div>
   );
