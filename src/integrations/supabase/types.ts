@@ -209,6 +209,39 @@ export type Database = {
         }
         Relationships: []
       }
+      sponsored_whispers: {
+        Row: {
+          active_from: string
+          active_until: string
+          brand: string
+          brand_url: string | null
+          content: string
+          created_at: string
+          frequency_cap: number
+          id: string
+        }
+        Insert: {
+          active_from?: string
+          active_until: string
+          brand: string
+          brand_url?: string | null
+          content: string
+          created_at?: string
+          frequency_cap?: number
+          id?: string
+        }
+        Update: {
+          active_from?: string
+          active_until?: string
+          brand?: string
+          brand_url?: string | null
+          content?: string
+          created_at?: string
+          frequency_cap?: number
+          id?: string
+        }
+        Relationships: []
+      }
       subscription_status: {
         Row: {
           cancel_at_period_end: boolean | null

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Thought, DecayMode, DecaySpeed, FragmentCategory, PRIVATE_DECAY_DURATION, WATER_EXTENSION_MINUTES, DECAY_DURATIONS, calculateDecayLevel } from '@/types/thought';
+import { PREMIUM_DECAY_DURATION } from '@/types/premium';
 import { incrementStat } from '@/components/ForbiddenScreen';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId, isUUID } from '@/hooks/useSessionId';
@@ -51,7 +52,10 @@ export const useThoughtStore = create<ThoughtStore>()(
       addPrivateThought: (content, mode, category = 'uncategorized') => {
         const now = new Date();
         const id = generateId();
-        const expiresAt = new Date(now.getTime() + PRIVATE_DECAY_DURATION * 60 * 1000);
+        // Premium users get 48h decay, free users get 24h
+        const isPremium = typeof window !== 'undefined' && sessionStorage.getItem('brainchild-premium') === 'true';
+        const duration = isPremium ? PREMIUM_DECAY_DURATION : PRIVATE_DECAY_DURATION;
+        const expiresAt = new Date(now.getTime() + duration * 60 * 1000);
         
         const thought: Thought = {
           id,

@@ -54,6 +54,9 @@ export function usePremiumStatus(): PremiumStatus {
         premiumUntil !== null &&
         premiumUntil > new Date();
 
+      // Cache for sync access in thoughtStore
+      sessionStorage.setItem('brainchild-premium', isPremium ? 'true' : 'false');
+
       setStatus({ isPremium, premiumUntil, isLoading: false });
     }
 
