@@ -1,169 +1,138 @@
 
 
-# Full Monetization, Automation, and Growth Ecosystem
+# Phases 2, 3, and 4 -- Automation, SEO, and Traffic Drivers
 
-This is a big one. Here's the full battle plan to turn Brainchild into a money-making, self-running machine with organic traffic flowing in.
-
----
-
-## What Already Exists (Your Foundation)
-
-- Stripe Connect with 4 edge functions (accounts, products, checkout, webhooks)
-- Connected accounts + subscription status tables in the database
-- Platform subscription at $9.99/month (Price ID already configured)
-- Storefront page, dashboard, and success page
-- 5% platform fee on direct purchases
-- Webhook handling for subscription lifecycle
-
----
-
-## Phase 1: Complete the Payment System (Fix What's Broken)
-
-The Stripe integration exists but has gaps that prevent real money from flowing.
-
-**1a. Add a Tip Jar / One-Time Donation Flow**
-- Create a new "Support the Vision" component accessible from Settings
-- Wire it to `stripe-connect-checkout` with preset tip amounts ($3, $5, $10, custom)
-- No account creation needed -- uses the platform's own Stripe account for direct charges
-
-**1b. Wire Up the Platform Subscription End-to-End**
-- The subscription price exists (`price_1SyQp8C1A9HaROZtqOcQvbjV`) but there's no user-facing subscribe button in the main app
-- Add a subtle "Inner Sanctum" access point in Settings that triggers subscription checkout
-- Gate premium features (ambient soundscapes, extended decay timers, priority fog placement) behind active subscription status
-- Query `subscription_status` table to check access
-
-**1c. Add Missing OG Image for Social Sharing**
-- `og:image` and `twitter:image` tags are empty -- this kills click-through rates from any shared link
-- Generate or add a branded OG image (1200x630) and wire it into `index.html`
+This implements the remaining three phases of the monetization ecosystem in a single build.
 
 ---
 
 ## Phase 2: Automate Everything
 
-**2a. Automated Cleanup Cron Jobs**
-- Set up `pg_cron` + `pg_net` to run these on schedule:
-  - `cleanup_expired_notes()` -- every 15 minutes
-  - `cleanup_rate_limits()` -- every hour
-  - Expired public thoughts cleanup -- every 30 minutes
-- This eliminates manual database maintenance entirely
+### 2a. Auto-Decay Edge Function
+Create `supabase/functions/auto-decay/index.ts` that:
+- Calculates and updates `decay_level` on all `public_thoughts` based on elapsed time vs total duration
+- Deletes thoughts where `expires_at <= now()` (fully expired)
+- Called via cron every 5 minutes
 
-**2b. Webhook Automation Completion**
-- The webhook handler has TODO comments for granting/revoking access -- implement them:
-  - On `invoice.paid`: Set a `premium_until` timestamp on the session
-  - On `customer.subscription.deleted`: Revoke premium features immediately
-  - On `invoice.payment_failed`: Queue a soft in-app whisper on next visit
+### 2b. Cron Jobs (pg_cron + pg_net)
+Enable `pg_cron` and `pg_net` extensions, then schedule:
+- `cleanup_expired_notes()` every 15 minutes
+- `cleanup_rate_limits()` every hour  
+- `auto-decay` edge function every 5 minutes
+- Expired public thoughts cleanup every 30 minutes
 
-**2c. Auto-Decay Enforcement**
-- Create an edge function `auto-decay` that runs via cron every 5 minutes
-- Updates `decay_level` on all public thoughts based on elapsed time
-- Deletes fully decayed thoughts (decay_level = 100) automatically
+These are data operations (INSERT into cron.schedule), so they use the insert tool, not migrations.
+
+### 2c. Complete Webhook Automation
+Update `supabase/functions/stripe-connect-webhooks/index.ts` to replace the TODO comments:
+- `invoice.paid`: Add `premium_until` column to `subscription_status` and set it to `current_period_end`
+- `customer.subscription.deleted`: Set `premium_until` to `now()` to revoke access immediately
+- `invoice.payment_failed`: Insert a row into a new `payment_whispers` table so the app can show a soft notification on next visit
+
+### 2d. Premium Status Hook
+Create `src/hooks/usePremiumStatus.ts` that:
+- Queries `subscription_status` for the current session's connected account
+- Returns `{ isPremium, premiumUntil, isLoading }`
+- Used to gate premium features (extended decay timers, exclusive modes)
 
 ---
 
 ## Phase 3: SEO and Organic Traffic
 
-**3a. Full SEO Meta Tags**
-- Add `og:image`, `og:url`, `twitter:image` to `index.html`
-- Add structured data (JSON-LD) for the app as a `WebApplication`
-- Add canonical URL
+### 3a. PWA Manifest Enhancement
+Update `public/manifest.json` to add:
+- `screenshots` array (for app store listings)
+- `related_applications` placeholder
+- `prefer_related_applications: false`
 
-**3b. Landing Page / SEO-Friendly Entry Point**
-- The current home screen is a JS-rendered animation -- search engines see nothing
-- Add server-rendered content in `index.html` `<noscript>` tags with descriptive text
-- Add a `<h1>` in the initial HTML that's visually hidden but crawlable
+### 3b. Robots.txt and Sitemap (Already Done)
+These were completed in Phase 1. No changes needed.
 
-**3c. Sitemap and Robots.txt**
-- `robots.txt` exists but likely needs updating
-- Add a basic `sitemap.xml` listing the main routes (`/`, `/connect/dashboard`, `/connect/store`)
-
-**3d. PWA Discoverability**
-- The manifest exists -- verify it has proper `name`, `short_name`, `description`, `screenshots` for app store listings
-- Add `related_applications` if planning mobile wrapper apps
+### 3c. SEO Meta Tags (Already Done)
+OG tags, canonical URL, structured data, noscript content, and hidden h1 were all added in Phase 1. No changes needed.
 
 ---
 
 ## Phase 4: Traffic Drivers
 
-**4a. Embeddable "Decaying Thought" Widget**
-- Create an edge function that serves an embeddable iframe/script
-- Bloggers and creators can embed a live decaying thought on their site
-- Each embed links back to Brainchild -- free organic backlinks
+### 4a. Shareable Fog Links
 
-**4b. Shareable Fog Links**
-- When a thought is released to the Public Fog, generate a unique short URL
-- The URL shows the thought decaying in real-time -- viral potential
-- After full decay, the URL shows "this thought has dissolved" with a CTA to try Brainchild
+**Database changes:**
+- Add `share_slug` column (text, nullable, unique) to `public_thoughts`
+- Add RLS policy allowing SELECT on `public_thoughts` by `share_slug` (public read for shared thoughts)
 
-**4c. Open Graph Dynamic Previews**
-- Create an edge function `og-image` that generates dynamic OG images for shared fog thoughts
-- When someone shares a fog link on Twitter/Discord, it shows a preview of the decaying text
-- Uses canvas/SVG rendering on the server side
+**Edge function:** Create `supabase/functions/share-thought/index.ts`
+- Accepts a `thought_id` + `session_id`, generates a random 8-char slug
+- Updates the thought's `share_slug`
+- Returns the shareable URL
 
----
+**Frontend:**
+- Create `src/components/ShareFogLink.tsx` -- a small button on `ThoughtCard` that generates and copies a share link
+- Create a new route `/fog/:slug` in `App.tsx` that displays the shared thought
+- Create `src/pages/SharedThought.tsx` -- renders a single decaying thought with a CTA to try Brainchild; shows "this thought has dissolved" if expired
 
-## Phase 5: Revenue Diversification
+### 4b. Embeddable Widget
 
-**5a. Creator Storefronts**
-- The Stripe Connect storefront already exists at `/connect/store/:accountId`
-- Polish it: add store customization, branding options, and discoverability
-- Creators sell digital goods (writing prompts, ambient packs, decay presets)
-- Platform takes 5% on every sale (already configured)
+**Edge function:** Create `supabase/functions/embed-widget/index.ts`
+- Serves a small HTML/JS snippet that renders a live decaying thought in an iframe
+- Includes a "Powered by Brainchild" backlink
+- Fetches a random active public thought via service role
 
-**5b. Sponsored "Whispers"**
-- Non-intrusive sponsored messages that appear as system whispers
-- Ethical brands only (meditation apps, journals, creative tools)
-- Create a `sponsored_whispers` table and edge function to serve them
-- Frequency-capped: max 1 per session, never during active writing
+**Frontend:**
+- Add an "Embed" section in Settings that shows the embed code snippet users can copy
 
-**5c. Premium Tier Features**
-- Extended thought lifespans (48h instead of 24h)
-- Exclusive decay modes (glitch, crystallize, echo)
-- Priority placement in Public Fog
-- Custom ambient soundscapes
-- All gated behind the $9.99/month subscription
+### 4c. Dynamic OG Image for Shared Thoughts
+
+**Edge function:** Create `supabase/functions/og-image/index.ts`
+- Accepts a `slug` query param
+- Fetches the thought content from `public_thoughts` by `share_slug`
+- Generates an SVG-based image with the thought text overlaid on the Brainchild brand background
+- Returns as `image/svg+xml` (no external dependencies needed)
+- `SharedThought.tsx` page sets its OG meta tags to point to this function
 
 ---
 
 ## Technical Summary
 
+### Database Changes (Migration)
+1. Add `share_slug` text column (nullable, unique) to `public_thoughts`
+2. Add `premium_until` timestamptz column to `subscription_status`
+3. Create `payment_whispers` table (id, session_id, message, seen, created_at)
+4. Enable `pg_cron` and `pg_net` extensions
+5. Add SELECT RLS policy on `public_thoughts` for shared thoughts (where `share_slug` is not null)
+6. Add UPDATE policy on `public_thoughts` for `share_slug` (via service role only -- handled in edge function)
+
+### Cron Jobs (Insert tool -- not migration)
+1. `cleanup_expired_notes` -- every 15 min
+2. `cleanup_rate_limits` -- every hour
+3. `auto-decay` edge function call -- every 5 min
+4. Delete expired `public_thoughts` -- every 30 min
+
 ### New Edge Functions
-1. `auto-decay` -- Cron-triggered decay processor
-2. `og-image` -- Dynamic OG image generator for shared thoughts
-3. `embed-widget` -- Embeddable decaying thought script
-4. `tip-jar` -- Simplified one-time payment flow
+1. `auto-decay` -- decay processor
+2. `share-thought` -- generate share slugs
+3. `embed-widget` -- embeddable iframe content
+4. `og-image` -- dynamic SVG OG images
 
-### Database Changes
-1. `sponsored_whispers` table (content, brand, frequency_cap, active dates)
-2. Add `premium_until` column to track subscription access per session
-3. Add `share_slug` column to `public_thoughts` for shareable URLs
+### Updated Edge Functions
+1. `stripe-connect-webhooks` -- complete TODO items for premium access
 
-### New Frontend Components
-1. `TipJar` -- Support the Vision donation UI
-2. `InnerSanctumGate` -- Subscription upgrade prompt
-3. `EmbedWidget` -- Embeddable thought component
-4. `ShareFogLink` -- Shareable fog thought generator
-5. `SponsoredWhisper` -- Non-intrusive ad whisper
+### New Frontend Files
+1. `src/hooks/usePremiumStatus.ts`
+2. `src/components/ShareFogLink.tsx`
+3. `src/pages/SharedThought.tsx`
 
-### Cron Jobs (via pg_cron)
-1. Cleanup expired notes -- every 15 min
-2. Cleanup rate limits -- every hour
-3. Auto-decay processor -- every 5 min
-4. Cleanup fully decayed thoughts -- every 30 min
+### Updated Frontend Files
+1. `src/App.tsx` -- add `/fog/:slug` route
+2. `src/components/ThoughtCard.tsx` -- add share button
+3. `src/components/SettingsView.tsx` -- add embed code section
+4. `public/manifest.json` -- enhance PWA metadata
+5. `supabase/config.toml` -- register new edge functions
 
-### SEO Updates
-1. OG image, structured data, canonical URL in `index.html`
-2. `sitemap.xml` generation
-3. Noscript fallback content for crawlers
-
----
-
-## Recommended Build Order
-
-1. **Phase 1** first -- fix payments so money can flow immediately
-2. **Phase 2** next -- automate so nothing needs manual intervention
-3. **Phase 3** alongside Phase 2 -- SEO takes time to index, start early
-4. **Phase 4** after payments work -- traffic without monetization is wasted
-5. **Phase 5** last -- diversify once the core engine is proven
-
-Each phase can be broken into individual prompts for focused implementation.
+### Build Order
+1. Database migration (columns + tables + extensions + policies)
+2. Cron job scheduling (insert tool)
+3. Edge functions (auto-decay, share-thought, embed-widget, og-image, updated webhooks)
+4. Frontend components and routes
+5. Deploy and test
 
