@@ -34,6 +34,8 @@ const CoThinkingIndicator = lazy(() => import('@/components/CoThinkingIndicator'
 const EndOfDayCompost = lazy(() => import('@/components/EndOfDayCompost').then((m) => ({ default: m.EndOfDayCompost })));
 const LeavingOverlay = lazy(() => import('@/components/LeavingOverlay').then((m) => ({ default: m.LeavingOverlay })));
 import { useLeavingRoom } from '@/components/LeavingOverlay';
+import { SponsoredWhisper } from '@/components/SponsoredWhisper';
+import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 
 // Lazy load heavy 3D scene — deferred for performance
 const FogScene = lazy(() => import('@/components/three/FogScene').then((m) => ({ default: m.FogScene })));
@@ -85,6 +87,9 @@ const Index = () => {
   const appMood = useAppMoods();
   const identity = useIdentityDrift(privateThoughts);
   const leaving = useLeavingRoom();
+
+  // Premium status — caches to sessionStorage for thoughtStore access
+  const premium = usePremiumStatus();
 
   // Derived counts for ambient log
   const starredCount = useMemo(
@@ -209,6 +214,9 @@ const Index = () => {
 
         {/* Ambient log — subtle status line */}
         <AmbientLog thoughtCount={privateThoughts.length} starredCount={starredCount} />
+
+        {/* Sponsored whisper — max 1 per session, delayed */}
+        <SponsoredWhisper />
 
         {/* Top bar */}
         <header className="fixed top-0 left-0 right-0 z-30 safe-area-top">

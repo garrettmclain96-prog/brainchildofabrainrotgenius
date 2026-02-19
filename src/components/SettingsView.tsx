@@ -11,6 +11,7 @@ import { SelfReflection } from '@/components/SelfReflection';
 import { PatternWhisper } from '@/components/PatternWhisper';
 import { TipJar } from '@/components/TipJar';
 import { InnerSanctumGate } from '@/components/InnerSanctumGate';
+import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 import { AppMoodState } from '@/hooks/useAppMoods';
 import { IdentityState } from '@/hooks/useIdentityDrift';
 import { cn } from '@/lib/utils';
@@ -50,11 +51,17 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
   const { mode } = useAppMode();
   const { isDark, toggle: toggleDark } = useDarkMode();
   const patternWhisper = usePatternWhisper();
+  const { isPremium } = usePremiumStatus();
   return (
     <div className="min-h-screen px-6 py-8 pb-28">
       <div className="max-w-lg mx-auto space-y-8">
-        <header>
+        <header className="flex items-center gap-3">
           <h1 className="text-xl font-thought text-foreground/85 tracking-wider">controls</h1>
+          {isPremium && (
+            <span className="text-[9px] px-2 py-0.5 rounded-full bg-primary/10 text-primary/60 font-thought tracking-wider">
+              inner sanctum
+            </span>
+          )}
         </header>
 
         {/* Self Reflection — quiet status signals */}
