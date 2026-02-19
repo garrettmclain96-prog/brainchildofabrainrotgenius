@@ -9,9 +9,12 @@ import { DissolveButton } from '@/components/DissolveButton';
 import { FinitudeDial } from '@/components/FinitudeDial';
 import { SelfReflection } from '@/components/SelfReflection';
 import { PatternWhisper } from '@/components/PatternWhisper';
+import { TipJar } from '@/components/TipJar';
+import { InnerSanctumGate } from '@/components/InnerSanctumGate';
 import { AppMoodState } from '@/hooks/useAppMoods';
 import { IdentityState } from '@/hooks/useIdentityDrift';
 import { cn } from '@/lib/utils';
+import { getSessionId } from '@/hooks/useSessionId';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -207,6 +210,15 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
             </p>
           )}
         </section>
+
+        {/* Section label — support */}
+        <h2 className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/40 mb-2 mt-2">support</h2>
+
+        {/* Tip Jar */}
+        <TipJar sessionId={getSessionId()} />
+
+        {/* Inner Sanctum Subscription */}
+        <InnerSanctumGate sessionId={getSessionId()} />
 
         {/* Section label — actions */}
         <h2 className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/40 mb-2 mt-2">actions</h2>
