@@ -107,6 +107,74 @@ Deno.serve(async (req) => {
       }
 
       // =================================================================
+      // ACTION: TIP — One-time tip/donation to the platform
+      // No connected account needed — charges directly on the platform
+      // =================================================================
+      case "tip": {
+        const { amountInCents, sessionId } = body;
+
+        if (!amountInCents || amountInCents < 100) {
+          return new Response(
+            JSON.stringify({ error: "amountInCents must be at least 100 ($1)" }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const session = await stripeClient.checkout.sessions.create({
+          line_items: [
+            {
+              price_data: {
+                currency: "usd",
+                product_data: {
+                  name: "Support Brainchild",
+                  description: "A tip to keep thoughts decaying freely",
+                },
+                unit_amount: amountInCents,
+              },
+              quantity: 1,
+            },
+          ],
+          mode: "payment",
+          success_url: `${origin}/?tip=thanks`,
+          cancel_url: `${origin}/`,
+          metadata: { sessionId: sessionId || "anonymous" },
+        });
+
+        return new Response(
+          JSON.stringify({ url: session.url }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // =================================================================
+      // ACTION: PLATFORM-SUBSCRIBE — Session-based platform subscription
+      // Creates a checkout for the Inner Sanctum subscription
+      // =================================================================
+      case "platform-subscribe": {
+        const { sessionId: subSessionId, priceId } = body;
+
+        if (!priceId) {
+          return new Response(
+            JSON.stringify({ error: "priceId is required" }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const session = await stripeClient.checkout.sessions.create({
+          mode: "subscription",
+          line_items: [{ price: priceId, quantity: 1 }],
+          success_url: `${origin}/?subscribed=true`,
+          cancel_url: `${origin}/`,
+          metadata: { sessionId: subSessionId || "anonymous" },
+        });
+
+        return new Response(
+          JSON.stringify({ url: session.url }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // =================================================================
       // ACTION: SUBSCRIBE — Platform-level subscription for a connected account
       // Uses customer_account to charge the connected account directly
       // =================================================================
@@ -120,18 +188,10 @@ Deno.serve(async (req) => {
           );
         }
 
-        // Create a subscription checkout session
-        // customer_account uses the connected account ID (acct_...) as both
-        // the customer and the account — a V2 accounts feature
         const session = await stripeClient.checkout.sessions.create({
-          customer_account: accountId, // V2: Connected account ID serves as customer
+          customer_account: accountId,
           mode: "subscription",
-          line_items: [
-            {
-              price: priceId,   // PLACEHOLDER: Set this to your actual Price ID from Stripe
-              quantity: 1,
-            },
-          ],
+          line_items: [{ price: priceId, quantity: 1 }],
           success_url: `${origin}/connect/dashboard?accountId=${accountId}&session_id={CHECKOUT_SESSION_ID}`,
           cancel_url: `${origin}/connect/dashboard?accountId=${accountId}`,
         });
@@ -155,10 +215,8 @@ Deno.serve(async (req) => {
           );
         }
 
-        // Create a Billing Portal session
-        // customer_account allows the connected account to manage their subscription
         const session = await stripeClient.billingPortal.sessions.create({
-          customer_account: portalAccountId, // V2: Connected account manages their own billing
+          customer_account: portalAccountId,
           return_url: `${origin}/connect/dashboard?accountId=${portalAccountId}`,
         });
 
@@ -170,7 +228,7 @@ Deno.serve(async (req) => {
 
       default:
         return new Response(
-          JSON.stringify({ error: `Unknown action: ${action}. Use "purchase", "subscribe", or "billing-portal".` }),
+          JSON.stringify({ error: `Unknown action: ${action}. Use "purchase", "tip", "platform-subscribe", "subscribe", or "billing-portal".` }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
     }

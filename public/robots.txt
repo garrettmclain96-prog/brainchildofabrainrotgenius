@@ -12,3 +12,5 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://brainchildofabrainrotgenius.lovable.app/sitemap.xml
