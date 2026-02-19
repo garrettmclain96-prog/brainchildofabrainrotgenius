@@ -6,6 +6,8 @@ import { useAppMode } from '@/hooks/useAppMode';
 import { DecayShader } from '@/components/DecayShader';
 import { TypographyDecay } from '@/components/TypographyDecay';
 import { cn } from '@/lib/utils';
+import { ShareFogLink } from '@/components/ShareFogLink';
+import { getSessionId } from '@/hooks/useSessionId';
 
 interface ThoughtCardProps {
   thought: Thought;
@@ -203,6 +205,11 @@ export function ThoughtCard({ thought, onEcho, onWater, onStar, onReflect, showE
                 >
                   tend
                 </motion.button>
+              )}
+
+              {/* Share button — fog thoughts only */}
+              {showEchoButton && thought.visibility === 'public' && thought.decayLevel < 90 && (
+                <ShareFogLink thoughtId={thought.id} sessionId={getSessionId()} />
               )}
 
               {/* Echo button — min 44px tap target */}

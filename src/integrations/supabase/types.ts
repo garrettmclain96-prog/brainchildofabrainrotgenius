@@ -86,6 +86,30 @@ export type Database = {
           },
         ]
       }
+      payment_whispers: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          seen: boolean
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string
+          seen?: boolean
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          seen?: boolean
+          session_id?: string
+        }
+        Relationships: []
+      }
       private_notes: {
         Row: {
           category: string
@@ -135,6 +159,7 @@ export type Database = {
           id: string
           mode: Database["public"]["Enums"]["decay_mode"]
           session_id: string
+          share_slug: string | null
           zone: string
         }
         Insert: {
@@ -146,6 +171,7 @@ export type Database = {
           id?: string
           mode?: Database["public"]["Enums"]["decay_mode"]
           session_id: string
+          share_slug?: string | null
           zone?: string
         }
         Update: {
@@ -157,6 +183,7 @@ export type Database = {
           id?: string
           mode?: Database["public"]["Enums"]["decay_mode"]
           session_id?: string
+          share_slug?: string | null
           zone?: string
         }
         Relationships: []
@@ -188,6 +215,7 @@ export type Database = {
           created_at: string
           current_period_end: string | null
           id: string
+          premium_until: string | null
           price_id: string | null
           status: string
           stripe_account_id: string
@@ -200,6 +228,7 @@ export type Database = {
           created_at?: string
           current_period_end?: string | null
           id?: string
+          premium_until?: string | null
           price_id?: string | null
           status?: string
           stripe_account_id: string
@@ -212,6 +241,7 @@ export type Database = {
           created_at?: string
           current_period_end?: string | null
           id?: string
+          premium_until?: string | null
           price_id?: string | null
           status?: string
           stripe_account_id?: string
