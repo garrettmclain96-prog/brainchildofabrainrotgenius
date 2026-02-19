@@ -35,6 +35,7 @@ const EndOfDayCompost = lazy(() => import('@/components/EndOfDayCompost').then((
 const LeavingOverlay = lazy(() => import('@/components/LeavingOverlay').then((m) => ({ default: m.LeavingOverlay })));
 import { useLeavingRoom } from '@/components/LeavingOverlay';
 import { SponsoredWhisper } from '@/components/SponsoredWhisper';
+import { PaymentWhisper } from '@/components/PaymentWhisper';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 
 // Lazy load heavy 3D scene — deferred for performance
@@ -217,6 +218,9 @@ const Index = () => {
 
         {/* Sponsored whisper — max 1 per session, delayed */}
         <SponsoredWhisper />
+
+        {/* Payment failure whisper — checks on load */}
+        <PaymentWhisper />
 
         {/* Top bar */}
         <header className="fixed top-0 left-0 right-0 z-30 safe-area-top">
