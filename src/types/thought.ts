@@ -24,6 +24,8 @@ export type ThoughtZone =
   | 'static'
   | 'leaving';
 
+export type PremiumDecayMode = 'glitch' | 'crystallize' | 'echo';
+
 export interface Thought {
   id: string;
   content: string;
@@ -38,6 +40,7 @@ export interface Thought {
   waterCount: number;
   starred: boolean;
   zone?: ThoughtZone;
+  premiumDecayMode?: PremiumDecayMode;
 }
 
 export interface Echo {

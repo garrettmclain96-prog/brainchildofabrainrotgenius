@@ -1322,6 +1322,41 @@
 }
 
 /* =============================================
+   PREMIUM DECAY MODE EFFECTS
+   ============================================= */
+
+/* Glitch scan line animation */
+@keyframes premium-glitch-scan {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 100%; }
+}
+
+.premium-glitch-scan {
+  animation: premium-glitch-scan 8s linear infinite;
+}
+
+/* Crystallize shimmer */
+@keyframes premium-crystallize-shimmer {
+  0%, 100% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(30deg); }
+}
+
+.premium-crystallize-shimmer {
+  animation: premium-crystallize-shimmer 6s ease-in-out infinite;
+}
+
+/* Echo ghost drift */
+@keyframes premium-echo-drift {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  25% { transform: translateX(3px) translateY(-2px); }
+  75% { transform: translateX(-2px) translateY(1px); }
+}
+
+.premium-echo-drift {
+  animation: premium-echo-drift 10s ease-in-out infinite;
+}
+
+/* =============================================
    REDUCED MOTION — Accessibility & battery
    ============================================= */
 @media (prefers-reduced-motion: reduce) {
