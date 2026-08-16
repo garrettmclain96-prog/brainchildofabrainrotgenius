@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useAppMode } from '@/hooks/useAppMode';
@@ -34,7 +34,10 @@ const INTERACTION_THOUGHTS = [
 
 const smoothEase: [number, number, number, number] = [0.23, 1, 0.32, 1];
 
-export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
+export const HomeScreen = forwardRef<HTMLDivElement, HomeScreenProps>(function HomeScreen(
+  { onEnter, isFirstVisit },
+  forwardedRef
+) {
   const [phase, setPhase] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
   const [fadedCount, setFadedCount] = useState<number | null>(null);
@@ -90,6 +93,7 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
 
   return (
     <motion.div
+      ref={forwardedRef}
       className={cn(
         'fixed inset-0 z-50 bg-background flex flex-col items-center justify-center',
         'cursor-pointer select-none overflow-hidden'
@@ -313,4 +317,4 @@ export function HomeScreen({ onEnter, isFirstVisit }: HomeScreenProps) {
       </motion.p>
     </motion.div>
   );
-}
+});

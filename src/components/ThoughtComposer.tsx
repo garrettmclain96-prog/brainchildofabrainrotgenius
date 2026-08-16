@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { DecayMode, DecaySpeed, FragmentCategory, PremiumDecayMode, CATEGORY_META } from '@/types/thought';
+import { DecayMode, DecaySpeed, FragmentCategory, PremiumDecayMode, CATEGORY_META, HalfLife, HALF_LIVES, DEFAULT_HALF_LIFE } from '@/types/thought';
 import { PREMIUM_DECAY_MODES } from '@/types/premium';
 import { useAppMode } from '@/hooks/useAppMode';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 
 interface ThoughtComposerProps {
-  onSubmit: (content: string, mode: DecayMode, decaySpeed: DecaySpeed, category?: FragmentCategory, premiumDecayMode?: PremiumDecayMode) => void;
+  onSubmit: (content: string, mode: DecayMode, decaySpeed: DecaySpeed, category?: FragmentCategory, premiumDecayMode?: PremiumDecayMode, halfLife?: HalfLife) => void;
   isPublic?: boolean;
   disabled?: boolean;
   onBurst?: (x: number, y: number) => void;
@@ -22,6 +22,7 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
   const [decaySpeed, setDecaySpeed] = useState<DecaySpeed>('normal');
   const [category, setCategory] = useState<FragmentCategory>('uncategorized');
   const [premiumMode, setPremiumMode] = useState<PremiumDecayMode | undefined>(undefined);
+  const [halfLife, setHalfLife] = useState<HalfLife>(DEFAULT_HALF_LIFE);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -47,7 +48,14 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
         onBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
       }
 
-      onSubmit(content.trim(), isPublic ? mode : (appMode === 'rot' ? 'rot' : 'clean'), decaySpeed, category, premiumMode);
+      onSubmit(
+        content.trim(),
+        isPublic ? mode : (appMode === 'rot' ? 'rot' : 'clean'),
+        decaySpeed,
+        category,
+        premiumMode,
+        isPublic ? undefined : halfLife
+      );
       setContent('');
       setPremiumMode(undefined);
 
@@ -134,7 +142,7 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
       </div>
 
       {/* Category chips — appear on focus */}
-      {!isPublic && isFocused && (
+      {!isPublic && (isFocused || content.length > 0) && (
         <motion.div
           className="flex gap-1.5 flex-wrap"
           initial={{ opacity: 0, y: -4 }}
@@ -206,8 +214,38 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
         </div>
       )}
 
+      {/* Half-Life Dial — lifespan chosen by feel, not by numbers */}
+      {!isPublic && (isFocused || content.length > 0) && (
+        <motion.div
+          className="flex items-center gap-2 text-[10px] font-sans tracking-wide flex-wrap"
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+        >
+          <span className="text-muted-foreground/30">lasts</span>
+          <div className="flex rounded-xl bg-secondary/10 p-0.5">
+            {(Object.keys(HALF_LIVES) as HalfLife[]).map((hl) => (
+              <button
+                key={hl}
+                type="button"
+                onClick={() => setHalfLife(hl)}
+                className={cn(
+                  'px-2.5 py-1 rounded-lg transition-all duration-500',
+                  halfLife === hl
+                    ? 'bg-primary/12 text-primary/80'
+                    : 'text-muted-foreground/30 hover:text-muted-foreground/50'
+                )}
+                aria-pressed={halfLife === hl}
+              >
+                {HALF_LIVES[hl].label}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
       {/* Premium decay mode selector — Inner Sanctum only */}
-      {isPremium && isFocused && (
+      {isPremium && (isFocused || content.length > 0) && (
         <motion.div
           className="flex items-center gap-2 text-[10px] font-sans tracking-wide"
           initial={{ opacity: 0, y: -4 }}
