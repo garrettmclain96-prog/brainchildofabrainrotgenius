@@ -142,7 +142,7 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
       </div>
 
       {/* Category chips — appear on focus */}
-      {!isPublic && isFocused && (
+      {!isPublic && (isFocused || content.length > 0) && (
         <motion.div
           className="flex gap-1.5 flex-wrap"
           initial={{ opacity: 0, y: -4 }}
@@ -215,7 +215,7 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
       )}
 
       {/* Half-Life Dial — lifespan chosen by feel, not by numbers */}
-      {!isPublic && isFocused && (
+      {!isPublic && (isFocused || content.length > 0) && (
         <motion.div
           className="flex items-center gap-2 text-[10px] font-sans tracking-wide flex-wrap"
           initial={{ opacity: 0, y: -4 }}
@@ -245,7 +245,7 @@ export function ThoughtComposer({ onSubmit, isPublic = false, disabled = false, 
       )}
 
       {/* Premium decay mode selector — Inner Sanctum only */}
-      {isPremium && isFocused && (
+      {isPremium && (isFocused || content.length > 0) && (
         <motion.div
           className="flex items-center gap-2 text-[10px] font-sans tracking-wide"
           initial={{ opacity: 0, y: -4 }}
