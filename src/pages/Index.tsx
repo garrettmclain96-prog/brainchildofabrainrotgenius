@@ -37,6 +37,11 @@ import { useLeavingRoom } from '@/components/LeavingOverlay';
 import { SponsoredWhisper } from '@/components/SponsoredWhisper';
 import { PaymentWhisper } from '@/components/PaymentWhisper';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
+import { CompostLayer } from '@/components/CompostLayer';
+import { InstallWhisper } from '@/components/InstallWhisper';
+import { LocalLockScreen } from '@/components/LocalLockScreen';
+import { useLocalLock } from '@/hooks/useLocalLock';
+import { useBreathPacing } from '@/hooks/useBreathPacing';
 
 // Lazy load heavy 3D scene — deferred for performance
 const FogScene = lazy(() => import('@/components/three/FogScene').then((m) => ({ default: m.FogScene })));
@@ -91,6 +96,12 @@ const Index = () => {
 
   // Premium status — caches to sessionStorage for thoughtStore access
   const premium = usePremiumStatus();
+
+  // Local lock — device-only gate in front of the private space
+  const lock = useLocalLock();
+
+  // Breath pacing — the interface breathes with the user
+  useBreathPacing();
 
   // Derived counts for ambient log
   const starredCount = useMemo(
@@ -152,21 +163,27 @@ const Index = () => {
     [socialEnabled, socialPermanentlyDisabled, toggleSocial, overload]
   );
 
+  if (lock.isReady && lock.isEnabled && !lock.isUnlocked) {
+    return <LocalLockScreen onUnlock={lock.unlock} />;
+  }
+
   return (
     <PoeticErrorBoundary>
       <div className="min-h-screen bg-background relative overflow-hidden">
         {/* Home screen — atmospheric entry */}
         <AnimatePresence mode="wait">
           {showHome && (
-            <HomeScreen
-              onEnter={handleHomeComplete}
-              isFirstVisit={isFirstVisit}
-            />
+            <motion.div key="home" exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+              <Suspense fallback={null}>
+                <HomeScreen onEnter={handleHomeComplete} isFirstVisit={isFirstVisit} />
+              </Suspense>
+            </motion.div>
           )}
         </AnimatePresence>
 
         {/* Background layers */}
         <FogBackground />
+        <CompostLayer />
         <Suspense fallback={null}>{is3DReady && <FogScene />}</Suspense>
 
         {/* Film grain & vignette */}
@@ -221,6 +238,9 @@ const Index = () => {
 
         {/* Payment failure whisper — checks on load */}
         <PaymentWhisper />
+
+        {/* One-time offer to keep the app on the home screen */}
+        <InstallWhisper />
 
         {/* Top bar */}
         <header className="fixed top-0 left-0 right-0 z-30 safe-area-top">
@@ -279,6 +299,7 @@ const Index = () => {
                     audio={audio}
                     appMood={appMood}
                     identity={identity}
+                    lock={lock}
                   />
                 </PoeticErrorBoundary>
               </motion.div>

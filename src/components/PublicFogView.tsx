@@ -18,6 +18,8 @@ import { AppMoodState } from '@/hooks/useAppMoods';
 import { ThoughtZone, ZONE_META, ZONE_PATTERNS, VISIBLE_ZONES } from '@/types/thought';
 import { cn } from '@/lib/utils';
 import { SubmitBurst } from '@/components/SubmitBurst';
+import { RoomWeather } from '@/components/RoomWeather';
+import { WhisperComposer } from '@/components/WhisperComposer';
 
 interface PublicFogViewProps {
   onAction?: () => void;
@@ -158,6 +160,13 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
             </div>
           </div>
 
+          {/* Room weather — atmospheric read of this room's decay density */}
+          {!showGraveyard && (
+            <div className="mb-2">
+              <RoomWeather zone={activeZone} thoughts={thoughts} />
+            </div>
+          )}
+
           {/* Faded count */}
           {fadedCount > 0 && (
             <motion.p
@@ -258,6 +267,18 @@ export function PublicFogView({ onAction, appMood }: PublicFogViewProps) {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Whisper — one line, the shortest life available */}
+            {!showGraveyard && canCompose && appMood?.mood !== 'withholding' && (
+              <div className="mb-6">
+                <WhisperComposer
+                  onRelease={(content) => {
+                    createPublicThought(content, mode === 'rot' ? 'rot' : 'clean', 'sink');
+                    onAction?.();
+                  }}
+                />
+              </div>
+            )}
 
             {/* Empty state */}
             {!isLoading && displayThoughts.length === 0 && (

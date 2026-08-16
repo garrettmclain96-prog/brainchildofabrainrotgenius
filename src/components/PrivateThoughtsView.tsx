@@ -15,7 +15,15 @@ import { AnimatedEmptyState } from '@/components/AnimatedEmptyState';
 import { AncestralEchoOverlay } from '@/components/AncestralEchoOverlay';
 import { CompassMode } from '@/components/CompassMode';
 import { ForgettingCeremony } from '@/components/ForgettingCeremony';
-import { DecaySpeed, FragmentCategory, PremiumDecayMode } from '@/types/thought';
+import { DecaySpeed, FragmentCategory, PremiumDecayMode, HalfLife, Thought } from '@/types/thought';
+import { QuietSearch } from '@/components/QuietSearch';
+import { DecayTimeline } from '@/components/DecayTimeline';
+import { ThresholdRite } from '@/components/ThresholdRite';
+import { useThresholdRite } from '@/hooks/useThresholdRite';
+import { LastWords } from '@/components/LastWords';
+import { useLastWords } from '@/hooks/useLastWords';
+import { useOfflineState } from '@/hooks/useOfflineState';
+import { useSeasonOfRot } from '@/hooks/useSeasonOfRot';
 import { AppMoodState } from '@/hooks/useAppMoods';
 import { IdentityState } from '@/hooks/useIdentityDrift';
 import { cn } from '@/lib/utils';
@@ -37,7 +45,7 @@ interface PrivateThoughtsViewProps {
 }
 
 export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThoughtsViewProps) {
-  const { privateThoughts, addPrivateThought, deletePrivateThought, waterThought, starThought, releaseToFog } = useThoughtStore();
+  const { privateThoughts, addPrivateThought, deletePrivateThought, waterThought, starThought, releaseToFog, stitchThoughts } = useThoughtStore();
   const { addThought: addToPublicFog } = usePublicFog();
   const { mode } = useAppMode();
 
@@ -59,6 +67,14 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
   });
   const [selectedSpeed, setSelectedSpeed] = useState<DecaySpeed>('normal');
   const [bursts, setBursts] = useState<Array<{ id: number; x: number; y: number }>>([]);
+  const [query, setQuery] = useState('');
+  const [timelineThought, setTimelineThought] = useState<Thought | null>(null);
+  const [stitchFrom, setStitchFrom] = useState<string | null>(null);
+
+  const threshold = useThresholdRite(privateThoughts.length > 0);
+  const lastWords = useLastWords(privateThoughts);
+  const offline = useOfflineState();
+  const season = useSeasonOfRot();
 
   // Undo delete — 5s grace period before permanent removal
   const [pendingDeleteIds, setPendingDeleteIds] = useState<Set<string>>(new Set());
@@ -97,8 +113,11 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
     const base = selectedCategory === 'all'
       ? weightedThoughts
       : weightedThoughts.filter(w => w.thought.category === selectedCategory);
-    return base.filter(w => !pendingDeleteIds.has(w.thought.id));
-  }, [weightedThoughts, selectedCategory, pendingDeleteIds]);
+    const needle = query.trim().toLowerCase();
+    return base
+      .filter(w => !pendingDeleteIds.has(w.thought.id))
+      .filter(w => !needle || w.thought.content.toLowerCase().includes(needle));
+  }, [weightedThoughts, selectedCategory, pendingDeleteIds, query]);
 
   const handleRelease = () => {
     if (releaseDialog.thoughtId) {
@@ -109,8 +128,8 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
   };
 
   const handleSubmit = useCallback(
-    (content: string, decayMode: any, _speed: any, category?: FragmentCategory, premiumDecayMode?: PremiumDecayMode) => {
-      addPrivateThought(content, decayMode, category, premiumDecayMode);
+    (content: string, decayMode: any, _speed: any, category?: FragmentCategory, premiumDecayMode?: PremiumDecayMode, halfLife?: HalfLife) => {
+      addPrivateThought(content, decayMode, category, premiumDecayMode, halfLife);
       ancestral.dismissEcho();
       onAction?.();
     },
@@ -188,8 +207,45 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
     onAction?.();
   }, [deletePrivateThought, onAction, friction]);
 
+  // Fragment Stitching — pick a first fragment, then a second to absorb into it
+  const handleStitch = useCallback((id: string) => {
+    if (!stitchFrom) {
+      setStitchFrom(id);
+      toast('choose a second fragment', { description: 'they will become one' });
+      return;
+    }
+    if (stitchFrom === id) {
+      setStitchFrom(null);
+      return;
+    }
+    stitchThoughts(stitchFrom, id);
+    setStitchFrom(null);
+    toast('stitched', { description: 'one thought now, with the longer life' });
+    onAction?.();
+  }, [stitchFrom, stitchThoughts, onAction]);
+
+  const handleLastWordsKeep = useCallback((id: string) => {
+    starThought(id);
+    lastWords.dismiss();
+  }, [starThought, lastWords]);
+
+  const handleLastWordsRelease = useCallback((id: string) => {
+    deletePrivateThought(id);
+    lastWords.dismiss();
+  }, [deletePrivateThought, lastWords]);
+
   return (
     <div className="min-h-screen relative pb-28">
+      <ThresholdRite isOpen={threshold.isOpen} question={threshold.question} onComplete={threshold.complete} />
+
+      <DecayTimeline thought={timelineThought} onClose={() => setTimelineThought(null)} />
+
+      <LastWords
+        thought={lastWords.candidate}
+        onKeep={handleLastWordsKeep}
+        onRelease={handleLastWordsRelease}
+        onDismiss={lastWords.dismiss}
+      />
       <AnimatePresence>
         {bursts.map((burst) => (
           <SubmitBurst key={burst.id} x={burst.x} y={burst.y} onComplete={() => removeBurst(burst.id)} />
@@ -237,13 +293,16 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
                 brainchild
               </h1>
               <p className="text-[10px] font-sans text-muted-foreground/50 tracking-[0.15em] mt-1">
-                {nightDecay.isNight
-                  ? 'the rot moves faster at night'
-                  : 'if it matters, it survives'}
+                {offline.label
+                  ? offline.label
+                  : nightDecay.isNight
+                    ? 'the rot moves faster at night'
+                    : season.whisper}
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <QuietSearch value={query} onChange={setQuery} matchCount={filteredThoughts.length} />
               <span className="text-[10px] font-sans text-muted-foreground/40 tracking-widest uppercase">
                 {mode === 'rot' ? 'rot' : 'prune'}
               </span>
@@ -341,6 +400,25 @@ export function PrivateThoughtsView({ onAction, appMood, identity }: PrivateThou
                       className="px-4 py-2 rounded-xl text-xs font-thought bg-destructive/10 text-destructive-foreground/65 hover:bg-destructive/20 transition-all"
                     >
                       let it go
+                    </button>
+                    <button
+                      onClick={() => setTimelineThought(thought)}
+                      className="min-h-[44px] px-3 rounded-xl text-xs font-thought text-muted-foreground/45 hover:text-primary/65 transition-all"
+                      aria-label="See its decay"
+                    >
+                      trace
+                    </button>
+                    <button
+                      onClick={() => handleStitch(thought.id)}
+                      className={cn(
+                        'min-h-[44px] px-3 rounded-xl text-xs font-thought transition-all',
+                        stitchFrom === thought.id
+                          ? 'text-primary/80 bg-primary/10'
+                          : 'text-muted-foreground/45 hover:text-primary/65'
+                      )}
+                      aria-label="Stitch with another fragment"
+                    >
+                      {stitchFrom === thought.id ? 'stitching…' : 'stitch'}
                     </button>
                   </motion.div>
                 </motion.div>

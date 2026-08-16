@@ -16,6 +16,10 @@ import { AppMoodState } from '@/hooks/useAppMoods';
 import { IdentityState } from '@/hooks/useIdentityDrift';
 import { cn } from '@/lib/utils';
 import { getSessionId } from '@/hooks/useSessionId';
+import { ExportErase } from '@/components/ExportErase';
+import { LocalLockSection } from '@/components/LocalLockSection';
+import { useSeasonOfRot } from '@/hooks/useSeasonOfRot';
+import { useOfflineState } from '@/hooks/useOfflineState';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,9 +42,15 @@ interface SettingsViewProps {
   };
   appMood?: AppMoodState;
   identity?: IdentityState;
+  lock?: {
+    isEnabled: boolean;
+    enable: (passcode: string) => Promise<boolean>;
+    disable: (passcode: string) => Promise<boolean>;
+    lockNow: () => void;
+  };
 }
 
-export function SettingsView({ onReplayIntro, audio, appMood, identity }: SettingsViewProps) {
+export function SettingsView({ onReplayIntro, audio, appMood, identity, lock }: SettingsViewProps) {
   const {
     socialEnabled,
     socialPermanentlyDisabled,
@@ -52,6 +62,8 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
   const { isDark, toggle: toggleDark } = useDarkMode();
   const patternWhisper = usePatternWhisper();
   const { isPremium } = usePremiumStatus();
+  const season = useSeasonOfRot();
+  const offline = useOfflineState();
   return (
     <div className="min-h-screen px-6 py-8 pb-28">
       <div className="max-w-lg mx-auto space-y-8">
@@ -63,6 +75,13 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
             </span>
           )}
         </header>
+
+        {/* Season of rot + connection honesty */}
+        <p className="text-[10px] font-sans tracking-[0.16em] text-muted-foreground/40 lowercase">
+          season of {season.label} · {offline.isOffline
+            ? `offline${offline.unsyncedCount > 0 ? ` · ${offline.unsyncedCount} waiting` : ''}`
+            : 'connected'}
+        </p>
 
         {/* Self Reflection — quiet status signals */}
         <SelfReflection thoughts={privateThoughts} />
@@ -254,6 +273,13 @@ export function SettingsView({ onReplayIntro, audio, appMood, identity }: Settin
         <section className="glass-premium rounded-xl p-4">
           <DissolveButton />
         </section>
+
+        {/* Section label — privacy */}
+        <h2 className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/40 mb-2 mt-2">privacy</h2>
+
+        {lock && <LocalLockSection lock={lock} />}
+
+        <ExportErase />
 
         {/* Section label — embed */}
         <h2 className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/40 mb-2 mt-2">embed</h2>

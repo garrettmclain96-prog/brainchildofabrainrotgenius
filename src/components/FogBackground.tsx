@@ -45,7 +45,7 @@ export function FogBackground() {
   if (!mounted) return null;
 
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0 breathe" aria-hidden="true">
       {/* Mesh gradient base — psychedelic pastel wash */}
       <div 
         className="absolute inset-0"

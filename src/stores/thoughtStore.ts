@@ -1,11 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Thought, DecayMode, DecaySpeed, FragmentCategory, PremiumDecayMode, PRIVATE_DECAY_DURATION, WATER_EXTENSION_MINUTES, DECAY_DURATIONS, calculateDecayLevel } from '@/types/thought';
+import { Thought, DecayMode, DecaySpeed, FragmentCategory, PremiumDecayMode, HalfLife, HALF_LIVES, PRIVATE_DECAY_DURATION, WATER_EXTENSION_MINUTES, DECAY_DURATIONS, calculateDecayLevel } from '@/types/thought';
 import { PREMIUM_DECAY_DURATION } from '@/types/premium';
 import { incrementStat } from '@/components/ForbiddenScreen';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId, isUUID } from '@/hooks/useSessionId';
 import { useSyncStore } from '@/hooks/useSyncState';
+import { compost } from '@/hooks/useCompostLayer';
 
 interface ThoughtStore {
   // Private thoughts (local + DB synced)
@@ -19,7 +20,8 @@ interface ThoughtStore {
   isDBLoaded: boolean;
   
   // Actions
-  addPrivateThought: (content: string, mode: DecayMode, category?: FragmentCategory, premiumDecayMode?: PremiumDecayMode) => void;
+  addPrivateThought: (content: string, mode: DecayMode, category?: FragmentCategory, premiumDecayMode?: PremiumDecayMode, halfLife?: HalfLife) => void;
+  stitchThoughts: (keepId: string, absorbId: string) => void;
   deletePrivateThought: (id: string) => void;
   waterThought: (id: string) => void;
   starThought: (id: string) => void;
@@ -49,12 +51,14 @@ export const useThoughtStore = create<ThoughtStore>()(
       socialPermanentlyDisabled: false,
       isDBLoaded: false,
 
-      addPrivateThought: (content, mode, category = 'uncategorized', premiumDecayMode) => {
+      addPrivateThought: (content, mode, category = 'uncategorized', premiumDecayMode, halfLife) => {
         const now = new Date();
         const id = generateId();
         // Premium users get 48h decay, free users get 24h
         const isPremium = typeof window !== 'undefined' && sessionStorage.getItem('brainchild-premium') === 'true';
-        const duration = isPremium ? PREMIUM_DECAY_DURATION : PRIVATE_DECAY_DURATION;
+        // An explicit half-life always wins; otherwise premium extends the default window.
+        const baseDuration = isPremium ? PREMIUM_DECAY_DURATION : PRIVATE_DECAY_DURATION;
+        const duration = halfLife ? HALF_LIVES[halfLife].minutes : baseDuration;
         const expiresAt = new Date(now.getTime() + duration * 60 * 1000);
         
         const thought: Thought = {
@@ -70,6 +74,7 @@ export const useThoughtStore = create<ThoughtStore>()(
           waterCount: 0,
           starred: false,
           premiumDecayMode,
+          halfLife,
         };
         
         incrementStat('totalCreated');
@@ -194,6 +199,64 @@ export const useThoughtStore = create<ThoughtStore>()(
         return publicThought;
       },
 
+      stitchThoughts: (keepId, absorbId) => {
+        const state = get();
+        const keep = state.privateThoughts.find((t) => t.id === keepId);
+        const absorb = state.privateThoughts.find((t) => t.id === absorbId);
+        if (!keep || !absorb || keepId === absorbId) return;
+
+        // The stitched fragment inherits the later expiry, so merging never
+        // shortens the life of either half.
+        const mergedContent = `${keep.content}\n\n${absorb.content}`;
+        const expiresAt = new Date(Math.max(keep.expiresAt.getTime(), absorb.expiresAt.getTime()));
+
+        set((s) => ({
+          privateThoughts: s.privateThoughts
+            .filter((t) => t.id !== absorbId)
+            .map((t) =>
+              t.id === keepId
+                ? {
+                    ...t,
+                    content: mergedContent.slice(0, 2000),
+                    expiresAt,
+                    decayLevel: Math.min(keep.decayLevel, absorb.decayLevel),
+                    starred: keep.starred || absorb.starred,
+                  }
+                : t
+            ),
+        }));
+
+        // Persist: the absorbed note is removed, the surviving note rewritten.
+        const sessionId = getSessionId();
+        if (isUUID(absorbId)) {
+          syncToDB(`delete-${absorbId}`, async () => {
+            const { error } = await supabase.rpc('delete_private_note', {
+              p_session_id: sessionId,
+              p_note_id: absorbId,
+            });
+            if (error) throw error;
+          });
+        }
+        if (isUUID(keepId)) {
+          syncToDB(`stitch-${keepId}`, async () => {
+            const { error } = await supabase.rpc('delete_private_note', {
+              p_session_id: sessionId,
+              p_note_id: keepId,
+            });
+            if (error) throw error;
+            const { error: insertError } = await supabase.from('private_notes').insert({
+              id: keepId,
+              session_id: sessionId,
+              content: mergedContent.slice(0, 2000),
+              category: keep.category,
+              mode: keep.mode,
+              expires_at: expiresAt.toISOString(),
+            });
+            if (insertError) throw insertError;
+          });
+        }
+      },
+
       toggleSocial: () => {
         const { socialPermanentlyDisabled } = get();
         if (socialPermanentlyDisabled) return;
@@ -283,6 +346,13 @@ export const useThoughtStore = create<ThoughtStore>()(
 
       removeExpiredThoughts: () => {
         const now = Date.now();
+        const expiring = get().privateThoughts.filter(
+          (t) => !t.starred && t.expiresAt.getTime() <= now
+        );
+        // Fully decayed thoughts leave anonymous residue in the compost layer
+        // rather than disappearing without a trace.
+        expiring.forEach((t) => compost(t.content));
+
         set((state) => ({
           privateThoughts: state.privateThoughts.filter(
             // Starred thoughts never expire automatically

@@ -41,6 +41,7 @@ export interface Thought {
   starred: boolean;
   zone?: ThoughtZone;
   premiumDecayMode?: PremiumDecayMode;
+  halfLife?: HalfLife;
 }
 
 export interface Echo {
@@ -61,6 +62,20 @@ export const DECAY_DURATIONS: Record<DecaySpeed, number> = {
 export const PRIVATE_DECAY_DURATION = 24 * 60;
 export const ECHO_DECAY_DURATION = 10;
 export const WATER_EXTENSION_MINUTES = 60;
+
+// ───── Half-lives — lifespan chosen by feel, never by numbers ─────
+
+export type HalfLife = 'hour' | 'night' | 'day' | 'week';
+
+export const HALF_LIVES: Record<HalfLife, { label: string; minutes: number; texture: string }> = {
+  hour: { label: 'an hour', minutes: 60, texture: 'thin' },
+  night: { label: 'a night', minutes: 12 * 60, texture: 'soft' },
+  day: { label: 'a day', minutes: 24 * 60, texture: 'steady' },
+  week: { label: 'a week', minutes: 7 * 24 * 60, texture: 'dense' },
+};
+
+export const DEFAULT_HALF_LIFE: HalfLife = 'day';
+
 
 // Category metadata
 export const CATEGORY_META: Record<FragmentCategory, { label: string; icon: string; color: string }> = {

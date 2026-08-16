@@ -1377,3 +1377,44 @@
     filter: none !important;
   }
 }
+
+/* =============================================
+   BREATH PACING — the interface inhales and exhales
+   Driven by --breath-duration / --breath-depth, set by useBreathPacing.
+   ============================================= */
+:root {
+  --breath-duration: 9s;
+  --breath-depth: 0.45;
+}
+
+@keyframes breathe {
+  0%, 100% {
+    opacity: calc(1 - var(--breath-depth) * 0.18);
+    transform: scale(calc(1 - var(--breath-depth) * 0.01));
+  }
+  50% {
+    opacity: 1;
+    transform: scale(calc(1 + var(--breath-depth) * 0.012));
+  }
+}
+
+.breathe {
+  animation: breathe var(--breath-duration) ease-in-out infinite;
+  will-change: opacity, transform;
+}
+
+html[data-breathing='off'] .breathe {
+  animation: none;
+}
+
+/* =============================================
+   SEASONS OF ROT — the decay language shifts weekly
+   ============================================= */
+.season-fray { --season-tint: 280 60% 60%; }
+.season-bloom { --season-tint: 330 65% 62%; }
+.season-ash { --season-tint: 30 35% 55%; }
+.season-frost { --season-tint: 195 55% 62%; }
+
+.season-tinted {
+  box-shadow: inset 0 0 40px hsl(var(--season-tint) / 0.05);
+}
