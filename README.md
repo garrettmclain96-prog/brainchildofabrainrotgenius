@@ -1,73 +1,74 @@
-# Welcome to your Lovable project
+# Brainchild
 
-## Project info
+Brainchild is an iPhone-first thought incubator built around one rule: not every thought deserves permanent storage.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+Capture a fragment, give it a lifespan, and let time create pressure. A thought can be preserved, extended, combined with another fragment, released anonymously, or allowed to disappear. The product is intentionally different from a notes app: accumulation is not the goal; deciding what is worth keeping is.
 
-## How can I edit this code?
+## Core loop
 
-There are several ways of editing your application.
+1. Capture a thought without organizing it first.
+2. Choose how long it should live.
+3. Return before it expires.
+4. Preserve, develop, combine, release, or let it decay.
+5. Review what survived and turn the best fragments into something real.
 
-**Use Lovable**
+The focused beta should prove that loop before expanding the experimental rooms, ambient systems, payments, or social layer.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## What already exists
 
-Changes made via Lovable will be committed automatically to this repo.
+- React + TypeScript installable PWA
+- Local-first thought capture with Supabase synchronization
+- Time-based decay and selectable half-lives
+- Preserve, water, delete, stitch, search, and category flows
+- Public “fog” sharing mode
+- AI reflection and overnight synthesis functions
+- Stripe Connect and paid-feature foundations
+- Offline caching and iPhone home-screen installation
 
-**Use your preferred IDE**
+## Local development
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Requirements: Node.js 20 or newer and a Supabase project containing the migrations in `supabase/migrations`.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
+npm ci
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Create a local `.env` file with:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```dotenv
+VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
+VITE_SUPABASE_PROJECT_ID=YOUR_PROJECT_ID
+```
 
-**Use GitHub Codespaces**
+Supabase Edge Functions additionally use server-side secrets such as `SUPABASE_SERVICE_ROLE_KEY`, `LOVABLE_API_KEY`, and Stripe credentials. Do not expose those as `VITE_` variables.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Verification
 
-## What technologies are used for this project?
+```bash
+npm test
+npm run build
+npm run lint
+```
 
-This project is built with:
+The production build and the decay-model tests are expected to pass. Lint cleanup remains an active stabilization task and should be completed before calling the beta release-ready.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Product boundary for the beta
 
-## How can I deploy this project?
+Keep:
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+- private capture
+- time-to-decay
+- preserve / let go decision
+- resurfacing and synthesis
+- export and local lock
 
-## Can I connect a custom domain to my Lovable project?
+Defer until retention proves the loop:
 
-Yes, you can!
+- the full 15-room discovery system
+- broad social features
+- creator storefronts and Stripe Connect
+- decorative systems that materially increase load time
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+This boundary is deliberate. Brainchild becomes defensible when it produces a useful record of which ideas survive—not when it has the most atmospheric features.
